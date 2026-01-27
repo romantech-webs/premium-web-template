@@ -23,7 +23,7 @@ export function Reviews() {
           <span className="section-label justify-center">Opiniones</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary mt-4 mb-8">
             Lo que dicen{" "}
-            <span className="text-gradient">nuestros pacientes</span>
+            <span className="text-primary">nuestros pacientes</span>
           </h2>
 
           {/* Rating summary */}

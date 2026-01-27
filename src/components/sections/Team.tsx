@@ -25,7 +25,7 @@ export function Team() {
           <span className="section-label justify-center">Nuestro Equipo</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary mt-4 mb-6">
             Profesionales{" "}
-            <span className="text-gradient">especializados</span>
+            <span className="text-accent">especializados</span>
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
             Experiencia y dedicación al servicio de tu recuperación

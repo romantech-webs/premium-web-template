@@ -22,7 +22,7 @@ export function Gallery() {
           <span className="section-label justify-center">Instalaciones</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary mt-4 mb-6">
             Conoce nuestra{" "}
-            <span className="text-gradient">clínica</span>
+            <span className="text-accent">clínica</span>
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
             Espacios diseñados para tu comodidad y recuperación

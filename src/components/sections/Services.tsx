@@ -30,7 +30,7 @@ export function Services() {
           <span className="section-label">Nuestros Servicios</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary mb-6">
             Tratamientos{" "}
-            <span className="text-gradient">especializados</span>
+            <span className="text-accent">especializados</span>
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
             Técnicas avanzadas de fisioterapia deportiva y neurológica
