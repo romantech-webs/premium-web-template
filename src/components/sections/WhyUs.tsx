@@ -47,18 +47,18 @@ export function WhyUs() {
             <span className="section-label !text-accent">
               Por Qué Elegirnos
             </span>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mt-4 mb-6">
-              Tu recuperación,{" "}
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mt-4 mb-6">
+              Tu belleza,{" "}
               <span className="relative inline-block">
-                nuestra prioridad
-                <svg className="absolute -bottom-2 left-0 w-full h-3 text-accent/50" viewBox="0 0 200 12" fill="none">
+                nuestra pasión
+                <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/50" viewBox="0 0 200 12" fill="none">
                   <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
                 </svg>
               </span>
             </h2>
             <p className="text-white/60 text-xl mb-12 leading-relaxed">
-              Combinamos experiencia, tecnología de vanguardia y un trato
-              personalizado para que alcances tus objetivos.
+              Combinamos experiencia, las mejores técnicas y un trato
+              personalizado para realzar tu belleza natural.
             </p>
 
             {/* Features */}
@@ -97,10 +97,10 @@ export function WhyUs() {
           >
             <div className="grid grid-cols-2 gap-4">
               {[
-                { value: "8", label: "Especialidades", icon: "Layers" },
-                { value: `+${clinic.reviews.count}`, label: "Pacientes tratados", icon: "Users" },
+                { value: "8", label: "Tratamientos", icon: "Layers" },
+                { value: `+${clinic.reviews.count}`, label: "Clientas satisfechas", icon: "Users" },
                 { value: clinic.reviews.rating.toString(), label: "Valoración media", icon: "Star" },
-                { value: "100%", label: "Compromiso", icon: "Target" },
+                { value: "100%", label: "Dedicación", icon: "Heart" },
               ].map((stat, index) => {
                 const Icon = getIcon(stat.icon)
                 return (

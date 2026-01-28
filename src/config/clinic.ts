@@ -1,73 +1,79 @@
 export const clinic = {
   // === IDENTIDAD ===
-  name: "FisioAtlon",
-  tagline: "Clínica de Fisioterapia NeuroDeportiva en Badajoz",
-  description: "FisioAtlon es una clínica especializada en fisioterapia deportiva y neurológica en Badajoz. Tratamientos personalizados con las últimas tecnologías para deportistas y pacientes neurológicos.",
+  name: "Centro Estética CyM",
+  tagline: "Tu Centro de Belleza en Puertollano",
+  description: "Centro Estética CyM es un centro de belleza integral en Puertollano especializado en micropigmentación, microblading, depilación láser y tratamientos faciales. Profesionales cualificados para realzar tu belleza natural.",
 
-  // === PALETA ===
+  // === PALETA (Elegante/Spa) ===
   colors: {
-    primary: "#3A9B8C",      // Teal/azul verdoso del círculo del logo
-    secondary: "#1f2937",    // Gris oscuro para texto
-    accent: "#E87839",       // Naranja de la figura corriendo
-    neutral: "#f8fafc",      // Fondo claro
+    primary: "#C9A86C",      // Dorado elegante
+    secondary: "#2D2D2D",    // Gris sofisticado
+    accent: "#D4A574",       // Rosa champán
+    neutral: "#FAF8F5",      // Crema cálido
   },
 
   // === CONTACTO ===
-  phone: "605 43 58 00",
-  whatsapp: "+34605435800",
-  whatsappMessage: "Hola, me gustaría solicitar información sobre vuestros servicios de fisioterapia.",
-  email: "Info@clinicafisioatlon.es",
+  phone: "629 61 04 71",
+  whatsapp: "+34629610471",
+  whatsappMessage: "Hola, me gustaría solicitar información sobre vuestros tratamientos de estética.",
+  email: "info@esteticacym.es",
 
   // === UBICACIÓN ===
   address: {
-    street: "Argüello Carvajal Teólogo Siglo XVII, 28A",
-    city: "Badajoz",
-    province: "Badajoz",
-    postalCode: "06007",
+    street: "C. Numancia, 40",
+    city: "Puertollano",
+    province: "Ciudad Real",
+    postalCode: "13500",
     country: "España",
   },
-  googleMapsUrl: "https://maps.google.com/?q=Arguello+Carvajal+Teologo+Siglo+XVII+28A+Badajoz",
-  googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3144.5!2d-6.9794!3d38.8886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDUzJzE5LjAiTiA2wrA1OCc0NS44Ilc!5e0!3m2!1ses!2ses!4v1",
-  coordinates: { lat: 38.8886, lng: -6.9794 },
+  googleMapsUrl: "https://maps.google.com/?q=C.+Numancia+40+Puertollano",
+  googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3144.5!2d-4.1078!3d38.6872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd6d1f1a8a8a8a8a%3A0x0!2sC.+Numancia%2C+40%2C+13500+Puertollano!5e0!3m2!1ses!2ses!4v1",
+  coordinates: { lat: 38.6872, lng: -4.1078 },
 
   // === HORARIOS ===
   schedule: [
-    { days: "Lunes - Viernes", hours: "9:00 - 14:00 y 16:00 - 21:00" },
+    { days: "Lunes - Viernes", hours: "10:00 - 20:00" },
     { days: "Sábado", hours: "Cerrado" },
     { days: "Domingo", hours: "Cerrado" },
   ],
 
   // === REDES SOCIALES ===
   social: {
-    instagram: "https://www.instagram.com/fisioatlon_dr.antoniolopez/",
-    facebook: "https://www.facebook.com/fisioatlon/?locale=es_ES",
+    instagram: "https://www.instagram.com/centrodeesteticacym/",
+    facebook: "https://www.facebook.com/centrodeesteticacym/",
     linkedin: null as string | null,
     tiktok: null as string | null,
   },
 
   // === RESEÑAS GOOGLE ===
   reviews: {
-    rating: 5.0,
-    count: 89,
+    rating: 4.7,
+    count: 190,
     url: "#",
     featured: [
       {
-        author: "Pablo M.",
+        author: "Eva León",
         rating: 5,
-        text: "Excelente profesional. Antonio me ayudó a recuperarme de una lesión de rodilla y volver a correr en tiempo récord.",
+        text: "Increíble trabajo de micropigmentación. El resultado es muy natural y el trato inmejorable. Sin duda volveré para más tratamientos.",
+        date: "hace 2 semanas",
+      },
+      {
+        author: "Javier Padilla",
+        rating: 5,
+        text: "Excelente profesionalidad en todos los tratamientos. Las instalaciones son muy modernas y el ambiente muy relajante.",
         date: "hace 1 mes",
       },
       {
-        author: "Laura S.",
+        author: "Melanie Ponce",
         rating: 5,
-        text: "Muy recomendable para cualquier deportista. Tratamiento personalizado y con las últimas tecnologías.",
-        date: "hace 2 meses",
+        text: "Me encantó el resultado del microblading. Quedé muy satisfecha con el trabajo realizado. Muy recomendable.",
+        date: "hace 1 mes",
       },
       {
-        author: "Javier R.",
+        author: "María Teresa Salguero",
         rating: 5,
-        text: "Gran experiencia en fisioterapia neurológica. Mi padre ha mejorado muchísimo después del ictus gracias a Antonio.",
-        date: "hace 3 meses",
+        text: "El mejor centro de estética de Puertollano. Tratamientos de calidad y atención personalizada. Volveré seguro.",
+        date: "hace 2 meses",
       },
     ],
   },
@@ -75,60 +81,60 @@ export const clinic = {
   // === SERVICIOS ===
   services: [
     {
-      id: "fisioterapia-deportiva",
-      name: "Fisioterapia Deportiva",
-      description: "Tratamiento especializado en lesiones deportivas, readaptación al ejercicio y prevención de lesiones para atletas de todos los niveles.",
-      benefits: ["Recuperación de lesiones", "Mejora del rendimiento", "Prevención de recaídas"],
-      icon: "Dumbbell",
+      id: "micropigmentacion",
+      name: "Micropigmentación",
+      description: "Técnica avanzada de maquillaje semipermanente para cejas, labios y ojos. Resultados naturales y duraderos que realzan tu belleza.",
+      benefits: ["Resultados naturales", "Larga duración", "Mínimo mantenimiento"],
+      icon: "Sparkles",
     },
     {
-      id: "fisioterapia-neurologica",
-      name: "Fisioterapia Neurológica",
-      description: "Rehabilitación especializada para pacientes con ictus, Parkinson, esclerosis múltiple y otras patologías neurológicas.",
-      benefits: ["Recuperación funcional", "Mejora de la movilidad", "Autonomía personal"],
-      icon: "Brain",
+      id: "microblading",
+      name: "Microblading de Cejas",
+      description: "Técnica pelo a pelo para cejas perfectamente definidas. Efecto hiperrealista que simula el vello natural.",
+      benefits: ["Efecto pelo a pelo", "Cejas definidas", "Aspecto natural"],
+      icon: "Feather",
     },
     {
-      id: "rehabilitacion-deportiva",
-      name: "Rehabilitación Deportiva",
-      description: "Programas completos de recuperación post-lesión y readaptación para la vuelta segura a la actividad deportiva.",
-      benefits: ["Vuelta al deporte segura", "Fortalecimiento muscular", "Readaptación progresiva"],
-      icon: "Activity",
-    },
-    {
-      id: "puncion-seca",
-      name: "Punción Seca",
-      description: "Técnica invasiva mínima para el tratamiento de puntos gatillo miofasciales y dolor muscular crónico.",
-      benefits: ["Alivio del dolor", "Liberación muscular", "Mejora de la movilidad"],
-      icon: "Target",
-    },
-    {
-      id: "electroterapia",
-      name: "Electroterapia y Nuevas Tecnologías",
-      description: "Tratamientos con TENS, ultrasonidos, láser terapéutico y otras tecnologías avanzadas para acelerar la recuperación.",
-      benefits: ["Reducción del dolor", "Aceleración de la curación", "Tecnología de vanguardia"],
+      id: "depilacion-laser",
+      name: "Depilación Láser",
+      description: "Eliminación definitiva del vello con tecnología láser de última generación. Tratamientos seguros y efectivos.",
+      benefits: ["Resultados permanentes", "Sin dolor", "Piel suave"],
       icon: "Zap",
     },
     {
-      id: "terapia-manual",
-      name: "Terapia Manual",
-      description: "Masaje terapéutico, movilizaciones articulares y técnicas de estiramiento para restaurar la función y aliviar el dolor.",
-      benefits: ["Relajación muscular", "Mejora articular", "Alivio de tensiones"],
+      id: "tratamientos-faciales",
+      name: "Tratamientos Faciales",
+      description: "Cuidados personalizados para cada tipo de piel. Hidratación profunda, antiedad y luminosidad para un rostro radiante.",
+      benefits: ["Piel rejuvenecida", "Hidratación profunda", "Luminosidad"],
+      icon: "Flower2",
+    },
+    {
+      id: "tratamientos-corporales",
+      name: "Tratamientos Corporales",
+      description: "Tratamientos reductores, reafirmantes y anticelulíticos. Moldea tu silueta con las técnicas más avanzadas.",
+      benefits: ["Reduce centímetros", "Reafirma la piel", "Elimina celulitis"],
+      icon: "Heart",
+    },
+    {
+      id: "manicura-pedicura",
+      name: "Manicura y Pedicura",
+      description: "Cuidado completo de manos y pies con esmaltes de alta calidad. Uñas perfectas con diseños personalizados.",
+      benefits: ["Uñas perfectas", "Manos cuidadas", "Diseños exclusivos"],
       icon: "Hand",
     },
     {
-      id: "vendaje-neuromuscular",
-      name: "Vendaje Neuromuscular",
-      description: "Aplicación de kinesiotaping para facilitar la recuperación, reducir la inflamación y mejorar el rendimiento.",
-      benefits: ["Soporte muscular", "Reducción de edema", "Mejora propioceptiva"],
-      icon: "Ribbon",
+      id: "extensiones-pestanas",
+      name: "Extensiones de Pestañas",
+      description: "Mirada impactante con extensiones de pestañas pelo a pelo. Efecto natural o dramático según tu preferencia.",
+      benefits: ["Mirada intensa", "Efecto natural", "Sin máscara"],
+      icon: "Eye",
     },
     {
-      id: "readaptacion-funcional",
-      name: "Readaptación Funcional",
-      description: "Ejercicio terapéutico personalizado para recuperar la funcionalidad completa tras lesiones o cirugías.",
-      benefits: ["Ejercicio personalizado", "Recuperación completa", "Prevención de lesiones"],
-      icon: "TrendingUp",
+      id: "maquillaje-profesional",
+      name: "Maquillaje Profesional",
+      description: "Maquillaje para eventos especiales, novias y sesiones fotográficas. Realza tu belleza para cada ocasión.",
+      benefits: ["Look personalizado", "Alta duración", "Acabado profesional"],
+      icon: "Palette",
     },
   ],
 
@@ -137,45 +143,45 @@ export const clinic = {
     {
       step: 1,
       title: "Contacta",
-      description: "Solicita tu cita de valoración inicial por teléfono o WhatsApp",
+      description: "Solicita tu cita de consulta inicial por teléfono o WhatsApp",
     },
     {
       step: 2,
-      title: "Evaluación",
-      description: "Realizamos una valoración completa para identificar la causa de tu problema",
+      title: "Consulta",
+      description: "Analizamos tus necesidades y diseñamos el tratamiento ideal para ti",
     },
     {
       step: 3,
-      title: "Plan de Tratamiento",
-      description: "Diseñamos un programa de rehabilitación personalizado según tus objetivos",
+      title: "Tratamiento",
+      description: "Realizamos el tratamiento con las técnicas más avanzadas y productos de calidad",
     },
     {
       step: 4,
-      title: "Recuperación",
-      description: "Sesiones de fisioterapia con seguimiento continuo hasta tu recuperación total",
+      title: "Resultados",
+      description: "Disfruta de resultados espectaculares y un seguimiento personalizado",
     },
   ],
 
   // === POR QUÉ ELEGIRNOS ===
   whyUs: [
     {
-      title: "Especialista NeuroDeportivo",
-      description: "Formación especializada en fisioterapia deportiva y neurológica con años de experiencia",
-      icon: "GraduationCap",
+      title: "Especialistas en Micropigmentación",
+      description: "Técnicas avanzadas de micropigmentación y microblading con resultados naturales y duraderos",
+      icon: "Award",
     },
     {
-      title: "Tecnología Avanzada",
-      description: "Equipamiento de última generación para tratamientos más efectivos y recuperaciones más rápidas",
+      title: "Tecnología de Vanguardia",
+      description: "Equipos de última generación para tratamientos más efectivos y seguros",
       icon: "Cpu",
     },
     {
       title: "Atención Personalizada",
-      description: "Cada paciente recibe un plan de tratamiento único adaptado a sus objetivos y necesidades",
+      description: "Cada clienta recibe un tratamiento único adaptado a sus necesidades y deseos",
       icon: "UserCheck",
     },
     {
-      title: "Valoración 5 Estrellas",
-      description: "89 pacientes nos avalan con la máxima puntuación en Google",
+      title: "Valoración 4.7 Estrellas",
+      description: "190 clientas satisfechas nos avalan con excelentes valoraciones en Google",
       icon: "Star",
     },
   ],
@@ -183,82 +189,83 @@ export const clinic = {
   // === EQUIPO ===
   team: [
     {
-      name: "Antonio López",
-      role: "Fisioterapeuta NeuroDeportivo",
-      image: "/images/team/antonio.jpg",
-      bio: "Especialista en fisioterapia deportiva y neurológica. Apasionado por ayudar a deportistas y pacientes neurológicos a recuperar su máximo potencial.",
+      name: "Centro Estética CyM",
+      role: "Especialistas en Micropigmentación",
+      image: "/images/team/placeholder.jpg",
+      bio: "Profesionales apasionadas por la belleza y el cuidado personal. Con años de experiencia en micropigmentación, microblading y tratamientos estéticos, nos dedicamos a realzar la belleza natural de cada clienta.",
     },
   ],
 
   // === GALERÍA ===
   gallery: [
-    { src: "/images/gallery/1.webp", alt: "Interior de la clínica FisioAtlon - Sala de tratamiento" },
-    { src: "/images/gallery/2.webp", alt: "Recepción de la clínica FisioAtlon" },
+    { src: "/images/gallery/local-fuera.webp", alt: "Fachada del Centro Estética CyM" },
+    { src: "/images/gallery/local-dentro.webp", alt: "Interior del centro - Recepción" },
+    { src: "/images/gallery/clinica-dentro1.webp", alt: "Sala de tratamientos" },
   ],
 
   // === FAQ ===
   faq: [
     {
-      question: "¿Qué diferencia hay entre fisioterapia deportiva y neurológica?",
-      answer: "La fisioterapia deportiva se centra en lesiones relacionadas con la actividad física y el deporte, mientras que la neurológica trata patologías del sistema nervioso como ictus, Parkinson o esclerosis múltiple. En FisioAtlon somos especialistas en ambas áreas.",
+      question: "¿Cuánto dura la micropigmentación?",
+      answer: "La micropigmentación puede durar entre 1 y 3 años dependiendo del tipo de piel, cuidados posteriores y la zona tratada. Ofrecemos retoques para mantener el resultado óptimo.",
     },
     {
-      question: "¿Cuántas sesiones necesitaré para recuperarme?",
-      answer: "El número de sesiones depende de cada caso. Tras la evaluación inicial, establecemos un plan de tratamiento con objetivos claros y hacemos revisiones periódicas para valorar el progreso.",
+      question: "¿Es doloroso el microblading de cejas?",
+      answer: "El procedimiento es prácticamente indoloro gracias a la aplicación de crema anestésica tópica. La mayoría de clientas describen la sensación como un ligero cosquilleo.",
     },
     {
-      question: "¿Atendéis lesiones deportivas de cualquier nivel?",
-      answer: "Sí, tratamos desde deportistas amateur hasta profesionales. Cada plan se adapta a tus objetivos, ya sea volver a correr por ocio o competir al más alto nivel.",
+      question: "¿Cuántas sesiones necesito para la depilación láser?",
+      answer: "Generalmente se necesitan entre 6 y 8 sesiones espaciadas cada 4-6 semanas para obtener resultados óptimos. El número exacto depende del tipo de piel y vello.",
     },
     {
-      question: "¿Qué es la punción seca y duele?",
-      answer: "La punción seca es una técnica que utiliza agujas finas para desactivar puntos gatillo musculares. Puede causar una molestia momentánea, pero es muy efectiva para aliviar el dolor muscular crónico.",
+      question: "¿Qué cuidados necesito después de un tratamiento facial?",
+      answer: "Recomendamos evitar el sol directo, usar protección solar SPF50 y seguir la rutina de cuidados que te indicamos según tu tipo de piel.",
     },
     {
-      question: "¿Trabajáis con equipos deportivos?",
-      answer: "Sí, ofrecemos servicios de fisioterapia para equipos deportivos, incluyendo prevención de lesiones, tratamiento en competición y programas de readaptación.",
+      question: "¿Ofrecéis tratamientos para novias?",
+      answer: "Sí, tenemos packs especiales para novias que incluyen tratamientos faciales, maquillaje de prueba y el día de la boda, manicura y más.",
     },
     {
-      question: "¿Cuánto dura una sesión de fisioterapia?",
-      answer: "Las sesiones tienen una duración aproximada de 45-60 minutos, dependiendo del tratamiento necesario y la evolución del paciente.",
+      question: "¿Las extensiones de pestañas dañan mis pestañas naturales?",
+      answer: "No, cuando se aplican correctamente por profesionales cualificados, las extensiones no dañan las pestañas naturales. Usamos adhesivos de alta calidad y técnicas seguras.",
     },
     {
-      question: "¿Necesito prescripción médica para acudir?",
-      answer: "No es necesaria prescripción médica. Puedes contactarnos directamente para solicitar una valoración inicial y comenzar tu tratamiento.",
+      question: "¿Cuánto dura una sesión de tratamiento facial?",
+      answer: "Dependiendo del tratamiento, las sesiones duran entre 45 y 90 minutos. Incluimos tiempo para la consulta inicial y recomendaciones personalizadas.",
     },
     {
-      question: "¿Trabajáis con seguros o mutuas?",
-      answer: "Trabajamos de forma privada. Te proporcionamos factura para que puedas presentarla a tu seguro si este cubre servicios de fisioterapia.",
+      question: "¿Necesito cita previa?",
+      answer: "Sí, recomendamos siempre reservar cita previa para garantizar la disponibilidad y poder dedicarte el tiempo que mereces. Puedes reservar por teléfono o WhatsApp.",
     },
   ],
 
   // === SEO ===
   seo: {
-    titleTemplate: "%s | FisioAtlon - Fisioterapia NeuroDeportiva Badajoz",
-    defaultTitle: "FisioAtlon | Clínica de Fisioterapia NeuroDeportiva en Badajoz",
-    defaultDescription: "Clínica de fisioterapia deportiva y neurológica en Badajoz. Especialistas en lesiones deportivas, rehabilitación neurológica, punción seca y nuevas tecnologías. Antonio López, fisioterapeuta.",
+    titleTemplate: "%s | Centro Estética CyM - Belleza en Puertollano",
+    defaultTitle: "Centro Estética CyM | Tu Centro de Belleza en Puertollano",
+    defaultDescription: "Centro de estética en Puertollano especializado en micropigmentación, microblading, depilación láser y tratamientos faciales. Profesionales cualificados. Cita previa: 629 61 04 71.",
     keywords: [
-      "fisioterapeuta Badajoz",
-      "fisioterapia deportiva Badajoz",
-      "fisioterapia neurológica Badajoz",
-      "rehabilitación deportiva Badajoz",
-      "punción seca Badajoz",
-      "lesiones deportivas",
-      "ictus rehabilitación",
-      "Parkinson fisioterapia",
-      "kinesiotaping Badajoz",
-      "electroterapia Badajoz",
-      "FisioAtlon",
-      "Antonio López fisioterapeuta",
+      "centro estética Puertollano",
+      "micropigmentación Puertollano",
+      "microblading cejas Puertollano",
+      "depilación láser Puertollano",
+      "tratamientos faciales Puertollano",
+      "extensiones pestañas Puertollano",
+      "maquillaje profesional",
+      "manicura pedicura",
+      "tratamientos corporales",
+      "belleza Puertollano",
+      "Centro Estética CyM",
+      "estética Ciudad Real",
     ],
     ogImage: "/og-image.jpg",
   },
 
   // === LEGAL ===
   legal: {
-    companyName: "FisioAtlon - Clínica de Fisioterapia NeuroDeportiva",
+    companyName: "Centro Estética CyM",
     cif: "",
-    registeredAddress: "Argüello Carvajal Teólogo Siglo XVII, 28A, 06007 Badajoz",
+    registeredAddress: "C. Numancia, 40, 13500 Puertollano, Ciudad Real",
   },
 }
 

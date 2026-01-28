@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-primary: #3A9B8C;
-  --color-secondary: #0a1628;
-  --color-accent: #E87839;
-  --color-neutral: #f7f9fc;
+  --color-primary: #C9A86C;
+  --color-secondary: #2D2D2D;
+  --color-accent: #D4A574;
+  --color-neutral: #FAF8F5;
 }
 
 @layer base {

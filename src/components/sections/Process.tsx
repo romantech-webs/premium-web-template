@@ -18,7 +18,7 @@ export function Process() {
             Cómo Trabajamos
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-secondary mt-4 mb-6">
-            Tu camino hacia el bienestar en 4 pasos
+            Tu camino hacia la <span className="text-primary">belleza</span> en 4 pasos
           </h2>
           <p className="text-lg text-secondary/70">
             Un proceso simple y transparente diseñado para tu comodidad.

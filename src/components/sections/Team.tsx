@@ -23,12 +23,12 @@ export function Team() {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <span className="section-label justify-center">Nuestro Equipo</span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary mt-4 mb-6">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
             Profesionales{" "}
-            <span className="text-accent">especializados</span>
+            <span className="text-primary">especializadas</span>
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
-            Experiencia y dedicación al servicio de tu recuperación
+            Experiencia y pasión al servicio de tu belleza
           </p>
         </motion.div>
 
@@ -77,12 +77,12 @@ export function Team() {
                     className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-4 hidden md:block"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
                         <Award className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <p className="font-bold text-secondary">Especialista</p>
-                        <p className="text-xs text-secondary/50">NeuroDeportivo</p>
+                        <p className="font-bold text-secondary">Especialistas</p>
+                        <p className="text-xs text-secondary/50">Micropigmentación</p>
                       </div>
                     </div>
                   </motion.div>

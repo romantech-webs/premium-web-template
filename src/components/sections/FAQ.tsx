@@ -26,7 +26,7 @@ export function FAQ() {
             Preguntas frecuentes
           </h2>
           <p className="text-lg text-secondary/70">
-            Resolvemos las dudas más comunes de nuestros pacientes.
+            Resolvemos las dudas más comunes de nuestras clientas.
           </p>
         </motion.div>
 

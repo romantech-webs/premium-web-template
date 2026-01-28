@@ -56,13 +56,13 @@ export function Header() {
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold tracking-tight text-secondary">
-                Fisio<span className="text-accent">Atlón</span>
+                C<span className="text-primary">&</span>M <span className="text-primary">Estética</span>
               </span>
               <p className={cn(
                 "text-[10px] uppercase tracking-[0.15em] transition-colors",
                 isScrolled ? "text-secondary/50" : "text-secondary/60"
               )}>
-                Rehabilitación NeuroDeportiva
+                Centro de Belleza
               </p>
             </div>
           </Link>

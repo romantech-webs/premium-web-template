@@ -34,10 +34,10 @@ export function Footer() {
               />
               <div>
                 <span className="text-xl font-bold tracking-tight">
-                  Fisio<span className="text-accent">Atlón</span>
+                  C<span className="text-primary">&</span>M <span className="text-primary">Estética</span>
                 </span>
                 <p className="text-[10px] uppercase tracking-[0.15em] text-white/40">
-                  Rehabilitación NeuroDeportiva
+                  Centro de Belleza
                 </p>
               </div>
             </div>

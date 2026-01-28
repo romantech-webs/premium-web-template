@@ -20,12 +20,12 @@ export function Gallery() {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <span className="section-label justify-center">Instalaciones</span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary mt-4 mb-6">
-            Conoce nuestra{" "}
-            <span className="text-accent">clínica</span>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
+            Conoce nuestro{" "}
+            <span className="text-primary">centro</span>
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
-            Espacios diseñados para tu comodidad y recuperación
+            Un espacio diseñado para tu bienestar y relajación
           </p>
         </motion.div>
 
