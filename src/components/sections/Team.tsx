@@ -22,13 +22,12 @@ export function Team() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="section-label justify-center">Nuestro Equipo</span>
+          <span className="section-label justify-center">{clinic.sectionCopy.teamLabel}</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
-            Profesionales{" "}
-            <span className="text-primary">especializadas</span>
+            {clinic.sectionCopy.teamTitle}
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
-            Experiencia y pasión al servicio de tu belleza
+            {clinic.sectionCopy.teamDescription}
           </p>
         </motion.div>
 
@@ -53,6 +52,7 @@ export function Team() {
                         src={member.image}
                         alt={member.name}
                         fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover"
                       />
                     ) : (
@@ -81,8 +81,8 @@ export function Team() {
                         <Award className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <p className="font-bold text-secondary">Especialistas</p>
-                        <p className="text-xs text-secondary/50">Micropigmentación</p>
+                        <p className="font-bold text-secondary">{member.role}</p>
+                        <p className="text-xs text-secondary/50">{clinic.name}</p>
                       </div>
                     </div>
                   </motion.div>

@@ -27,7 +27,7 @@ export default function PrivacidadPage() {
             <li><strong>Identidad:</strong> {clinic.legal.companyName}</li>
             <li><strong>CIF:</strong> {clinic.legal.cif}</li>
             <li><strong>Dirección:</strong> {clinic.legal.registeredAddress}</li>
-            <li><strong>Email:</strong> {clinic.email}</li>
+            {clinic.email && <li><strong>Email:</strong> {clinic.email}</li>}
             <li><strong>Teléfono:</strong> {clinic.phone}</li>
           </ul>
 
@@ -73,7 +73,7 @@ export default function PrivacidadPage() {
             <li><strong>Portabilidad:</strong> Recibir los datos personales en un formato estructurado, de uso común y lectura mecánica, y poder transmitirlos a otro responsable.</li>
           </ul>
           <p>
-            Para ejercer estos derechos, puede dirigirse a {clinic.email} adjuntando una copia de su
+            Para ejercer estos derechos, puede dirigirse a {clinic.email || clinic.phone} adjuntando una copia de su
             DNI o documento identificativo equivalente.
           </p>
           <p>

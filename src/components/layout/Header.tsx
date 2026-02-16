@@ -40,35 +40,41 @@ export function Header() {
       <div className="container-wide px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-4 group">
-            <div className="relative">
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="relative shrink-0">
               <div className={cn(
                 "absolute inset-0 rounded-xl transition-all duration-300",
                 isScrolled ? "bg-primary/10" : "bg-white/20"
               )} />
-              <Image
-                src="/images/logo.jpg"
-                alt={clinic.name}
-                width={48}
-                height={48}
-                className="relative rounded-xl"
-              />
+              {clinic.logo ? (
+                <Image
+                  src={clinic.logo}
+                  alt={clinic.name}
+                  width={44}
+                  height={44}
+                  className="relative rounded-xl"
+                />
+              ) : (
+                <div className="relative w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg">
+                  {clinic.name.charAt(0)}
+                </div>
+              )}
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold tracking-tight text-secondary">
-                C<span className="text-primary">&</span>M <span className="text-primary">Estética</span>
+                {clinic.name}
               </span>
               <p className={cn(
                 "text-[10px] uppercase tracking-[0.15em] transition-colors",
                 isScrolled ? "text-secondary/50" : "text-secondary/60"
               )}>
-                Centro de Belleza
+                {clinic.tagline}
               </p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1 shrink-0">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -85,12 +91,12 @@ export function Header() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3 shrink-0">
             <a
               href={`tel:${clinic.phone.replace(/\s/g, "")}`}
-              className="flex items-center gap-2 text-sm font-semibold text-secondary/70 hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-sm font-semibold text-secondary/70 hover:text-primary transition-colors whitespace-nowrap"
             >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Phone className="w-4 h-4 text-primary" />
               </div>
               <span className="hidden xl:block">{clinic.phone}</span>
@@ -99,7 +105,7 @@ export function Header() {
               href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary text-sm"
+              className="btn-primary text-sm whitespace-nowrap shrink-0"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Pedir Cita

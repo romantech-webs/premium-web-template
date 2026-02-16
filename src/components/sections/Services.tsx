@@ -27,14 +27,12 @@ export function Services() {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mb-16"
         >
-          <span className="section-label">Nuestros Servicios</span>
+          <span className="section-label">{clinic.sectionCopy.servicesLabel}</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mb-6">
-            Tratamientos{" "}
-            <span className="text-primary">especializados</span>
+            {clinic.sectionCopy.servicesTitle}
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
-            Técnicas avanzadas de estética y belleza para realzar
-            tu imagen y cuidar de ti.
+            {clinic.sectionCopy.servicesDescription}
           </p>
         </motion.div>
 

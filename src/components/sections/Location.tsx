@@ -16,10 +16,10 @@ export function Location() {
           className="text-center max-w-3xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Ubicación
+            {clinic.sectionCopy.locationLabel}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-secondary mt-4 mb-6">
-            Cómo llegar
+            {clinic.sectionCopy.locationTitle}
           </h2>
           <p className="text-lg text-secondary/70">
             Estamos en el corazón de {clinic.address.city}, con fácil acceso en transporte público y parking cercano.
@@ -94,12 +94,14 @@ export function Location() {
                   >
                     {clinic.phone}
                   </a>
+                  {clinic.email && (
                   <a
                     href={`mailto:${clinic.email}`}
                     className="text-secondary/70 hover:text-primary transition-colors block mt-1"
                   >
                     {clinic.email}
                   </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -122,7 +124,9 @@ export function Location() {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Ubicación de la clínica"
+                  allow="fullscreen"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  title={`Ubicación de ${clinic.name}`}
                 />
               ) : (
                 <div className="h-full flex items-center justify-center text-secondary/30">

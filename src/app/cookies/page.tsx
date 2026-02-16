@@ -133,7 +133,7 @@ export default function CookiesPage() {
             Si tiene alguna duda sobre esta Política de Cookies, puede contactar con nosotros en:
           </p>
           <ul>
-            <li><strong>Email:</strong> {clinic.email}</li>
+            {clinic.email && <li><strong>Email:</strong> {clinic.email}</li>}
             <li><strong>Teléfono:</strong> {clinic.phone}</li>
             <li><strong>Dirección:</strong> {clinic.address.street}, {clinic.address.postalCode} {clinic.address.city}</li>
           </ul>

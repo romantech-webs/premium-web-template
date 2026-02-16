@@ -20,10 +20,9 @@ export function Reviews() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="section-label justify-center">Opiniones</span>
+          <span className="section-label justify-center">{clinic.sectionCopy.reviewsLabel}</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-8">
-            Lo que dicen{" "}
-            <span className="text-primary">nuestras clientas</span>
+            {clinic.sectionCopy.reviewsTitle}
           </h2>
 
           {/* Rating summary */}

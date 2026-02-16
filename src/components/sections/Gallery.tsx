@@ -19,13 +19,12 @@ export function Gallery() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="section-label justify-center">Instalaciones</span>
+          <span className="section-label justify-center">{clinic.sectionCopy.galleryLabel}</span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
-            Conoce nuestro{" "}
-            <span className="text-primary">centro</span>
+            {clinic.sectionCopy.galleryTitle}
           </h2>
           <p className="text-xl text-secondary/60 leading-relaxed">
-            Un espacio diseñado para tu bienestar y relajación
+            {clinic.sectionCopy.galleryDescription}
           </p>
         </motion.div>
 
@@ -46,6 +45,7 @@ export function Gallery() {
                     src={image.src}
                     alt={image.alt}
                     fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (

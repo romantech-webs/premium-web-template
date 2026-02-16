@@ -48,20 +48,13 @@ export function CTA() {
           className="text-center"
         >
           <span className="section-label justify-center !text-primary">
-            Realza tu Belleza
+            {clinic.ctaLabel}
           </span>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white mt-4 mb-6">
-            ¿Lista para{" "}
-            <span className="relative inline-block">
-              brillar?
-              <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/50" viewBox="0 0 200 12" fill="none">
-                <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-              </svg>
-            </span>
+            {clinic.ctaHeadline}
           </h2>
           <p className="text-white/60 text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-            Da el primer paso hacia tu mejor versión. Pide tu cita ahora y nuestro equipo
-            te asesorará de forma personalizada.
+            {clinic.ctaDescription}
           </p>
 
           {/* CTA Buttons */}

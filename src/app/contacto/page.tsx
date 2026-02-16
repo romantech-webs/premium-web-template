@@ -14,11 +14,39 @@ export default function ContactoPage() {
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement form submission
-    console.log("Form submitted:", formState)
-    setIsSubmitted(true)
+    setIsSubmitting(true)
+    setSubmitError(null)
+    try {
+      const apiUrl = (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).__WIDGET_API_URL) as string | undefined
+      if (!apiUrl) {
+        setIsSubmitted(true)
+        return
+      }
+      const projectId = (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).__PROJECT_ID) as string | undefined
+      const res = await fetch(`${apiUrl}/api/widget/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: projectId || '',
+          type: 'contact',
+          name: formState.nombre,
+          email: formState.email,
+          phone: formState.telefono,
+          message: formState.mensaje,
+        }),
+      })
+      if (!res.ok) throw new Error('Error al enviar')
+      setIsSubmitted(true)
+    } catch {
+      setSubmitError('Error al enviar el mensaje. Por favor, inténtalo de nuevo o contacta por WhatsApp.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -159,9 +187,12 @@ export default function ContactoPage() {
                     .
                   </div>
 
-                  <button type="submit" className="btn-primary w-full sm:w-auto">
+                  {submitError && (
+                    <p className="text-sm text-red-600">{submitError}</p>
+                  )}
+                  <button type="submit" className="btn-primary w-full sm:w-auto" disabled={isSubmitting}>
                     <Send className="w-4 h-4" />
-                    Enviar mensaje
+                    {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
                   </button>
                 </form>
               )}
@@ -196,6 +227,7 @@ export default function ContactoPage() {
                 </div>
 
                 {/* Email */}
+                {clinic.email && (
                 <div className="flex gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Mail className="w-5 h-5 text-primary" />
@@ -210,6 +242,7 @@ export default function ContactoPage() {
                     </a>
                   </div>
                 </div>
+                )}
 
                 {/* Address */}
                 <div className="flex gap-4">

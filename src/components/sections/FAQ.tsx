@@ -20,13 +20,13 @@ export function FAQ() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            FAQ
+            {clinic.sectionCopy.faqLabel}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-secondary mt-4 mb-6">
-            Preguntas frecuentes
+            {clinic.sectionCopy.faqTitle}
           </h2>
           <p className="text-lg text-secondary/70">
-            Resolvemos las dudas más comunes de nuestras clientas.
+            {clinic.sectionCopy.faqDescription}
           </p>
         </motion.div>
 

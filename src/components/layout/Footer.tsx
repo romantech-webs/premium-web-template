@@ -25,19 +25,25 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
-              <Image
-                src="/images/logo.jpg"
-                alt={clinic.name}
-                width={48}
-                height={48}
-                className="rounded-xl"
-              />
+              {clinic.logo ? (
+                <Image
+                  src={clinic.logo}
+                  alt={clinic.name}
+                  width={44}
+                  height={44}
+                  className="rounded-xl shrink-0"
+                />
+              ) : (
+                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
+                  {clinic.name.charAt(0)}
+                </div>
+              )}
               <div>
                 <span className="text-xl font-bold tracking-tight">
-                  C<span className="text-primary">&</span>M <span className="text-primary">Estética</span>
+                  {clinic.name}
                 </span>
                 <p className="text-[10px] uppercase tracking-[0.15em] text-white/40">
-                  Centro de Belleza
+                  {clinic.tagline}
                 </p>
               </div>
             </div>
@@ -109,6 +115,7 @@ export function Footer() {
                   <span>{clinic.phone}</span>
                 </a>
               </li>
+              {clinic.email && (
               <li>
                 <a
                   href={`mailto:${clinic.email}`}
@@ -120,6 +127,7 @@ export function Footer() {
                   <span className="text-sm">{clinic.email}</span>
                 </a>
               </li>
+              )}
               <li>
                 <a
                   href={clinic.googleMapsUrl}

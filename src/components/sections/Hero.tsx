@@ -74,15 +74,15 @@ export function Hero() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6"
             >
-              <span className="block">Tu Centro de</span>
+              <span className="block">{clinic.heroHeadline[0]}</span>
               <span className="relative inline-block">
-                <span className="text-primary">Belleza</span>
+                <span className="text-primary">{clinic.heroHeadline[1]}</span>
                 <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 200 12" fill="none">
                   <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
                 </svg>
               </span>
               <span className="block text-3xl sm:text-4xl lg:text-5xl mt-2 font-semibold text-secondary/70">
-                en Puertollano
+                {clinic.heroHeadline[2]}
               </span>
             </motion.h1>
 
@@ -93,10 +93,7 @@ export function Hero() {
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-lg sm:text-xl text-secondary/60 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed"
             >
-              Realza tu belleza natural con tratamientos de
-              <span className="text-secondary font-semibold"> micropigmentación</span>,
-              <span className="text-secondary font-semibold"> microblading</span> y
-              <span className="text-secondary font-semibold"> estética avanzada</span>.
+              {clinic.heroDescription}
             </motion.p>
 
             {/* CTA Buttons */}
@@ -110,12 +107,14 @@ export function Hero() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-whatsapp text-base"
+                className="btn-primary text-base"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Reservar Cita
-                <ArrowRight className="w-5 h-5" />
+                <span className="inline-flex items-center gap-3">
+                  Reservar Cita
+                  <ArrowRight className="w-5 h-5" />
+                </span>
               </motion.a>
 
               <motion.a
@@ -137,8 +136,8 @@ export function Hero() {
               className="mt-12 pt-10 border-t border-gray-200 grid grid-cols-3 gap-6"
             >
               {[
-                { value: `+${clinic.reviews.count}`, label: "Clientas" },
-                { value: "8", label: "Tratamientos" },
+                { value: `+${clinic.reviews.count}`, label: clinic.statsLabel },
+                { value: String(clinic.services.length), label: "Tratamientos" },
                 { value: clinic.reviews.rating.toString(), label: "Valoración" },
               ].map((stat, i) => (
                 <div key={i} className="text-center lg:text-left">
@@ -164,7 +163,7 @@ export function Hero() {
               {/* Image */}
               <div className="relative aspect-[4/5] rounded-[1.5rem] overflow-hidden shadow-2xl shadow-primary/20">
                 <Image
-                  src="/images/hero.jpg"
+                  src="/images/hero.webp"
                   alt={`${clinic.name} - ${clinic.tagline}`}
                   fill
                   className="object-cover"
@@ -205,8 +204,8 @@ export function Hero() {
                     <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
                   </div>
                   <div>
-                    <p className="font-bold text-secondary">Micropigmentación</p>
-                    <p className="text-xs text-secondary/50">& Microblading</p>
+                    <p className="font-bold text-secondary">{clinic.specialty}</p>
+                    <p className="text-xs text-secondary/50">{clinic.name}</p>
                   </div>
                 </div>
               </motion.div>

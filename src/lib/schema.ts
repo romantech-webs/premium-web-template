@@ -3,12 +3,12 @@ import { clinic } from "@/config/clinic"
 export function generateLocalBusinessSchema(baseUrl: string) {
   return {
     "@context": "https://schema.org",
-    "@type": "BeautySalon",
+    "@type": clinic.schemaType,
     name: clinic.name,
     description: clinic.description,
     url: baseUrl,
     telephone: clinic.phone,
-    email: clinic.email,
+    ...(clinic.email ? { email: clinic.email } : {}),
     address: {
       "@type": "PostalAddress",
       streetAddress: clinic.address.street,

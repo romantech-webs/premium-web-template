@@ -15,13 +15,13 @@ export function Process() {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Cómo Trabajamos
+            {clinic.sectionCopy.processLabel}
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-secondary mt-4 mb-6">
-            Tu camino hacia la <span className="text-primary">belleza</span> en 4 pasos
+            {clinic.sectionCopy.processTitle}
           </h2>
           <p className="text-lg text-secondary/70">
-            Un proceso simple y transparente diseñado para tu comodidad.
+            {clinic.sectionCopy.processDescription}
           </p>
         </motion.div>
 

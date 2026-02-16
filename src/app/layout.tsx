@@ -37,7 +37,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : ""
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || ""
 
   return (
     <html lang="es">

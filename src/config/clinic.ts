@@ -1,6 +1,7 @@
 export const clinic = {
   // === IDENTIDAD ===
   name: "Centro Estética CyM",
+  logo: "/images/logo.jpg" as string | null,
   tagline: "Tu Centro de Belleza en Puertollano",
   description: "Centro Estética CyM es un centro de belleza integral en Puertollano especializado en micropigmentación, microblading, depilación láser y tratamientos faciales. Profesionales cualificados para realzar tu belleza natural.",
 
@@ -266,6 +267,40 @@ export const clinic = {
     companyName: "Centro Estética CyM",
     cif: "",
     registeredAddress: "C. Numancia, 40, 13500 Puertollano, Ciudad Real",
+  },
+
+  // === UI COPY (driven by clinic type) ===
+  heroHeadline: ["Tu Centro de", "Belleza", "en Puertollano"],
+  heroDescription: "Realza tu belleza natural con tratamientos de micropigmentación, microblading y estética avanzada. Profesionales cualificadas y tecnología de vanguardia.",
+  specialty: "Micropigmentación",
+  ctaLabel: "Realza tu Belleza",
+  ctaHeadline: "¿Lista para brillar?",
+  ctaDescription: "Da el primer paso hacia tu mejor versión. Pide tu cita ahora y nuestro equipo te asesorará de forma personalizada.",
+  statsLabel: "Clientas",
+  schemaType: "BeautySalon",
+  sectionCopy: {
+    servicesLabel: "Nuestros Servicios",
+    servicesTitle: "Tratamientos especializados",
+    servicesDescription: "Técnicas avanzadas de estética y belleza para realzar tu imagen y cuidar de ti.",
+    processLabel: "Cómo Trabajamos",
+    processTitle: "Tu camino hacia la belleza en 4 pasos",
+    processDescription: "Un proceso simple y transparente diseñado para tu comodidad.",
+    whyUsLabel: "Por Qué Elegirnos",
+    whyUsTitle: "Tu belleza, nuestra pasión",
+    whyUsDescription: "Combinamos experiencia, las mejores técnicas y un trato personalizado para realzar tu belleza natural.",
+    reviewsLabel: "Opiniones",
+    reviewsTitle: "Lo que dicen nuestras clientas",
+    galleryLabel: "Instalaciones",
+    galleryTitle: "Conoce nuestro centro",
+    galleryDescription: "Un espacio diseñado para tu bienestar y relajación",
+    faqLabel: "FAQ",
+    faqTitle: "Preguntas frecuentes",
+    faqDescription: "Resolvemos las dudas más comunes de nuestras clientas.",
+    locationLabel: "Ubicación",
+    locationTitle: "Cómo llegar",
+    teamLabel: "Nuestro Equipo",
+    teamTitle: "Profesionales especializadas",
+    teamDescription: "Experiencia y pasión al servicio de tu belleza",
   },
 }
 

@@ -32,7 +32,7 @@ export default function AvisoLegalPage() {
             <li><strong>Titular:</strong> {clinic.legal.companyName}</li>
             <li><strong>CIF:</strong> {clinic.legal.cif}</li>
             <li><strong>Domicilio:</strong> {clinic.legal.registeredAddress}</li>
-            <li><strong>Email:</strong> {clinic.email}</li>
+            {clinic.email && <li><strong>Email:</strong> {clinic.email}</li>}
             <li><strong>Teléfono:</strong> {clinic.phone}</li>
           </ul>
 
