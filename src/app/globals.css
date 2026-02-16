@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #C9A86C;
+  --color-secondary: #2D2D2D;
+  --color-accent: #D4A574;
+  --color-neutral: #FAF8F5;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+    color: var(--color-secondary);
+    background-color: #fafbfd;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+    letter-spacing: -0.03em;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: white;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply py-20 md:py-28 lg:py-36 px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-narrow {
+    @apply max-w-5xl mx-auto;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto;
+  }
+
+  /* Premium Button - Primary */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold text-white overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary), black 15%) 100%);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(135deg, var(--color-accent) 0%, color-mix(in srgb, var(--color-accent), black 10%) 100%);
+  }
+
+  .btn-primary:hover::before {
+    @apply opacity-100;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -10px color-mix(in srgb, var(--color-primary) 50%, transparent);
+  }
+
+  .btn-primary span {
+    @apply relative z-10;
+  }
+
+  /* Premium Button - Secondary */
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold transition-all duration-300;
+    border: 2px solid var(--color-secondary);
+    color: var(--color-secondary);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-secondary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* WhatsApp Button */
+  .btn-whatsapp {
+    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-bold text-white overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    box-shadow: 0 10px 30px -5px rgba(37, 211, 102, 0.4);
+  }
+
+  .btn-whatsapp:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 20px 40px -5px rgba(37, 211, 102, 0.5);
+  }
+
+  /* Athletic Card Style */
+  .card-athletic {
+    @apply relative bg-white overflow-hidden transition-all duration-500;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+
+  .card-athletic::before {
+    content: '';
+    @apply absolute top-0 left-0 w-1 h-full transition-all duration-500;
+    background: var(--color-primary);
+  }
+
+  .card-athletic:hover::before {
+    background: var(--color-accent);
+    width: 4px;
+  }
+
+  .card-athletic:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Diagonal stripe decoration */
+  .diagonal-stripes {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      color-mix(in srgb, var(--color-primary) 5%, transparent) 10px,
+      color-mix(in srgb, var(--color-primary) 5%, transparent) 20px
+    );
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  }
+
+  /* Section label */
+  .section-label {
+    @apply inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] mb-6;
+    color: var(--color-primary);
+  }
+
+  .section-label::before {
+    content: '';
+    @apply w-8 h-0.5;
+    background: var(--color-accent);
+  }
+
+  /* Premium underline effect */
+  .underline-accent {
+    @apply relative inline-block;
+  }
+
+  .underline-accent::after {
+    content: '';
+    @apply absolute -bottom-2 left-0 h-1 transition-all duration-500;
+    width: 60%;
+    background: linear-gradient(90deg, var(--color-accent) 0%, transparent 100%);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay {
+    position: relative;
+  }
+
+  .noise-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* Athletic line decoration */
+  .athletic-lines {
+    position: relative;
+  }
+
+  .athletic-lines::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -100px;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), transparent);
+    transform: translateY(-50%);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Smooth image loading */
+img {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+img[data-loading="true"] {
+  opacity: 0;
+}
