@@ -119,7 +119,7 @@
 
   .card-athletic:hover {
     transform: translateY(-8px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 25px 50px -12px color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
   /* Diagonal stripe decoration */
@@ -146,6 +146,13 @@
   }
 
   .section-label::before {
+    content: '•';
+    @apply text-xs;
+    color: var(--color-accent);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  .section-label::after {
     content: '';
     @apply w-8 h-0.5;
     background: var(--color-accent);
@@ -216,6 +223,62 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-accent);
+}
+
+/* Button shimmer effect */
+.btn-primary::after,
+.btn-whatsapp::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 70%,
+    transparent 100%
+  );
+  transition: none;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.btn-primary:hover::after,
+.btn-whatsapp:hover::after {
+  animation: shimmer 0.8s ease forwards;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glass morphism utility */
+.glass {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth transitions for interactive properties */
+*, *::before, *::after {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Smooth image loading */

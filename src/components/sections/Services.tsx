@@ -46,17 +46,17 @@ export function Services() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 className="group"
               >
-                <div className="card-athletic h-full p-8 bg-gradient-to-br from-white to-neutral">
+                <div className="card-athletic h-full p-8 bg-gradient-to-br from-white to-neutral hover:shadow-[0_25px_60px_-15px_color-mix(in_srgb,var(--color-primary)_25%,transparent)]">
                   {/* Number */}
-                  <div className="text-6xl font-bold text-primary/10 mb-4 leading-none">
+                  <div className="text-7xl font-bold leading-none mb-4 bg-gradient-to-b from-primary/10 to-transparent bg-clip-text text-transparent">
                     {String(index + 1).padStart(2, '0')}
                   </div>
 
                   {/* Icon */}
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:rotate-3 group-hover:scale-110 transition-all duration-300">
                     <Icon className="w-7 h-7 text-primary group-hover:text-white transition-colors duration-300" />
                   </div>
 

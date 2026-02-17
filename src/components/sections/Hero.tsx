@@ -6,6 +6,11 @@ import { Phone, Star, ArrowRight, Play } from "lucide-react"
 import { clinic } from "@/config/clinic"
 import { CountUp } from "@/components/count-up"
 
+const clipReveal = {
+  hidden: { clipPath: "inset(0 100% 0 0)", opacity: 0 },
+  visible: { clipPath: "inset(0 0% 0 0)", opacity: 1 },
+}
+
 export function Hero() {
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
@@ -26,9 +31,17 @@ export function Hero() {
           }} />
         </div>
 
-        {/* Gradient orbs */}
-        <div className="absolute top-20 right-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px]" />
+        {/* Gradient orbs - larger and animated */}
+        <motion.div
+          className="absolute top-20 right-1/4 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px]"
+          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[100px]"
+          animate={{ x: [0, -20, 0], y: [0, 15, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         {/* Athletic corner accent */}
         <div className="absolute top-0 right-0 w-32 h-32">
@@ -46,13 +59,23 @@ export function Hero() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="text-center lg:text-left"
           >
-            {/* Trust badge */}
+            {/* Trust badge with pulse ring */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="inline-flex items-center gap-3 px-4 py-2 bg-white rounded-full shadow-lg shadow-black/5 border border-gray-100 mb-8"
+              className="inline-flex items-center gap-3 px-4 py-2 bg-white rounded-full shadow-lg shadow-black/5 border border-gray-100 mb-8 relative"
             >
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                animate={{
+                  boxShadow: [
+                    "0 0 0 0px color-mix(in srgb, var(--color-primary) 30%, transparent)",
+                    "0 0 0 8px color-mix(in srgb, var(--color-primary) 0%, transparent)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+              />
               <div className="flex -space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -68,24 +91,39 @@ export function Hero() {
               </span>
             </motion.div>
 
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6"
-            >
-              <span className="block">{clinic.heroHeadline[0]}</span>
-              <span className="relative inline-block">
+            {/* Headline with clip reveal */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6">
+              <motion.span
+                className="block"
+                variants={clipReveal}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {clinic.heroHeadline[0]}
+              </motion.span>
+              <motion.span
+                className="relative inline-block"
+                variants={clipReveal}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.55, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <span className="text-primary">{clinic.heroHeadline[1]}</span>
                 <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 200 12" fill="none">
                   <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
                 </svg>
-              </span>
-              <span className="block text-3xl sm:text-4xl lg:text-5xl mt-2 font-semibold text-secondary/70">
+              </motion.span>
+              <motion.span
+                className="block text-3xl sm:text-4xl lg:text-5xl mt-2 font-semibold text-secondary/70"
+                variants={clipReveal}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.7, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              >
                 {clinic.heroHeadline[2]}
-              </span>
-            </motion.h1>
+              </motion.span>
+            </h1>
 
             {/* Description */}
             <motion.p
@@ -129,7 +167,7 @@ export function Hero() {
               </motion.a>
             </motion.div>
 
-            {/* Stats */}
+            {/* Stats with dividers */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -141,11 +179,14 @@ export function Hero() {
                 { end: clinic.services.length, label: "Tratamientos" },
                 { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
               ].map((stat, i) => (
-                <div key={i} className="text-center lg:text-left">
-                  <p className="text-3xl sm:text-4xl font-bold text-secondary">
-                    <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
-                  </p>
-                  <p className="text-sm text-secondary/50 mt-1 uppercase tracking-wider">{stat.label}</p>
+                <div key={i} className="text-center lg:text-left flex items-center gap-6">
+                  {i > 0 && <div className="w-px h-8 bg-gray-200 hidden lg:block -ml-3" />}
+                  <div>
+                    <p className="text-3xl sm:text-4xl font-bold text-secondary">
+                      <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
+                    </p>
+                    <p className="text-sm text-secondary/50 mt-1 uppercase tracking-wider">{stat.label}</p>
+                  </div>
                 </div>
               ))}
             </motion.div>
@@ -156,7 +197,7 @@ export function Hero() {
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-            className="relative"
+            className="relative group"
           >
             {/* Main image container */}
             <div className="relative">
@@ -169,7 +210,7 @@ export function Hero() {
                   src="/images/hero.webp"
                   alt={`${clinic.name} - ${clinic.tagline}`}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
@@ -184,7 +225,11 @@ export function Hero() {
                 transition={{ delay: 0.8, duration: 0.6 }}
                 className="absolute -left-6 top-1/4 bg-white rounded-2xl shadow-xl p-4 hidden lg:block"
               >
-                <div className="flex items-center gap-3">
+                <motion.div
+                  className="flex items-center gap-3"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                >
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
                     <Star className="w-6 h-6 text-white" fill="currentColor" />
                   </div>
@@ -192,7 +237,7 @@ export function Hero() {
                     <p className="text-2xl font-bold text-secondary">{clinic.reviews.rating}</p>
                     <p className="text-xs text-secondary/50 uppercase tracking-wider">Google</p>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* Floating badge - Specialty */}
@@ -202,7 +247,11 @@ export function Hero() {
                 transition={{ delay: 0.9, duration: 0.6 }}
                 className="absolute -right-4 bottom-20 bg-white rounded-2xl shadow-xl p-4 hidden lg:block"
               >
-                <div className="flex items-center gap-3">
+                <motion.div
+                  className="flex items-center gap-3"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+                >
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
                     <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
                   </div>
@@ -210,7 +259,7 @@ export function Hero() {
                     <p className="font-bold text-secondary">{clinic.specialty}</p>
                     <p className="text-xs text-secondary/50">{clinic.name}</p>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* Corner accent */}

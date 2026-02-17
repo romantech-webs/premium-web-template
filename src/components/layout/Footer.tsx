@@ -14,8 +14,8 @@ export function Footer() {
 
   return (
     <footer className="bg-secondary text-white relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px]" />
+      {/* Background elements — reduced opacity */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px]" />
 
       {/* Top accent line */}
       <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
@@ -51,14 +51,14 @@ export function Footer() {
               {clinic.tagline}
             </p>
 
-            {/* Social Links */}
+            {/* Social Links with brand colors */}
             <div className="flex gap-3">
               {clinic.social.instagram && (
                 <a
                   href={clinic.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-accent transition-colors duration-300"
+                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-5 h-5" />
@@ -69,7 +69,7 @@ export function Footer() {
                   href={clinic.social.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-accent transition-colors duration-300"
+                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-[#1877F2] transition-all duration-300"
                   aria-label="Facebook"
                 >
                   <Facebook className="w-5 h-5" />
@@ -80,7 +80,7 @@ export function Footer() {
                   href={clinic.social.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-accent transition-colors duration-300"
+                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-[#0077B5] transition-all duration-300"
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="w-5 h-5" />
@@ -91,7 +91,7 @@ export function Footer() {
                   href={clinic.social.tiktok}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-accent transition-colors duration-300"
+                  className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-black hover:ring-1 hover:ring-white/20 transition-all duration-300"
                   aria-label="TikTok"
                 >
                   <TikTokIcon />
@@ -107,7 +107,7 @@ export function Footer() {
               <li>
                 <a
                   href={`tel:${clinic.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-4 text-white/70 hover:text-white transition-colors group"
+                  className="flex items-center gap-4 text-white/70 hover:text-white hover:translate-x-1 transition-all duration-300 group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Phone className="w-4 h-4" />
@@ -119,7 +119,7 @@ export function Footer() {
               <li>
                 <a
                   href={`mailto:${clinic.email}`}
-                  className="flex items-center gap-4 text-white/70 hover:text-white transition-colors group"
+                  className="flex items-center gap-4 text-white/70 hover:text-white hover:translate-x-1 transition-all duration-300 group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Mail className="w-4 h-4" />
@@ -133,7 +133,7 @@ export function Footer() {
                   href={clinic.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-4 text-white/70 hover:text-white transition-colors group"
+                  className="flex items-start gap-4 text-white/70 hover:text-white hover:translate-x-1 transition-all duration-300 group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
                     <MapPin className="w-4 h-4" />

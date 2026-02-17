@@ -9,8 +9,15 @@ export function CTA() {
 
   return (
     <section className="section-padding relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary to-primary/90" />
+      {/* Background with animated gradient */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary) 40%, color-mix(in srgb, var(--color-primary) 90%, var(--color-secondary)) 100%)",
+          backgroundSize: "200% 200%",
+          animation: "gradient-shift 8s ease infinite",
+        }}
+      />
 
       {/* Pattern overlay */}
       <div className="absolute inset-0 opacity-5">
@@ -50,7 +57,7 @@ export function CTA() {
           <span className="section-label justify-center !text-primary">
             {clinic.ctaLabel}
           </span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white mt-4 mb-6">
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold text-white mt-4 mb-6">
             {clinic.ctaHeadline}
           </h2>
           <p className="text-white/60 text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
@@ -63,15 +70,19 @@ export function CTA() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-xl font-bold bg-white text-secondary hover:bg-accent hover:text-white transition-all duration-300 shadow-2xl shadow-black/20"
+              className="btn-primary inline-flex items-center justify-center gap-3 px-10 py-5 font-bold bg-white text-secondary hover:bg-accent hover:text-white transition-all duration-300 shadow-2xl shadow-black/20"
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               style={{
-                clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))"
+                clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
+                background: "white",
+                color: "var(--color-secondary)",
               }}
             >
-              Reservar por WhatsApp
-              <ArrowRight className="w-5 h-5" />
+              <span className="relative z-10 flex items-center gap-3">
+                Reservar por WhatsApp
+                <ArrowRight className="w-5 h-5" />
+              </span>
             </motion.a>
 
             <motion.a
@@ -88,7 +99,7 @@ export function CTA() {
             </motion.a>
           </div>
 
-          {/* Trust indicators */}
+          {/* Trust indicators with subtle pulse */}
           <div className="grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
             {[
               { icon: CheckCircle, text: "Primera consulta informativa" },
@@ -103,13 +114,19 @@ export function CTA() {
                 transition={{ delay: 0.3 + index * 0.1 }}
                 className="flex items-center justify-center gap-3 text-white/50"
               >
-                <item.icon className="w-5 h-5 text-accent" />
+                <motion.div
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.5 }}
+                >
+                  <item.icon className="w-5 h-5 text-accent" />
+                </motion.div>
                 <span className="text-sm">{item.text}</span>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </div>
+
     </section>
   )
 }

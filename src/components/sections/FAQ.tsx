@@ -41,15 +41,20 @@ export function FAQ() {
             <div
               key={index}
               className={cn(
-                "bg-white rounded-2xl overflow-hidden transition-shadow",
-                openIndex === index ? "shadow-lg" : "shadow-sm"
+                "bg-white rounded-2xl overflow-hidden transition-all duration-300",
+                openIndex === index
+                  ? "shadow-lg border-l-4 border-l-primary"
+                  : "shadow-sm border-l-4 border-l-transparent"
               )}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full flex items-center justify-between p-6 text-left"
               >
-                <span className="font-semibold text-secondary pr-4">
+                <span className="font-semibold text-secondary pr-4 flex items-center">
+                  <span className="text-primary/20 font-mono mr-3">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
                   {item.question}
                 </span>
                 <ChevronDown
@@ -66,9 +71,9 @@ export function FAQ() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
                   >
-                    <div className="px-6 pb-6 text-secondary/70">
+                    <div className="px-6 pb-6 text-secondary/70 pl-[4.25rem]">
                       {item.answer}
                     </div>
                   </motion.div>
@@ -94,7 +99,7 @@ export function FAQ() {
             rel="noopener noreferrer"
             className="btn-primary"
           >
-            Pregúntanos por WhatsApp
+            <span className="relative z-10">Pregúntanos por WhatsApp</span>
           </a>
         </motion.div>
       </div>

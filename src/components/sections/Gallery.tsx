@@ -1,7 +1,9 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState, useCallback } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import { X } from "lucide-react"
 import { clinic } from "@/config/clinic"
 import { cn } from "@/lib/utils"
 
@@ -10,6 +12,9 @@ export function Gallery() {
   const total = images.length
   // Last image becomes a full-width panoramic only when middle images pair evenly
   const lastIsFeature = total >= 4 && (total - 2) % 2 === 0
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
+  const closeLightbox = useCallback(() => setLightboxIndex(null), [])
 
   return (
     <section className="section-padding bg-white relative overflow-hidden">
@@ -51,7 +56,8 @@ export function Gallery() {
                   delay: index * 0.08,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className={cn("group relative", isFeature && "md:col-span-2")}
+                className={cn("group relative cursor-pointer", isFeature && "md:col-span-2")}
+                onClick={() => setLightboxIndex(index)}
               >
                 <div
                   className={cn(
@@ -73,7 +79,7 @@ export function Gallery() {
                           ? "(max-width: 768px) 100vw, 100vw"
                           : "(max-width: 768px) 100vw, 50vw"
                       }
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
@@ -92,8 +98,8 @@ export function Gallery() {
                     <p className="text-white font-medium text-sm tracking-wide">{image.alt}</p>
                   </div>
 
-                  {/* Index marker — editorial detail */}
-                  <div className="absolute top-4 left-4 w-8 h-8 rounded-full border border-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-white/10 transition-all duration-300">
+                  {/* Index marker — always visible at reduced opacity, full on hover */}
+                  <div className="absolute top-4 left-4 w-8 h-8 rounded-full border border-white/20 backdrop-blur-sm flex items-center justify-center opacity-30 group-hover:opacity-100 group-hover:bg-white/10 transition-all duration-300">
                     <span className="text-white/90 text-xs font-bold">
                       {String(index + 1).padStart(2, "0")}
                     </span>
@@ -104,6 +110,66 @@ export function Gallery() {
           })}
         </div>
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={closeLightbox}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" />
+
+            {/* Close button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-6 right-6 z-10 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+              aria-label="Cerrar"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+
+            {/* Image */}
+            <motion.div
+              className="relative max-w-5xl w-full max-h-[85vh] aspect-[4/3]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {images[lightboxIndex].src && !images[lightboxIndex].src.includes("placeholder") ? (
+                <Image
+                  src={images[lightboxIndex].src}
+                  alt={images[lightboxIndex].alt}
+                  fill
+                  className="object-contain"
+                  sizes="100vw"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center rounded-2xl">
+                  <p className="text-white/50">{images[lightboxIndex].alt}</p>
+                </div>
+              )}
+
+              {/* Caption */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                <p className="text-white text-sm text-center">
+                  {images[lightboxIndex].alt}
+                  <span className="text-white/50 ml-2">
+                    {lightboxIndex + 1} / {total}
+                  </span>
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }

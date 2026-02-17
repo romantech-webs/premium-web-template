@@ -45,7 +45,11 @@ export function Team() {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 {/* Image */}
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-[2rem] rotate-2" />
+                  {/* Background shape - more subtle rotation */}
+                  <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-[2rem] -rotate-2" />
+                  {/* Second gradient layer for depth */}
+                  <div className="absolute -inset-6 bg-gradient-to-tl from-primary/10 to-transparent rounded-[2.5rem] rotate-1 -z-10" />
+
                   <div className="relative aspect-square rounded-[1.5rem] overflow-hidden shadow-2xl">
                     {member.image && member.image !== "/images/team/placeholder.jpg" ? (
                       <Image
@@ -53,7 +57,7 @@ export function Team() {
                         alt={member.name}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -68,7 +72,7 @@ export function Team() {
                     <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
 
-                  {/* Floating badge */}
+                  {/* Floating badge with animation */}
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
@@ -76,7 +80,11 @@ export function Team() {
                     transition={{ delay: 0.4 }}
                     className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-4 hidden md:block"
                   >
-                    <div className="flex items-center gap-3">
+                    <motion.div
+                      className="flex items-center gap-3"
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                    >
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
                         <Award className="w-6 h-6 text-white" />
                       </div>
@@ -84,7 +92,7 @@ export function Team() {
                         <p className="font-bold text-secondary">{member.role}</p>
                         <p className="text-xs text-secondary/50">{clinic.name}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   </motion.div>
                 </div>
 
@@ -100,14 +108,14 @@ export function Team() {
                     {member.bio}
                   </p>
 
-                  {/* Social links */}
+                  {/* Social links with brand colors */}
                   <div className="flex gap-3 justify-center md:justify-start">
                     {clinic.social.instagram && (
                       <a
                         href={clinic.social.instagram}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-12 h-12 rounded-xl bg-secondary/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+                        className="w-12 h-12 rounded-xl bg-secondary/5 flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 hover:text-white transition-all duration-300"
                       >
                         <Instagram className="w-5 h-5" />
                       </a>
@@ -117,7 +125,7 @@ export function Team() {
                         href={clinic.social.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-12 h-12 rounded-xl bg-secondary/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+                        className="w-12 h-12 rounded-xl bg-secondary/5 flex items-center justify-center hover:bg-[#0077B5] hover:text-white transition-all duration-300"
                       >
                         <Linkedin className="w-5 h-5" />
                       </a>

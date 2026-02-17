@@ -15,25 +15,14 @@ function getIcon(iconName: string) {
 export function WhyUs() {
   return (
     <section className="section-padding bg-secondary text-white relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-full" style={{
-          backgroundImage: `repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 100px,
-            rgba(255,255,255,0.03) 100px,
-            rgba(255,255,255,0.03) 101px
-          )`
-        }} />
-      </div>
+      {/* Background elements — orbs only, no vertical lines */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px]" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[120px]" />
 
-      {/* Corner accents */}
+      {/* Corner accents — thicker with gradient animation */}
       <div className="absolute top-0 left-0 w-32 h-32">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-transparent" />
-        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-accent to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-accent to-transparent" style={{ height: '2px' }} />
+        <div className="absolute top-0 left-0 h-full bg-gradient-to-b from-accent to-transparent" style={{ width: '2px' }} />
       </div>
 
       <div className="container-wide relative">
@@ -68,7 +57,7 @@ export function WhyUs() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="flex gap-5 group"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-accent transition-colors duration-300">
+                    <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-accent group-hover:scale-110 group-hover:border-accent transition-all duration-300">
                       <Icon className="w-6 h-6 text-accent group-hover:text-white transition-colors duration-300" />
                     </div>
                     <div>
@@ -106,9 +95,12 @@ export function WhyUs() {
                     transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                     className="relative group"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-accent/50 transition-colors duration-300">
+                    <div className="bg-white/[0.07] backdrop-blur-md rounded-2xl p-8 border border-white/[0.08] hover:bg-white/[0.12] hover:border-primary/30 transition-all duration-300">
                       <Icon className="w-6 h-6 text-accent mb-4" />
-                      <p className="text-4xl sm:text-5xl font-bold text-white mb-2">
+                      <p
+                        className="text-4xl sm:text-5xl font-bold text-white mb-2"
+                        style={{ textShadow: "0 0 60px color-mix(in srgb, var(--color-primary) 40%, transparent)" }}
+                      >
                         <CountUp end={stat.end} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
                       </p>
                       <p className="text-sm text-white/50 uppercase tracking-wider">{stat.label}</p>
