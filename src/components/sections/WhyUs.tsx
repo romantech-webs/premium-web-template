@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import * as LucideIcons from "lucide-react"
 import { clinic } from "@/config/clinic"
+import { CountUp } from "@/components/count-up"
 
 type IconName = keyof typeof LucideIcons
 
@@ -90,10 +91,10 @@ export function WhyUs() {
           >
             <div className="grid grid-cols-2 gap-4">
               {[
-                { value: String(clinic.services.length), label: "Tratamientos", icon: "Layers" },
-                { value: `+${clinic.reviews.count}`, label: `${clinic.statsLabel} satisfechos`, icon: "Users" },
-                { value: clinic.reviews.rating.toString(), label: "Valoración media", icon: "Star" },
-                { value: "100%", label: "Dedicación", icon: "Heart" },
+                { end: clinic.services.length, label: "Tratamientos", icon: "Layers" },
+                { end: clinic.reviews.count, prefix: "+", label: `${clinic.statsLabel} satisfechos`, icon: "Users" },
+                { end: clinic.reviews.rating, decimals: 1, label: "Valoración media", icon: "Star" },
+                { end: 100, suffix: "%", label: "Dedicación", icon: "Heart" },
               ].map((stat, index) => {
                 const Icon = getIcon(stat.icon)
                 return (
@@ -107,7 +108,9 @@ export function WhyUs() {
                   >
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-accent/50 transition-colors duration-300">
                       <Icon className="w-6 h-6 text-accent mb-4" />
-                      <p className="text-4xl sm:text-5xl font-bold text-white mb-2">{stat.value}</p>
+                      <p className="text-4xl sm:text-5xl font-bold text-white mb-2">
+                        <CountUp end={stat.end} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
+                      </p>
                       <p className="text-sm text-white/50 uppercase tracking-wider">{stat.label}</p>
                     </div>
                   </motion.div>

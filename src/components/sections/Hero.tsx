@@ -4,6 +4,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { Phone, Star, ArrowRight, Play } from "lucide-react"
 import { clinic } from "@/config/clinic"
+import { CountUp } from "@/components/count-up"
 
 export function Hero() {
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
@@ -136,12 +137,14 @@ export function Hero() {
               className="mt-12 pt-10 border-t border-gray-200 grid grid-cols-3 gap-6"
             >
               {[
-                { value: `+${clinic.reviews.count}`, label: clinic.statsLabel },
-                { value: String(clinic.services.length), label: "Tratamientos" },
-                { value: clinic.reviews.rating.toString(), label: "Valoración" },
+                { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
+                { end: clinic.services.length, label: "Tratamientos" },
+                { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
               ].map((stat, i) => (
                 <div key={i} className="text-center lg:text-left">
-                  <p className="text-3xl sm:text-4xl font-bold text-secondary">{stat.value}</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-secondary">
+                    <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
+                  </p>
                   <p className="text-sm text-secondary/50 mt-1 uppercase tracking-wider">{stat.label}</p>
                 </div>
               ))}
@@ -216,6 +219,25 @@ export function Hero() {
           </motion.div>
         </div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1 }}
+      >
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2"
+        >
+          <span className="text-[10px] uppercase tracking-[0.3em] text-secondary/30 font-medium select-none">
+            Scroll
+          </span>
+          <div className="w-px h-8 bg-gradient-to-b from-secondary/20 to-transparent" />
+        </motion.div>
+      </motion.div>
 
       {/* Bottom decorative line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />

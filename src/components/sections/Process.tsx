@@ -14,13 +14,13 @@ export function Process() {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">
+          <span className="section-label justify-center">
             {clinic.sectionCopy.processLabel}
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-secondary mt-4 mb-6">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
             {clinic.sectionCopy.processTitle}
           </h2>
-          <p className="text-lg text-secondary/70">
+          <p className="text-xl text-secondary/60 leading-relaxed">
             {clinic.sectionCopy.processDescription}
           </p>
         </motion.div>

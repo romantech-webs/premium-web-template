@@ -19,13 +19,13 @@ export function FAQ() {
           viewport={{ once: true }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">
+          <span className="section-label justify-center">
             {clinic.sectionCopy.faqLabel}
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-secondary mt-4 mb-6">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
             {clinic.sectionCopy.faqTitle}
           </h2>
-          <p className="text-lg text-secondary/70">
+          <p className="text-xl text-secondary/60 leading-relaxed">
             {clinic.sectionCopy.faqDescription}
           </p>
         </motion.div>
