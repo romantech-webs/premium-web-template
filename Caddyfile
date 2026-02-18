@@ -1,9 +1,16 @@
-# Bare domain — no sites here
+# Bare domain — deploy API + 404 for everything else
 romantechwebs.com {
 	tls {
 		dns cloudflare {env.CF_API_TOKEN}
 	}
-	respond "Not found" 404
+
+	handle /api/* {
+		reverse_proxy localhost:3001
+	}
+
+	handle {
+		respond "Not found" 404
+	}
 }
 
 # Wildcard for all clinic subdomains
