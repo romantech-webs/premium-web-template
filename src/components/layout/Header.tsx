@@ -56,8 +56,8 @@ export function Header() {
                   className="relative rounded-xl"
                 />
               ) : (
-                <div className="relative w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg">
-                  {clinic.name.charAt(0)}
+                <div className="relative w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight">
+                  {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
                 </div>
               )}
             </div>

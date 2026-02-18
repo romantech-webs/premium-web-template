@@ -37,8 +37,8 @@ export function Footer() {
                   className="rounded-xl shrink-0"
                 />
               ) : (
-                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
-                  {clinic.name.charAt(0)}
+                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight shrink-0">
+                  {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
                 </div>
               )}
               <div>
