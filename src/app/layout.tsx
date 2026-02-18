@@ -69,7 +69,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans">
+      <body className="font-sans overflow-x-hidden">
         <Header />
         <main>{children}</main>
         <Footer />

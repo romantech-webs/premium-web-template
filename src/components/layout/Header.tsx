@@ -40,7 +40,7 @@ export function Header() {
       <div className="container-wide px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0">
+          <Link href="/" className="flex items-center gap-3 group min-w-0">
             <div className="relative shrink-0">
               <div className={cn(
                 "absolute inset-0 rounded-xl transition-all duration-300",
@@ -60,12 +60,12 @@ export function Header() {
                 </div>
               )}
             </div>
-            <div className="hidden sm:block">
-              <span className="text-xl font-bold tracking-tight text-secondary">
+            <div className="hidden sm:block min-w-0">
+              <span className="block text-xl font-bold tracking-tight text-secondary truncate">
                 {clinic.name}
               </span>
               <p className={cn(
-                "text-[10px] uppercase tracking-[0.15em] transition-colors",
+                "text-[10px] uppercase tracking-[0.15em] transition-colors truncate",
                 isScrolled ? "text-secondary/50" : "text-secondary/60"
               )}>
                 {clinic.tagline}
