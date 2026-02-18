@@ -37,3 +37,20 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Notify dashboard
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            STATUS="deployed"
+          else
+            STATUS="failed"
+          fi
+          curl -sf -X POST "$DASHBOARD_URL/api/webhooks/deploy-complete" \
+            -H "Authorization: Bearer $DEPLOY_SECRET" \
+            -H "Content-Type: application/json" \
+            -d "{\"projectSlug\":\"${{ inputs.project_name }}\",\"status\":\"$STATUS\"}" \
+            || echo "Warning: deploy callback failed"
+        env:
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          DEPLOY_SECRET: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}
