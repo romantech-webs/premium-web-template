@@ -1,209 +1,134 @@
-# Workflow: Sistema de Templates para Webs de Clínicas
+# Workflow de Operaciones — premium-web
 
-## Estructura de Directorios
+## Despliegue de webs (automatizado)
 
-```
-/Users/emilio/
-├── premium-web/                    # Template base (NO modificar directamente)
-│   ├── src/config/clinic.ts       # Configuración con TODOs
-│   ├── public/images/             # Carpetas vacías para imágenes
-│   └── WORKFLOW.md                # Esta documentación
-│
-└── proyectos/cebos/               # Proyectos de clientes
-    ├── fisio-lourdes-benitez/     # Ejemplo: Fisioterapia
-    ├── dental-clinica-dental/     # Ejemplo: Dental
-    └── nutri-nutricionista/       # Ejemplo: Nutrición
-```
-
-## Convención de Nombres
-
-**Formato:** `tipodeclinica-nombredeclinica`
-
-### Prefijos por tipo de clínica:
-- `fisio-` → Fisioterapia
-- `dental-` → Clínicas dentales
-- `nutri-` → Nutricionistas
-- `psico-` → Psicología
-- `podolo-` → Podología
-- `esteti-` → Estética
-- `veterina-` → Veterinaria
-- `optica-` → Ópticas
-
-### Ejemplos:
-- `fisio-lourdes-benitez`
-- `dental-sonrisa-perfecta`
-- `nutri-maria-garcia`
-- `psico-mente-sana`
-
----
-
-## Proceso de Personalización
-
-### Paso 1: Crear proyecto del cliente
+El pipeline de `automatizacion-webs` se encarga de todo:
 
 ```bash
-# Crear directorio
-mkdir -p /Users/emilio/proyectos/cebos/[tipo]-[nombre]
-
-# Copiar template
-cp -r /Users/emilio/premium-web/* /Users/emilio/proyectos/cebos/[tipo]-[nombre]/
-
-# Copiar archivos ocultos
-cp /Users/emilio/premium-web/.gitignore /Users/emilio/proyectos/cebos/[tipo]-[nombre]/
-
-# Entrar al proyecto
-cd /Users/emilio/proyectos/cebos/[tipo]-[nombre]
-
-# Instalar dependencias
-npm install
+# En automatizacion-webs:
+npx tsx scripts/worker.ts --limit 10 --score 69
 ```
 
-### Paso 2: Recopilar datos del cliente
+Cada lead pasa por: scrape → AI content → POST a `/api/deploy` → web live.
 
-Usar esta plantilla para recoger la información:
+**No se toca este repo directamente para crear webs.** Este repo es el servidor multi-tenant.
 
-```
-=== DATOS DEL CLIENTE ===
+## Actualizar el template (cambios en componentes/estilos)
 
-IDENTIDAD:
-- Nombre de la clínica:
-- Eslogan:
-- Descripción (para SEO):
+Cuando haces cambios en el código de premium-web:
 
-CONTACTO:
-- Teléfono:
-- WhatsApp:
-- Email:
-
-UBICACIÓN:
-- Dirección completa:
-- Ciudad y código postal:
-- URL Google Maps:
-
-HORARIOS:
-- Lunes:
-- Martes:
-- Miércoles:
-- Jueves:
-- Viernes:
-- Sábado:
-- Domingo:
-
-REDES SOCIALES:
-- Instagram:
-- Facebook:
-- LinkedIn:
-- TikTok:
-
-RESEÑAS GOOGLE:
-- Puntuación:
-- Número de reseñas:
-- URL de Google Business:
-
-SERVICIOS (listar todos):
-1.
-2.
-3.
-
-EQUIPO (por cada miembro):
-- Nombre:
-- Cargo:
-- Biografía breve:
-
-DIFERENCIADORES (qué les hace únicos):
-1.
-2.
-3.
-4.
-
-PREGUNTAS FRECUENTES:
-1. P:
-   R:
-2. P:
-   R:
-```
-
-### Paso 3: Obtener recursos visuales
-
-1. **Logo** → Guardar en `/public/images/logo.jpg` o `.png`
-2. **Imagen hero** → Guardar en `/public/images/hero.jpg`
-3. **Fotos del equipo** → Guardar en `/public/images/team/nombre.jpg`
-4. **Galería** → Guardar en `/public/images/gallery/1.jpg`, `2.jpg`, etc.
-
-### Paso 4: Personalizar configuración
-
-Editar `/src/config/clinic.ts`:
-- Reemplazar todos los valores `TODO:` con datos reales
-- Extraer colores del logo del cliente
-- Añadir servicios específicos del tipo de clínica
-- Personalizar FAQ según especialidad
-
-### Paso 5: Verificar y desplegar
-
+### 1. Desarrollar en local
 ```bash
-# Verificar que compila
-npm run build
-
-# Probar localmente
 npm run dev
-
-# Si todo OK, desplegar según método elegido
+# Simular subdomain: añadir a /etc/hosts
+# 127.0.0.1 test-clinic.localhost
 ```
 
----
-
-## Checklist de Verificación
-
-### Antes de entregar:
-
-- [ ] `clinic.ts` no contiene ningún "TODO:"
-- [ ] Logo cargado en `/public/images/logo.jpg`
-- [ ] Imagen hero cargada (o usando placeholder)
-- [ ] Colores extraídos del logo
-- [ ] Teléfono y WhatsApp correctos
-- [ ] Dirección completa con URL de Google Maps
-- [ ] Horarios actualizados
-- [ ] Redes sociales configuradas (las que existan)
-- [ ] Servicios personalizados para el tipo de clínica
-- [ ] Equipo con foto y bio
-- [ ] FAQ relevantes añadidas
-- [ ] SEO personalizado (título, descripción, keywords)
-- [ ] `npm run build` funciona sin errores
-- [ ] Probado en móvil y escritorio
-
----
-
-## Notas de Diseño
-
-### WhatsApp CTA
-- El botón flotante de WhatsApp debe usar siempre el **icono SVG oficial de WhatsApp** (NO usar MessageCircle de Lucide ni otros iconos genéricos)
-- El icono oficial está implementado en `/src/components/layout/WhatsAppWidget.tsx`
-- Color del botón: verde oficial de WhatsApp `#25D366`
-- **IMPORTANTE:** Lucide React NO tiene el icono oficial de WhatsApp, usar el SVG personalizado del componente
-
----
-
-## Notas Importantes
-
-1. **NUNCA modificar premium-web directamente** - Siempre copiar a proyectos/cebos/
-2. **Mantener el template limpio** - Si mejoras el template, aplicar a premium-web
-3. **Backup antes de desplegar** - Guardar copia del proyecto antes de subir
-4. **Documentar cambios específicos** - Si un cliente necesita algo especial, documentarlo
-
----
-
-## Comandos Útiles
-
+### 2. Tests
 ```bash
-# Ver estructura de un proyecto
-ls -la /Users/emilio/proyectos/cebos/[proyecto]/
-
-# Buscar TODOs pendientes
-grep -r "TODO" /Users/emilio/proyectos/cebos/[proyecto]/src/
-
-# Verificar imágenes
-ls -la /Users/emilio/proyectos/cebos/[proyecto]/public/images/
-
-# Limpiar y reinstalar
-rm -rf node_modules .next && npm install
+npm test
 ```
+
+### 3. Commit y push
+```bash
+git add .
+git commit -m "feat: descripción del cambio"
+git push origin main
+```
+
+### 4. Deploy al VPS
+```bash
+ssh root@46.225.137.78 'bash /var/www/premium-web/scripts/deploy-vps.sh'
+```
+
+El script hace: `git pull → npm ci → build → copy static → pm2 reload`.
+Zero-downtime gracias al reload de PM2 cluster.
+
+**Todas las webs existentes se actualizan automáticamente** porque comparten la misma instancia Next.js. Solo los datos (config.json + imágenes) son específicos de cada web.
+
+## Estructura de una web
+
+Cada web se identifica por su `slug`. Los datos están en `/var/www/sites/{slug}/`:
+
+```
+/var/www/sites/fisio-lourdes-benitez/
+├── config.json          # ClinicConfig completa (generada por AI + scraping)
+├── og-image.jpg         # Imagen OG (generada, hero + nombre + color)
+└── images/
+    ├── hero.webp        # Imagen principal (de Google Places)
+    ├── logo.png         # Logo (de redes sociales)
+    ├── gallery/
+    │   ├── gallery-1.webp
+    │   └── gallery-2.webp
+    └── team/
+        └── team-1.webp
+```
+
+## Monitorización
+
+### PM2
+```bash
+ssh root@46.225.137.78
+pm2 status                    # Estado de las instancias
+pm2 logs premium-web          # Logs en tiempo real
+pm2 monit                     # Monitor interactivo
+```
+
+### Caddy
+```bash
+systemctl status caddy        # Estado del servicio
+journalctl -u caddy -f        # Logs en tiempo real
+journalctl -u caddy --since "1 hour ago"  # Últimos logs
+```
+
+### TLS
+Caddy renueva certificados automáticamente. Para verificar:
+```bash
+curl -vI https://test-clinic.romantechwebs.com 2>&1 | grep "subject:"
+```
+
+## Troubleshooting
+
+### Web devuelve 404
+- Verificar que existe `/var/www/sites/{slug}/config.json`
+- El middleware rechaza hosts sin subdomain válido
+
+### PM2 instancia crashea
+```bash
+pm2 restart premium-web
+pm2 logs premium-web --err --lines 50
+```
+
+### Caddy no arranca
+```bash
+caddy validate --config /etc/caddy/Caddyfile --envfile /etc/caddy/env
+journalctl -u caddy --since "5 minutes ago"
+```
+
+### TLS falla
+- Verificar que `/etc/caddy/env` tiene `CF_API_TOKEN` válido
+- El token necesita permisos: Zone > DNS > Edit para romantechwebs.com
+
+### Borrar una web manualmente
+```bash
+rm -rf /var/www/sites/{slug}
+# La cache se invalida sola en 5 min, o restart PM2
+```
+
+## Notas de diseño
+
+### WhatsApp Widget
+- Usa el **icono SVG oficial de WhatsApp** (NO MessageCircle de Lucide)
+- Color verde oficial: `#25D366`
+- Posición: esquina inferior derecha
+
+### Colores dinámicos
+- Los colores se inyectan como CSS custom properties en `layout.tsx`
+- `--color-primary`, `--color-secondary`, `--color-accent`, `--color-neutral`
+- Todos los componentes usan `useClinic()` para acceder a la config
+
+### Performance
+- Imágenes servidas por Caddy (estáticas, bypass de Next.js)
+- Config cacheada en memoria 5 minutos (load-config.ts)
+- PM2 cluster mode: 2 instancias para concurrencia
+- Next.js standalone: bundle mínimo sin node_modules
