@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion"
 import { ArrowRight, Phone, Clock, CheckCircle } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 export function CTA() {
+  const clinic = useClinic()
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
   return (

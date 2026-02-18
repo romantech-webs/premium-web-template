@@ -2,9 +2,11 @@
 
 import { motion } from "framer-motion"
 import { MapPin, Clock, Phone, Navigation } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 export function Location() {
+  const clinic = useClinic()
+
   return (
     <section id="ubicacion" className="section-padding bg-white">
       <div className="container-wide">

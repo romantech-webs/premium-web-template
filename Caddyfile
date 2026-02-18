@@ -1,0 +1,27 @@
+# Bare domain — no sites here
+romantechwebs.com {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+	respond "Not found" 404
+}
+
+# Wildcard for all clinic subdomains
+# {labels.2} = subdomain (e.g. "test-clinic" from test-clinic.romantechwebs.com)
+*.romantechwebs.com {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	# Static images served directly by Caddy
+	@static path /images/* /og-image.jpg
+	handle @static {
+		root * /var/www/sites/{labels.2}
+		file_server
+	}
+
+	# Everything else → Next.js
+	handle {
+		reverse_proxy localhost:3001
+	}
+}

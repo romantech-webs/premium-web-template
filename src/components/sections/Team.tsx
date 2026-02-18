@@ -3,9 +3,11 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { Instagram, Linkedin, Award } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 export function Team() {
+  const clinic = useClinic()
+
   return (
     <section id="equipo" className="section-padding bg-neutral relative overflow-hidden">
       {/* Background */}

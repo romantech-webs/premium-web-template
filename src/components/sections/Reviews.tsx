@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion"
 import { Star, Quote, ExternalLink } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
 export function Reviews() {
+  const clinic = useClinic()
+
   return (
     <section id="opiniones" className="section-padding bg-white relative overflow-hidden">
       {/* Background elements */}

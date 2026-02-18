@@ -4,10 +4,56 @@ import { useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { X } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
+function GalleryPlaceholder({ alt, dark }: { alt: string; dark?: boolean }) {
+  return (
+    <div className={cn(
+      "absolute inset-0 flex items-center justify-center",
+      dark
+        ? "bg-gradient-to-br from-white/5 to-white/10"
+        : "bg-gradient-to-br from-primary/10 to-accent/10"
+    )}>
+      <div className="text-center p-4">
+        <span className="text-4xl mb-2 block">📷</span>
+        <p className={cn("text-xs", dark ? "text-white/40" : "text-primary/50")}>{alt}</p>
+      </div>
+    </div>
+  )
+}
+
+function GalleryImageWithFallback({
+  src,
+  alt,
+  sizes,
+  contain,
+}: {
+  src: string
+  alt: string
+  sizes: string
+  contain?: boolean
+}) {
+  const [error, setError] = useState(false)
+
+  if (error || !src || src.includes("placeholder")) {
+    return <GalleryPlaceholder alt={alt} dark={contain} />
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className={contain ? "object-contain" : "object-cover group-hover:scale-105 transition-transform duration-700 ease-out"}
+      sizes={sizes}
+      onError={() => setError(true)}
+    />
+  )
+}
+
 export function Gallery() {
+  const clinic = useClinic()
   const images = clinic.gallery
   const total = images.length
   // Last image becomes a full-width panoramic only when middle images pair evenly
@@ -69,26 +115,15 @@ export function Gallery() {
                         : "aspect-[4/3]"
                   )}
                 >
-                  {image.src && !image.src.includes("placeholder") ? (
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      sizes={
-                        isFeature
-                          ? "(max-width: 768px) 100vw, 100vw"
-                          : "(max-width: 768px) 100vw, 50vw"
-                      }
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                      <div className="text-center p-4">
-                        <span className="text-4xl mb-2 block">📷</span>
-                        <p className="text-xs text-primary/50">{image.alt}</p>
-                      </div>
-                    </div>
-                  )}
+                  <GalleryImageWithFallback
+                    src={image.src}
+                    alt={image.alt}
+                    sizes={
+                      isFeature
+                        ? "(max-width: 768px) 100vw, 100vw"
+                        : "(max-width: 768px) 100vw, 50vw"
+                    }
+                  />
 
                   {/* Hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 via-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -143,19 +178,12 @@ export function Gallery() {
               transition={{ duration: 0.3 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {images[lightboxIndex].src && !images[lightboxIndex].src.includes("placeholder") ? (
-                <Image
-                  src={images[lightboxIndex].src}
-                  alt={images[lightboxIndex].alt}
-                  fill
-                  className="object-contain"
-                  sizes="100vw"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center rounded-2xl">
-                  <p className="text-white/50">{images[lightboxIndex].alt}</p>
-                </div>
-              )}
+              <GalleryImageWithFallback
+                src={images[lightboxIndex].src}
+                alt={images[lightboxIndex].alt}
+                sizes="100vw"
+                contain
+              />
 
               {/* Caption */}
               <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">

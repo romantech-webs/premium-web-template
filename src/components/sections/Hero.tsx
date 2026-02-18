@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Phone, Star, ArrowRight, Play } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 import { CountUp } from "@/components/count-up"
 
 const clipReveal = {
@@ -12,6 +12,7 @@ const clipReveal = {
 }
 
 export function Hero() {
+  const clinic = useClinic()
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
   return (
@@ -100,8 +101,9 @@ export function Hero() {
                 animate="visible"
                 transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               >
-                {clinic.heroHeadline[0]}
+                {clinic.heroHeadline?.[0] || ""}
               </motion.span>
+              {clinic.heroHeadline?.[1] && (
               <motion.span
                 className="relative inline-block"
                 variants={clipReveal}
@@ -114,6 +116,8 @@ export function Hero() {
                   <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
                 </svg>
               </motion.span>
+              )}
+              {clinic.heroHeadline?.[2] && (
               <motion.span
                 className="block text-3xl sm:text-4xl lg:text-5xl mt-2 font-semibold text-secondary/70"
                 variants={clipReveal}
@@ -123,6 +127,7 @@ export function Hero() {
               >
                 {clinic.heroHeadline[2]}
               </motion.span>
+              )}
             </h1>
 
             {/* Description */}

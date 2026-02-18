@@ -1,14 +1,20 @@
-import type { MetadataRoute } from 'next'
+import { headers } from "next/headers"
+import type { MetadataRoute } from "next"
 
-export const dynamic = 'force-static'
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const h = await headers()
+  const slug = h.get("x-clinic-slug")
 
-export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://example.com'
+  if (!slug) {
+    return { rules: { userAgent: "*", disallow: "/" } }
+  }
+
+  const baseUrl = `https://${slug}.romantechwebs.com`
 
   return {
     rules: {
-      userAgent: '*',
-      allow: '/',
+      userAgent: "*",
+      allow: "/",
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   }

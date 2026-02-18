@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import * as LucideIcons from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 import { CountUp } from "@/components/count-up"
 
 type IconName = keyof typeof LucideIcons
@@ -13,6 +13,8 @@ function getIcon(iconName: string) {
 }
 
 export function WhyUs() {
+  const clinic = useClinic()
+
   return (
     <section className="section-padding bg-secondary text-white relative overflow-hidden">
       {/* Background elements — orbs only, no vertical lines */}

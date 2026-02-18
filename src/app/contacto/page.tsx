@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Clock, Phone, Mail, Send, CheckCircle } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 export default function ContactoPage() {
+  const clinic = useClinic()
   const [formState, setFormState] = useState({
     nombre: "",
     email: "",
@@ -24,7 +25,7 @@ export default function ContactoPage() {
     try {
       const apiUrl = (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).__WIDGET_API_URL) as string | undefined
       if (!apiUrl) {
-        setIsSubmitted(true)
+        setSubmitError('No se pudo enviar el mensaje. Por favor, contacta por teléfono o WhatsApp.')
         return
       }
       const projectId = (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).__PROJECT_ID) as string | undefined

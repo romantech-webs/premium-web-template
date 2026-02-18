@@ -1,7 +1,9 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Linkedin, ArrowUpRight } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 const TikTokIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -10,6 +12,7 @@ const TikTokIcon = () => (
 )
 
 export function Footer() {
+  const clinic = useClinic()
   const currentYear = new Date().getFullYear()
 
   return (

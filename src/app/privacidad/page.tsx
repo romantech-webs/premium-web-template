@@ -1,12 +1,22 @@
-import { clinic } from "@/config/clinic"
+import { headers } from "next/headers"
+import { notFound } from "next/navigation"
+import { getClinicConfig } from "@/config/load-config"
 import type { Metadata } from "next"
 
-export const metadata: Metadata = {
-  title: "Política de Privacidad",
-  description: `Política de privacidad y protección de datos de ${clinic.name}`,
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers()
+  const config = await getClinicConfig(h.get("x-clinic-slug") || "")
+  return {
+    title: "Política de Privacidad",
+    description: `Política de privacidad y protección de datos de ${config?.name || ""}`,
+  }
 }
 
-export default function PrivacidadPage() {
+export default async function PrivacidadPage() {
+  const h = await headers()
+  const clinic = await getClinicConfig(h.get("x-clinic-slug") || "")
+  if (!clinic) return notFound()
+
   return (
     <div className="pt-24">
       <section className="section-padding bg-neutral">

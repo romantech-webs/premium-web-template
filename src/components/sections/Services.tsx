@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import * as LucideIcons from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 type IconName = keyof typeof LucideIcons
 
@@ -12,6 +12,8 @@ function getIcon(iconName: string) {
 }
 
 export function Services() {
+  const clinic = useClinic()
+
   return (
     <section id="servicios" className="section-padding bg-white relative overflow-hidden">
       {/* Background decoration */}

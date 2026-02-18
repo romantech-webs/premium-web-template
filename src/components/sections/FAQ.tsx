@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
 export function FAQ() {
+  const clinic = useClinic()
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (

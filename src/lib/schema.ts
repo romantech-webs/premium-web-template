@@ -1,6 +1,6 @@
-import { clinic } from "@/config/clinic"
+import type { ClinicConfig } from "@/config/types"
 
-export function generateLocalBusinessSchema(baseUrl: string) {
+export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": clinic.schemaType,
@@ -34,15 +34,15 @@ export function generateLocalBusinessSchema(baseUrl: string) {
       reviewCount: clinic.reviews.count.toString(),
     },
     sameAs: [
-      clinic.social.instagram ? `https://instagram.com/${clinic.social.instagram}` : null,
-      clinic.social.facebook ? `https://facebook.com/${clinic.social.facebook}` : null,
+      clinic.social.instagram,
+      clinic.social.facebook,
       clinic.social.linkedin,
-      clinic.social.tiktok ? `https://tiktok.com/@${clinic.social.tiktok}` : null,
+      clinic.social.tiktok,
     ].filter(Boolean),
   }
 }
 
-export function generateFAQSchema() {
+export function generateFAQSchema(clinic: ClinicConfig) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -17,6 +17,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export function WhatsAppWidget() {
+  const clinic = useClinic()
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
   return (

@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, Phone, ArrowUpRight } from "lucide-react"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -17,6 +17,7 @@ const navItems = [
 ]
 
 export function Header() {
+  const clinic = useClinic()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 

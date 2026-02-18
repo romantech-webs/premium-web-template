@@ -1,9 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { clinic } from "@/config/clinic"
+import { useClinic } from "@/config/clinic-context"
 
 export function Process() {
+  const clinic = useClinic()
+
   return (
     <section className="section-padding bg-neutral">
       <div className="container-wide">

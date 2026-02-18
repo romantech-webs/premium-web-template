@@ -1,12 +1,22 @@
-import { clinic } from "@/config/clinic"
+import { headers } from "next/headers"
+import { notFound } from "next/navigation"
+import { getClinicConfig } from "@/config/load-config"
 import type { Metadata } from "next"
 
-export const metadata: Metadata = {
-  title: "Política de Cookies",
-  description: `Información sobre el uso de cookies en el sitio web de ${clinic.name}`,
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers()
+  const config = await getClinicConfig(h.get("x-clinic-slug") || "")
+  return {
+    title: "Política de Cookies",
+    description: `Información sobre el uso de cookies en el sitio web de ${config?.name || ""}`,
+  }
 }
 
-export default function CookiesPage() {
+export default async function CookiesPage() {
+  const h = await headers()
+  const clinic = await getClinicConfig(h.get("x-clinic-slug") || "")
+  if (!clinic) return notFound()
+
   return (
     <div className="pt-24">
       <section className="section-padding bg-neutral">
