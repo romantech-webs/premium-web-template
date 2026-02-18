@@ -8,7 +8,7 @@ echo "==> Pulling latest changes..."
 git pull --ff-only
 
 echo "==> Installing dependencies..."
-npm ci
+npm install
 
 echo "==> Building Next.js standalone..."
 npm run build
