@@ -98,7 +98,7 @@ export function Header() {
                   {clinic.name}
                 </span>
                 <p className={cn(
-                  "text-[10px] uppercase tracking-[0.15em] transition-colors truncate",
+                  "text-[10px] uppercase tracking-[0.15em] transition-colors line-clamp-2",
                   isScrolled ? "text-secondary/50" : "text-secondary/60"
                 )}>
                   {clinic.tagline}
