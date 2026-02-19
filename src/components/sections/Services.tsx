@@ -54,7 +54,7 @@ export function Services() {
         </motion.div>
 
         {/* Mobile: Horizontal carousel */}
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <div ref={scrollRef} className="carousel-snap gap-4 -mx-4 px-4 pb-4">
             {clinic.services.map((service, index) => {
               const Icon = getIcon(service.icon)
@@ -107,7 +107,7 @@ export function Services() {
         </div>
 
         {/* Desktop: Grid */}
-        <div className="hidden lg:grid lg:grid-cols-4 gap-6">
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {clinic.services.map((service, index) => {
             const Icon = getIcon(service.icon)
             return (

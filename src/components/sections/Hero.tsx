@@ -5,10 +5,18 @@ import { motion } from "framer-motion"
 import { Phone, Star, ArrowRight, Play } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import { CountUp } from "@/components/count-up"
+import { cn } from "@/lib/utils"
 
 const clipReveal = {
   hidden: { clipPath: "inset(0 100% 0 0)", opacity: 0 },
   visible: { clipPath: "inset(0 0% 0 0)", opacity: 1 },
+}
+
+function getHeadlineSizeClasses(headline: string[] | undefined) {
+  const totalLength = (headline || []).join("").length
+  if (totalLength > 50) return { main: "text-xl sm:text-2xl", sub: "text-lg sm:text-xl" }
+  if (totalLength > 30) return { main: "text-2xl sm:text-3xl", sub: "text-xl sm:text-2xl" }
+  return { main: "text-3xl sm:text-4xl", sub: "text-2xl sm:text-3xl" }
 }
 
 export function Hero() {
@@ -17,6 +25,7 @@ export function Hero() {
   const featuredReview = clinic.reviews.featured.length > 0
     ? clinic.reviews.featured.reduce((best, r) => r.text.length > best.text.length ? r : best, clinic.reviews.featured[0])
     : null
+  const headlineSize = getHeadlineSizeClasses(clinic.heroHeadline)
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary/5">
@@ -63,12 +72,12 @@ export function Hero() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-white" />
 
-          {/* Floating rating badge on image */}
+          {/* Floating rating badge on image — top-24 clears the fixed header */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="absolute top-20 left-4 inline-flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg"
+            className="absolute top-24 left-4 inline-flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg"
           >
             <div className="flex -space-x-0.5">
               {[...Array(5)].map((_, i) => (
@@ -87,14 +96,14 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl sm:text-4xl font-display font-bold text-secondary leading-[1.05] mb-4"
+            className={cn(headlineSize.main, "font-display font-bold text-secondary leading-[1.05] mb-4 text-balance")}
           >
             <span className="block">{clinic.heroHeadline?.[0] || ""}</span>
             {clinic.heroHeadline?.[1] && (
               <span className="text-primary">{clinic.heroHeadline[1]}</span>
             )}
             {clinic.heroHeadline?.[2] && (
-              <span className="block text-2xl sm:text-3xl mt-1 font-semibold text-secondary/70">
+              <span className={cn("block mt-1 font-semibold text-secondary/70", headlineSize.sub)}>
                 {clinic.heroHeadline[2]}
               </span>
             )}

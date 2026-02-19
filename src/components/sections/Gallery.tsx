@@ -75,6 +75,16 @@ export function Gallery() {
     setLightboxIndex((lightboxIndex - 1 + total) % total)
   }, [lightboxIndex, total])
 
+  // Set data-overlay-open when lightbox is open
+  const lightboxOpen = lightboxIndex !== null
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.setAttribute("data-overlay-open", "true")
+    } else {
+      document.body.removeAttribute("data-overlay-open")
+    }
+  }, [lightboxOpen])
+
   // Keyboard navigation
   useEffect(() => {
     if (lightboxIndex === null) return
@@ -236,7 +246,7 @@ export function Gallery() {
       <AnimatePresence>
         {lightboxIndex !== null && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-[60] flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

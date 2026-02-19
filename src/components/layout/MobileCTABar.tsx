@@ -16,6 +16,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function MobileCTABar() {
   const clinic = useClinic()
   const [isVisible, setIsVisible] = useState(false)
+  const [overlayOpen, setOverlayOpen] = useState(false)
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
   useEffect(() => {
@@ -26,9 +27,18 @@ export function MobileCTABar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Watch for data-overlay-open attribute on body (set by Header menu + Gallery lightbox)
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setOverlayOpen(document.body.hasAttribute("data-overlay-open"))
+    })
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-overlay-open"] })
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isVisible && !overlayOpen && (
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}

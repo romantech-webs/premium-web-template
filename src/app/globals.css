@@ -110,14 +110,16 @@
     background: var(--color-primary);
   }
 
-  .card-athletic:hover::before {
-    background: var(--color-accent);
-    width: 4px;
-  }
+  @media (hover: hover) {
+    .card-athletic:hover::before {
+      background: var(--color-accent);
+      width: 4px;
+    }
 
-  .card-athletic:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px -12px color-mix(in srgb, var(--color-primary) 20%, transparent);
+    .card-athletic:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
   }
 
   /* Diagonal stripe decoration */
@@ -272,11 +274,6 @@
   -webkit-backdrop-filter: blur(24px);
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Smooth transitions for interactive properties */
-*, *::before, *::after {
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Smooth image loading */
