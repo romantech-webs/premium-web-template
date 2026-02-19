@@ -183,6 +183,15 @@ export function Header() {
             className="lg:hidden fixed inset-0 z-[55] overflow-y-auto overscroll-contain"
             style={{ background: "color-mix(in srgb, var(--color-secondary) 97%, transparent)" }}
           >
+            {/* Close button — inside overlay so it's always clickable */}
+            <button
+              onClick={closeMenu}
+              className="absolute top-5 right-4 sm:right-6 w-12 h-12 flex items-center justify-center z-10 rounded-xl bg-white/10"
+              aria-label="Cerrar menú"
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
             <div className="flex flex-col justify-center items-center min-h-full px-8 py-24">
               {/* Nav items with stagger */}
               <div className="space-y-3 w-full max-w-sm">
