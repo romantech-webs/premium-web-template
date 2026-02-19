@@ -21,10 +21,15 @@ export function Services() {
     const el = scrollRef.current
     if (!el) return
     const handleScroll = () => {
-      const scrollLeft = el.scrollLeft
-      const cardWidth = el.firstElementChild?.clientWidth || 280
-      const gap = 16
-      setActiveIndex(Math.round(scrollLeft / (cardWidth + gap)))
+      const children = Array.from(el.children) as HTMLElement[]
+      const center = el.scrollLeft + el.clientWidth / 2
+      let closest = 0
+      let minDist = Infinity
+      children.forEach((child, i) => {
+        const dist = Math.abs(child.offsetLeft + child.clientWidth / 2 - center)
+        if (dist < minDist) { minDist = dist; closest = i }
+      })
+      setActiveIndex(closest)
     }
     el.addEventListener("scroll", handleScroll, { passive: true })
     return () => el.removeEventListener("scroll", handleScroll)
@@ -54,12 +59,16 @@ export function Services() {
         </motion.div>
 
         {/* Mobile: Horizontal carousel */}
-        <div className="md:hidden">
-          <div ref={scrollRef} className="carousel-snap gap-4 -mx-4 px-4 pb-4">
+        <div className="md:hidden -mx-4">
+          <div
+            ref={scrollRef}
+            className="carousel-snap gap-4 pb-4"
+            style={{ paddingInline: "calc(50vw - min(40vw, 160px))" }}
+          >
             {clinic.services.map((service, index) => {
               const Icon = getIcon(service.icon)
               return (
-                <div key={service.id} className="w-[80vw] max-w-[320px]">
+                <div key={service.id} className="w-[80vw] max-w-[320px]" style={{ scrollSnapAlign: "center" }}>
                   <div className="h-full p-5 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm">
                     <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5 text-primary" />
@@ -94,8 +103,9 @@ export function Services() {
                 onClick={() => {
                   const el = scrollRef.current
                   if (!el) return
-                  const cardWidth = el.firstElementChild?.clientWidth || 280
-                  el.scrollTo({ left: i * (cardWidth + 16), behavior: "smooth" })
+                  const child = el.children[i] as HTMLElement
+                  if (!child) return
+                  el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: "smooth" })
                 }}
                 aria-label={`Ir al servicio ${i + 1}`}
               />
@@ -103,8 +113,8 @@ export function Services() {
           </div>
         </div>
 
-        {/* Desktop: Grid */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Desktop: Flex grid — centers orphan items on last row */}
+        <div className="hidden md:flex md:flex-wrap md:justify-center gap-6">
           {clinic.services.map((service, index) => {
             const Icon = getIcon(service.icon)
             return (
@@ -114,7 +124,7 @@ export function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="group"
+                className="group w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
               >
                 <div className="relative h-full p-8 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                   <div className="text-4xl font-bold leading-none mb-4 bg-gradient-to-b from-primary/15 to-transparent bg-clip-text text-transparent">

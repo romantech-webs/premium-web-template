@@ -15,10 +15,15 @@ export function Reviews() {
     const el = scrollRef.current
     if (!el) return
     const handleScroll = () => {
-      const scrollLeft = el.scrollLeft
-      const cardWidth = el.firstElementChild?.clientWidth || 300
-      const gap = 16
-      setActiveIndex(Math.round(scrollLeft / (cardWidth + gap)))
+      const children = Array.from(el.children) as HTMLElement[]
+      const center = el.scrollLeft + el.clientWidth / 2
+      let closest = 0
+      let minDist = Infinity
+      children.forEach((child, i) => {
+        const dist = Math.abs(child.offsetLeft + child.clientWidth / 2 - center)
+        if (dist < minDist) { minDist = dist; closest = i }
+      })
+      setActiveIndex(closest)
     }
     el.addEventListener("scroll", handleScroll, { passive: true })
     return () => el.removeEventListener("scroll", handleScroll)
@@ -73,10 +78,14 @@ export function Reviews() {
         </motion.div>
 
         {/* Mobile: Carousel */}
-        <div className="md:hidden">
-          <div ref={scrollRef} className="carousel-snap gap-4 -mx-4 px-4 pb-4">
+        <div className="md:hidden -mx-4">
+          <div
+            ref={scrollRef}
+            className="carousel-snap gap-4 pb-4"
+            style={{ paddingInline: "calc(50vw - min(40vw, 160px))" }}
+          >
             {clinic.reviews.featured.map((review, index) => (
-              <div key={index} className="w-[80vw] max-w-[320px]">
+              <div key={index} className="w-[80vw] max-w-[320px]" style={{ scrollSnapAlign: "center" }}>
                 <div className="h-full p-5 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
                   <div className="flex gap-1 mb-3">
                     {[...Array(5)].map((_, i) => (
@@ -125,8 +134,9 @@ export function Reviews() {
                 onClick={() => {
                   const el = scrollRef.current
                   if (!el) return
-                  const cardWidth = el.firstElementChild?.clientWidth || 300
-                  el.scrollTo({ left: i * (cardWidth + 16), behavior: "smooth" })
+                  const child = el.children[i] as HTMLElement
+                  if (!child) return
+                  el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: "smooth" })
                 }}
                 aria-label={`Ver reseña ${i + 1}`}
               />
