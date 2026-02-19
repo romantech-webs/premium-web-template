@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Phone, ArrowUpRight } from "lucide-react"
+import { Menu, X, Phone, ArrowUpRight, Instagram, Facebook } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
@@ -25,9 +25,19 @@ export function Header() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => { document.body.style.overflow = "" }
+  }, [isMobileMenuOpen])
 
   return (
     <header
@@ -41,7 +51,7 @@ export function Header() {
       <div className="container-wide px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group min-w-0">
+          <Link href="/" className="flex items-center gap-3 group min-w-0 relative z-[60]">
             <div className="relative shrink-0">
               <div className={cn(
                 "absolute inset-0 rounded-xl transition-all duration-300",
@@ -80,10 +90,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={cn(
-                  "relative px-5 py-2 text-sm font-medium transition-colors group",
-                  isScrolled ? "text-secondary/70 hover:text-secondary" : "text-secondary/70 hover:text-secondary"
-                )}
+                className="relative px-5 py-2 text-sm font-medium text-secondary/70 hover:text-secondary transition-colors group"
               >
                 {item.label}
                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-1/2" />
@@ -91,11 +98,12 @@ export function Header() {
             ))}
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons — desktop */}
           <div className="hidden lg:flex items-center gap-3 shrink-0">
             <a
               href={`tel:${clinic.phone.replace(/\s/g, "")}`}
               className="flex items-center gap-2 text-sm font-semibold text-secondary/70 hover:text-primary transition-colors whitespace-nowrap"
+              aria-label={`Llamar al ${clinic.phone}`}
             >
               <motion.div
                 className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
@@ -127,8 +135,9 @@ export function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden relative w-12 h-12 flex items-center justify-center"
-            aria-label="Toggle menu"
+            className="lg:hidden relative w-12 h-12 flex items-center justify-center z-[60]"
+            aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={isMobileMenuOpen}
           >
             <div className="absolute inset-0 bg-secondary/5 rounded-xl" />
             {isMobileMenuOpen ? (
@@ -140,50 +149,91 @@ export function Header() {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — Fullscreen Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-gray-100 shadow-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="lg:hidden fixed inset-0 z-50"
+            style={{ background: "color-mix(in srgb, var(--color-secondary) 97%, transparent)" }}
           >
-            <div className="container-wide px-4 py-8 space-y-2">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-4 px-4 text-secondary hover:bg-neutral rounded-xl transition-colors group"
+            <div className="flex flex-col justify-center items-center h-full px-8">
+              {/* Nav items with stagger */}
+              <div className="space-y-3 w-full max-w-sm">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ delay: 0.1 + index * 0.06, duration: 0.4 }}
                   >
-                    <span className="font-semibold">{item.label}</span>
-                    <ArrowUpRight className="w-4 h-4 text-secondary/30 group-hover:text-accent transition-colors" />
-                  </Link>
-                </motion.div>
-              ))}
-              <div className="pt-6 space-y-3 border-t border-gray-100 mt-4">
-                <a
-                  href={`tel:${clinic.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-3 py-3 px-4 text-secondary/70 hover:text-primary transition-colors"
-                >
-                  <Phone className="w-5 h-5" />
-                  {clinic.phone}
-                </a>
+                    <Link
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-between py-4 px-6 text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all group"
+                    >
+                      <span className="text-2xl font-display font-semibold">{item.label}</span>
+                      <ArrowUpRight className="w-5 h-5 text-white/20 group-hover:text-accent transition-colors" />
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
+                className="mt-8 w-full max-w-sm"
+              >
                 <a
                   href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-whatsapp w-full text-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="btn-primary w-full text-center py-4"
                 >
-                  Pedir Cita por WhatsApp
+                  <span className="relative z-10 flex items-center justify-center gap-3 text-lg">
+                    Pedir Cita
+                    <ArrowUpRight className="w-5 h-5" />
+                  </span>
                 </a>
-              </div>
+              </motion.div>
+
+              {/* Phone + Social links at bottom */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-10 flex flex-col items-center gap-4"
+              >
+                <a
+                  href={`tel:${clinic.phone.replace(/\s/g, "")}`}
+                  className="flex items-center gap-3 text-white/50 hover:text-white transition-colors"
+                  aria-label="Llamar por teléfono"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="text-sm">{clinic.phone}</span>
+                </a>
+
+                <div className="flex gap-3">
+                  {clinic.social.instagram && (
+                    <a href={clinic.social.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all" aria-label="Instagram">
+                      <Instagram className="w-4 h-4" />
+                    </a>
+                  )}
+                  {clinic.social.facebook && (
+                    <a href={clinic.social.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all" aria-label="Facebook">
+                      <Facebook className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         )}

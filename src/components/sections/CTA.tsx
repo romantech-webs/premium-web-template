@@ -58,10 +58,10 @@ export function CTA() {
           <span className="section-label justify-center !text-primary">
             {clinic.ctaLabel}
           </span>
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold text-white mt-4 mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-7xl font-display font-bold text-white mt-4 mb-4 lg:mb-6">
             {clinic.ctaHeadline}
           </h2>
-          <p className="text-white/60 text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="text-white/60 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto mb-8 lg:mb-12 leading-relaxed">
             {clinic.ctaDescription}
           </p>
 

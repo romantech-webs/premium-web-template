@@ -14,12 +14,14 @@ const clipReveal = {
 export function Hero() {
   const clinic = useClinic()
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
+  const featuredReview = clinic.reviews.featured.length > 0
+    ? clinic.reviews.featured.reduce((best, r) => r.text.length > best.text.length ? r : best, clinic.reviews.featured[0])
+    : null
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary/5">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Diagonal lines */}
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-[0.03]">
           <div className="absolute inset-0" style={{
             backgroundImage: `repeating-linear-gradient(
@@ -31,8 +33,6 @@ export function Hero() {
             )`
           }} />
         </div>
-
-        {/* Gradient orbs - larger and animated */}
         <motion.div
           className="absolute top-20 right-1/4 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px]"
           animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
@@ -43,24 +43,155 @@ export function Hero() {
           animate={{ x: [0, -20, 0], y: [0, 15, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
         />
-
-        {/* Athletic corner accent */}
         <div className="absolute top-0 right-0 w-32 h-32">
           <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-accent to-transparent" />
           <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-accent to-transparent" />
         </div>
       </div>
 
-      <div className="container-wide section-padding relative z-10 pt-32 lg:pt-24">
+      {/* === MOBILE HERO (< lg) === */}
+      <div className="lg:hidden w-full relative z-10">
+        {/* Hero image — full width with gradient overlay */}
+        <div className="relative w-full h-[50vh] min-h-[320px]">
+          <Image
+            src="/images/hero.webp"
+            alt={`${clinic.name} - ${clinic.tagline}`}
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-white" />
+
+          {/* Floating rating badge on image */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="absolute top-20 left-4 inline-flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg"
+          >
+            <div className="flex -space-x-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" />
+              ))}
+            </div>
+            <span className="text-xs font-bold text-secondary">
+              {clinic.reviews.rating} · {clinic.reviews.count}
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Content below image */}
+        <div className="px-4 pt-6 pb-8">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-3xl sm:text-4xl font-display font-bold text-secondary leading-[1.05] mb-4"
+          >
+            <span className="block">{clinic.heroHeadline?.[0] || ""}</span>
+            {clinic.heroHeadline?.[1] && (
+              <span className="text-primary">{clinic.heroHeadline[1]}</span>
+            )}
+            {clinic.heroHeadline?.[2] && (
+              <span className="block text-2xl sm:text-3xl mt-1 font-semibold text-secondary/70">
+                {clinic.heroHeadline[2]}
+              </span>
+            )}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.5 }}
+            className="text-base text-secondary/60 mb-6 leading-relaxed"
+          >
+            {clinic.heroDescription}
+          </motion.p>
+
+          {/* Mini testimonial — mobile */}
+          {featuredReview && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.5 }}
+              className="mb-6 p-4 bg-neutral rounded-xl border-l-4 border-l-accent"
+            >
+              <p className="text-sm text-secondary/70 italic leading-relaxed">
+                &ldquo;{featuredReview.text.length > 120 ? `${featuredReview.text.slice(0, 120)}...` : featuredReview.text}&rdquo;
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex -space-x-0.5">
+                  {[...Array(featuredReview.rating)].map((_, i) => (
+                    <Star key={i} className="w-3 h-3 text-amber-400" fill="currentColor" />
+                  ))}
+                </div>
+                <span className="text-xs font-semibold text-secondary">{featuredReview.author}</span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* CTA buttons — full width */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="flex gap-3"
+          >
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary flex-1 text-sm py-3.5"
+            >
+              <span className="inline-flex items-center justify-center gap-2 w-full">
+                Reservar Cita
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </a>
+            <a
+              href={`tel:${clinic.phone.replace(/\s/g, "")}`}
+              className="btn-secondary text-sm py-3.5 px-4"
+              aria-label="Llamar por teléfono"
+            >
+              <Phone className="w-5 h-5" />
+            </a>
+          </motion.div>
+
+          {/* Stats — horizontal scroll */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="mt-8 pt-6 border-t border-gray-200 flex justify-between"
+          >
+            {[
+              { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
+              { end: clinic.services.length, label: "Tratamientos" },
+              { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-2xl font-bold text-secondary">
+                  <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
+                </p>
+                <p className="text-[10px] text-secondary/50 mt-0.5 uppercase tracking-wider">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* === DESKTOP HERO (lg+) === */}
+      <div className="container-wide section-padding relative z-10 pt-32 lg:pt-24 hidden lg:block">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Content */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center lg:text-left"
+            className="text-left"
           >
-            {/* Trust badge with pulse ring */}
+            {/* Trust badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -79,11 +210,7 @@ export function Hero() {
               />
               <div className="flex -space-x-1">
                 {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 text-amber-400"
-                    fill="currentColor"
-                  />
+                  <Star key={i} className="w-4 h-4 text-amber-400" fill="currentColor" />
                 ))}
               </div>
               <div className="w-px h-4 bg-gray-200" />
@@ -92,7 +219,7 @@ export function Hero() {
               </span>
             </motion.div>
 
-            {/* Headline with clip reveal */}
+            {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6">
               <motion.span
                 className="block"
@@ -135,17 +262,39 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-lg sm:text-xl text-secondary/60 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+              className="text-lg sm:text-xl text-secondary/60 mb-8 max-w-xl leading-relaxed"
             >
               {clinic.heroDescription}
             </motion.p>
+
+            {/* Mini testimonial — desktop */}
+            {featuredReview && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55, duration: 0.5 }}
+                className="mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-xl border-l-4 border-l-accent shadow-sm max-w-xl"
+              >
+                <p className="text-sm text-secondary/70 italic leading-relaxed">
+                  &ldquo;{featuredReview.text.length > 120 ? `${featuredReview.text.slice(0, 120)}...` : featuredReview.text}&rdquo;
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="flex -space-x-0.5">
+                    {[...Array(featuredReview.rating)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 text-amber-400" fill="currentColor" />
+                    ))}
+                  </div>
+                  <span className="text-xs font-semibold text-secondary">{featuredReview.author}</span>
+                </div>
+              </motion.div>
+            )}
 
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              className="flex flex-row gap-4 justify-start"
             >
               <motion.a
                 href={whatsappUrl}
@@ -172,7 +321,7 @@ export function Hero() {
               </motion.a>
             </motion.div>
 
-            {/* Stats with dividers */}
+            {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -184,8 +333,8 @@ export function Hero() {
                 { end: clinic.services.length, label: "Tratamientos" },
                 { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
               ].map((stat, i) => (
-                <div key={i} className="text-center lg:text-left flex items-center gap-6">
-                  {i > 0 && <div className="w-px h-8 bg-gray-200 hidden lg:block -ml-3" />}
+                <div key={i} className="text-left flex items-center gap-6">
+                  {i > 0 && <div className="w-px h-8 bg-gray-200 -ml-3" />}
                   <div>
                     <p className="text-3xl sm:text-4xl font-bold text-secondary">
                       <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
@@ -197,19 +346,15 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Hero Image */}
+          {/* Hero Image — desktop */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="relative group"
           >
-            {/* Main image container */}
             <div className="relative">
-              {/* Background shape */}
               <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-primary/10 to-accent/20 rounded-[2rem] -rotate-3" />
-
-              {/* Image */}
               <div className="relative aspect-[4/5] rounded-[1.5rem] overflow-hidden shadow-2xl shadow-primary/20">
                 <Image
                   src="/images/hero.webp"
@@ -217,9 +362,8 @@ export function Hero() {
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="50vw"
                 />
-                {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 via-transparent to-transparent" />
               </div>
 
@@ -228,7 +372,7 @@ export function Hero() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
-                className="absolute -left-6 top-1/4 bg-white rounded-2xl shadow-xl p-4 hidden lg:block"
+                className="absolute -left-6 top-1/4 bg-white rounded-2xl shadow-xl p-4"
               >
                 <motion.div
                   className="flex items-center gap-3"
@@ -250,7 +394,7 @@ export function Hero() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
-                className="absolute -right-4 bottom-20 bg-white rounded-2xl shadow-xl p-4 hidden lg:block"
+                className="absolute -right-4 bottom-20 bg-white rounded-2xl shadow-xl p-4"
               >
                 <motion.div
                   className="flex items-center gap-3"
@@ -267,14 +411,13 @@ export function Hero() {
                 </motion.div>
               </motion.div>
 
-              {/* Corner accent */}
               <div className="absolute -bottom-4 -right-4 w-24 h-24 border-4 border-accent rounded-2xl -z-10" />
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — desktop only */}
       <motion.div
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
@@ -293,7 +436,6 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Bottom decorative line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
     </section>
   )

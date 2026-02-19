@@ -1,13 +1,29 @@
 import { headers } from "next/headers"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { Cormorant_Garamond, Montserrat } from "next/font/google"
 import { getClinicConfig } from "@/config/load-config"
 import { ClinicProvider } from "@/config/clinic-context"
-import { generateLocalBusinessSchema, generateFAQSchema } from "@/lib/schema"
+import { generateLocalBusinessSchema, generateFAQSchema, generateServiceSchema, generateBreadcrumbSchema } from "@/lib/schema"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { WhatsAppWidget } from "@/components/layout/WhatsAppWidget"
+import { MobileCTABar } from "@/components/layout/MobileCTABar"
 import "./globals.css"
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+})
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+})
 
 async function getSlugAndConfig() {
   const h = await headers()
@@ -94,6 +110,22 @@ export default async function RootLayout({
             __html: JSON.stringify(generateFAQSchema(config)),
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateServiceSchema(config, baseUrl)),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateBreadcrumbSchema(baseUrl, [
+              { name: "Inicio", path: "/" },
+              { name: "Servicios", path: "/#servicios" },
+              { name: "Contacto", path: "/contacto" },
+            ])),
+          }}
+        />
         {/* Widget globals + script */}
         <script
           dangerouslySetInnerHTML={{
@@ -133,12 +165,16 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body className="font-sans overflow-x-hidden">
+      <body className={`${cormorant.variable} ${montserrat.variable} font-sans overflow-x-hidden`}>
         <ClinicProvider config={config}>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-secondary focus:font-semibold">
+            Saltar al contenido
+          </a>
           <Header />
-          <main>{children}</main>
+          <main id="main-content">{children}</main>
           <Footer />
           <WhatsAppWidget />
+          <MobileCTABar />
         </ClinicProvider>
       </body>
     </html>

@@ -25,10 +25,10 @@ export function Team() {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <span className="section-label justify-center">{clinic.sectionCopy.teamLabel}</span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary mt-4 mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-bold text-secondary mt-4 mb-4 lg:mb-6">
             {clinic.sectionCopy.teamTitle}
           </h2>
-          <p className="text-xl text-secondary/60 leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-secondary/60 leading-relaxed">
             {clinic.sectionCopy.teamDescription}
           </p>
         </motion.div>

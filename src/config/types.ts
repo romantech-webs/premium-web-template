@@ -49,10 +49,12 @@ export interface ClinicConfig {
     benefits: string[]
     icon: string
   }>
+  yearsExperience?: number
   process: Array<{
     step: number
     title: string
     description: string
+    icon?: string
   }>
   whyUs: Array<{
     title: string

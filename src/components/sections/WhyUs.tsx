@@ -15,20 +15,99 @@ function getIcon(iconName: string) {
 export function WhyUs() {
   const clinic = useClinic()
 
+  const stats = [
+    { end: clinic.services.length, label: "Tratamientos", icon: "Layers" },
+    { end: clinic.reviews.count, prefix: "+", label: `${clinic.statsLabel} satisfechos`, icon: "Users" },
+    { end: clinic.reviews.rating, decimals: 1, label: "Valoración media", icon: "Star" },
+    { end: 100, suffix: "%", label: "Dedicación", icon: "Heart" },
+  ]
+
   return (
     <section className="section-padding bg-secondary text-white relative overflow-hidden">
-      {/* Background elements — orbs only, no vertical lines */}
+      {/* Background elements */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px]" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[120px]" />
-
-      {/* Corner accents — thicker with gradient animation */}
       <div className="absolute top-0 left-0 w-32 h-32">
-        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-accent to-transparent" style={{ height: '2px' }} />
+        <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-accent to-transparent" style={{ height: '2px' }} />
         <div className="absolute top-0 left-0 h-full bg-gradient-to-b from-accent to-transparent" style={{ width: '2px' }} />
       </div>
 
       <div className="container-wide relative">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* Mobile layout: Stats first, then features as timeline */}
+        <div className="lg:hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <span className="section-label !text-accent">
+              {clinic.sectionCopy.whyUsLabel}
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold mt-4 mb-4">
+              {clinic.sectionCopy.whyUsTitle}
+            </h2>
+            <p className="text-white/60 text-base mb-8 leading-relaxed">
+              {clinic.sectionCopy.whyUsDescription}
+            </p>
+          </motion.div>
+
+          {/* Stats grid — 2x2 with large numbers */}
+          <div className="grid grid-cols-2 gap-3 mb-10">
+            {stats.map((stat, index) => {
+              const Icon = getIcon(stat.icon)
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <div className="bg-white/[0.07] backdrop-blur-md rounded-2xl p-5 border border-white/[0.08]">
+                    <Icon className="w-5 h-5 text-accent mb-3" />
+                    <p
+                      className="text-4xl font-bold text-white mb-1"
+                      style={{ textShadow: "0 0 40px color-mix(in srgb, var(--color-primary) 40%, transparent)" }}
+                    >
+                      <CountUp end={stat.end} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
+                    </p>
+                    <p className="text-[10px] text-white/50 uppercase tracking-wider">{stat.label}</p>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Features as vertical timeline */}
+          <div className="relative pl-8">
+            {/* Vertical line */}
+            <div className="absolute left-3 top-0 bottom-0 w-px bg-gradient-to-b from-accent via-primary/30 to-transparent" />
+
+            {clinic.whyUs.map((item, index) => {
+              const Icon = getIcon(item.icon)
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative mb-6 last:mb-0"
+                >
+                  {/* Dot on timeline */}
+                  <div className="absolute -left-8 top-1 w-6 h-6 rounded-full bg-white/10 border border-accent/50 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-accent" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-1">{item.title}</h3>
+                  <p className="text-white/50 text-sm leading-relaxed">{item.description}</p>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Desktop layout: original 2-col */}
+        <div className="hidden lg:grid lg:grid-cols-2 gap-16 items-center">
           {/* Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -46,7 +125,6 @@ export function WhyUs() {
               {clinic.sectionCopy.whyUsDescription}
             </p>
 
-            {/* Features */}
             <div className="space-y-6">
               {clinic.whyUs.map((item, index) => {
                 const Icon = getIcon(item.icon)
@@ -81,12 +159,7 @@ export function WhyUs() {
             className="relative"
           >
             <div className="grid grid-cols-2 gap-4">
-              {[
-                { end: clinic.services.length, label: "Tratamientos", icon: "Layers" },
-                { end: clinic.reviews.count, prefix: "+", label: `${clinic.statsLabel} satisfechos`, icon: "Users" },
-                { end: clinic.reviews.rating, decimals: 1, label: "Valoración media", icon: "Star" },
-                { end: 100, suffix: "%", label: "Dedicación", icon: "Heart" },
-              ].map((stat, index) => {
+              {stats.map((stat, index) => {
                 const Icon = getIcon(stat.icon)
                 return (
                   <motion.div
@@ -111,8 +184,6 @@ export function WhyUs() {
                 )
               })}
             </div>
-
-            {/* Decorative corner */}
             <div className="absolute -bottom-6 -right-6 w-32 h-32 border-4 border-accent/30 rounded-2xl -z-10" />
           </motion.div>
         </div>

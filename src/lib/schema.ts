@@ -57,6 +57,27 @@ export function generateFAQSchema(clinic: ClinicConfig) {
   }
 }
 
+export function generateServiceSchema(clinic: ClinicConfig, baseUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: clinic.services.map((service, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Service",
+        name: service.name,
+        description: service.description,
+        provider: {
+          "@type": clinic.schemaType,
+          name: clinic.name,
+          url: baseUrl,
+        },
+      },
+    })),
+  }
+}
+
 export function generateBreadcrumbSchema(baseUrl: string, items: { name: string; path: string }[]) {
   return {
     "@context": "https://schema.org",
