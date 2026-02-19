@@ -97,12 +97,6 @@ export function Header() {
                 <span className="block text-xl font-bold tracking-tight text-secondary truncate">
                   {clinic.name}
                 </span>
-                <p className={cn(
-                  "text-[10px] uppercase tracking-[0.15em] transition-colors line-clamp-2",
-                  isScrolled ? "text-secondary/50" : "text-secondary/60"
-                )}>
-                  {clinic.tagline}
-                </p>
               </div>
             </Link>
 

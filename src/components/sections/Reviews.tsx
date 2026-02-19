@@ -76,14 +76,9 @@ export function Reviews() {
         <div className="md:hidden">
           <div ref={scrollRef} className="carousel-snap gap-4 -mx-4 px-4 pb-4">
             {clinic.reviews.featured.map((review, index) => (
-              <div key={index} className="w-[calc(100vw-48px)] max-w-[340px]">
-                <div className="card-athletic h-full p-6 bg-gradient-to-br from-white to-neutral relative overflow-hidden">
-                  {/* Large decorative quote */}
-                  <div className="absolute top-4 right-4 text-primary/5">
-                    <Quote className="w-16 h-16" />
-                  </div>
-
-                  <div className="flex gap-1 mb-4">
+              <div key={index} className="w-[80vw] max-w-[320px]">
+                <div className="h-full p-5 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+                  <div className="flex gap-1 mb-3">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
@@ -93,11 +88,11 @@ export function Reviews() {
                     ))}
                   </div>
 
-                  <p className="text-secondary/70 leading-relaxed mb-6 relative z-10">
+                  <p className="text-secondary/70 text-sm leading-relaxed mb-4 line-clamp-6">
                     &ldquo;{review.text}&rdquo;
                   </p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
                     <div>
                       <p className="font-bold text-secondary">{review.author}</p>
                       <p className="text-xs text-secondary/40">{review.date}</p>

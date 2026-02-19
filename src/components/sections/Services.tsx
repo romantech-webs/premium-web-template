@@ -59,16 +59,13 @@ export function Services() {
             {clinic.services.map((service, index) => {
               const Icon = getIcon(service.icon)
               return (
-                <div key={service.id} className="w-[85vw] max-w-[340px]">
-                  <div className="h-full p-6 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="text-3xl font-bold leading-none mb-3 bg-gradient-to-b from-primary/15 to-transparent bg-clip-text text-transparent">
-                      {String(index + 1).padStart(2, '0')}
+                <div key={service.id} className="w-[80vw] max-w-[320px]">
+                  <div className="h-full p-5 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                      <Icon className="w-5 h-5 text-primary" />
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-bold text-secondary mb-2">{service.name}</h3>
-                    <p className="text-secondary/60 text-sm mb-4 leading-relaxed">{service.description}</p>
+                    <h3 className="text-base font-bold text-secondary mb-1.5">{service.name}</h3>
+                    <p className="text-secondary/60 text-sm mb-3 leading-relaxed line-clamp-4">{service.description}</p>
                     <ul className="space-y-1.5">
                       {service.benefits.slice(0, 3).map((benefit, i) => (
                         <li key={i} className="flex items-center gap-2 text-sm text-secondary/70">
