@@ -1,15 +1,12 @@
 "use client"
 
 import { motion } from "framer-motion"
-import * as LucideIcons from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import { CountUp } from "@/components/count-up"
-
-type IconName = keyof typeof LucideIcons
+import { iconMap, DEFAULT_ICON_WEIGHT } from "@/lib/icon-map"
 
 function getIcon(iconName: string) {
-  const Icon = LucideIcons[iconName as IconName] as React.ComponentType<{ className?: string }>
-  return Icon || LucideIcons.Circle
+  return iconMap[iconName] || iconMap.CircleDashed
 }
 
 export function WhyUs() {
@@ -64,7 +61,7 @@ export function WhyUs() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <div className="bg-white/[0.07] backdrop-blur-md rounded-2xl p-5 border border-white/[0.08]">
-                    <Icon className="w-5 h-5 text-accent mb-3" />
+                    <Icon className="w-5 h-5 text-accent mb-3" weight={DEFAULT_ICON_WEIGHT} />
                     <p
                       className="text-4xl font-bold text-white mb-1"
                       style={{ textShadow: "0 0 40px color-mix(in srgb, var(--color-primary) 40%, transparent)" }}
@@ -138,7 +135,7 @@ export function WhyUs() {
                     className="flex gap-5 group"
                   >
                     <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-accent group-hover:scale-110 group-hover:border-accent transition-all duration-300">
-                      <Icon className="w-6 h-6 text-accent group-hover:text-white transition-colors duration-300" />
+                      <Icon className="w-6 h-6 text-accent group-hover:text-white transition-colors duration-300" weight={DEFAULT_ICON_WEIGHT} />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold mb-2">{item.title}</h3>
@@ -171,7 +168,7 @@ export function WhyUs() {
                     className="relative group"
                   >
                     <div className="bg-white/[0.07] backdrop-blur-md rounded-2xl p-8 border border-white/[0.08] hover:bg-white/[0.12] hover:border-primary/30 transition-all duration-300">
-                      <Icon className="w-6 h-6 text-accent mb-4" />
+                      <Icon className="w-6 h-6 text-accent mb-4" weight={DEFAULT_ICON_WEIGHT} />
                       <p
                         className="text-4xl sm:text-5xl font-bold text-white mb-2"
                         style={{ textShadow: "0 0 60px color-mix(in srgb, var(--color-primary) 40%, transparent)" }}

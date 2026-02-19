@@ -1,14 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import * as LucideIcons from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
-
-type IconName = keyof typeof LucideIcons
+import { iconMap, DEFAULT_ICON_WEIGHT } from "@/lib/icon-map"
 
 function getIcon(iconName: string) {
-  const Icon = LucideIcons[iconName as IconName] as React.ComponentType<{ className?: string }>
-  return Icon || null
+  return iconMap[iconName] || null
 }
 
 export function Process() {
@@ -79,7 +76,7 @@ export function Process() {
                       </div>
                       {StepIcon && (
                         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <StepIcon className="w-5 h-5 text-primary" />
+                          <StepIcon className="w-5 h-5 text-primary" weight={DEFAULT_ICON_WEIGHT} />
                         </div>
                       )}
                     </div>
