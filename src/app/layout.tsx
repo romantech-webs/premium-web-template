@@ -139,6 +139,7 @@ export default async function RootLayout({
             data-api-url={widgetApiUrl}
             data-project-id={projectId}
             data-primary-color={config.colors.primary}
+            data-booking-enabled={config._meta?.bookingEnabled ? "true" : "false"}
             defer
           />
         )}

@@ -123,5 +123,6 @@ export interface ClinicConfig {
   _meta?: {
     projectId: string
     widgetApiUrl: string
+    bookingEnabled?: boolean
   }
 }
