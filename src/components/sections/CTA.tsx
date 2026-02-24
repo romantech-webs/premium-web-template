@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, Phone, Clock, CheckCircle, CalendarCheck } from "lucide-react"
+import { ArrowRight, Phone, Clock, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useClinic } from "@/config/clinic-context"
 
@@ -68,24 +68,46 @@ export function CTA() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <motion.a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary inline-flex items-center justify-center gap-3 px-10 py-5 font-bold bg-white text-secondary hover:bg-accent hover:text-white transition-all duration-300 shadow-2xl shadow-black/20"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              style={{
-                clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
-                background: "white",
-                color: "var(--color-secondary)",
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                Reservar por WhatsApp
-                <ArrowRight className="w-5 h-5" />
-              </span>
-            </motion.a>
+            {clinic._meta?.bookingEnabled ? (
+              <motion.div
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Link
+                  href="/reservar"
+                  className="btn-primary inline-flex items-center justify-center gap-3 px-10 py-5 font-bold transition-all duration-300 shadow-2xl shadow-black/20"
+                  style={{
+                    clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
+                    background: "white",
+                    color: "var(--color-secondary)",
+                  }}
+                >
+                  <span className="relative z-10 flex items-center gap-3">
+                    Reservar cita online
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary inline-flex items-center justify-center gap-3 px-10 py-5 font-bold bg-white text-secondary hover:bg-accent hover:text-white transition-all duration-300 shadow-2xl shadow-black/20"
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                  clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
+                  background: "white",
+                  color: "var(--color-secondary)",
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-3">
+                  Reservar por WhatsApp
+                  <ArrowRight className="w-5 h-5" />
+                </span>
+              </motion.a>
+            )}
 
             <motion.a
               href={`tel:${clinic.phone.replace(/\s/g, "")}`}
@@ -99,24 +121,6 @@ export function CTA() {
               <Phone className="w-5 h-5" />
               {clinic.phone}
             </motion.a>
-
-            {clinic._meta?.bookingEnabled && (
-              <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Link
-                  href="/reservar"
-                  className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-xl font-bold border-2 border-accent/50 text-white hover:bg-accent/20 transition-all duration-300"
-                  style={{
-                    clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))"
-                  }}
-                >
-                  <CalendarCheck className="w-5 h-5" />
-                  Reservar cita
-                </Link>
-              </motion.div>
-            )}
           </div>
 
           {/* Trust indicators with subtle pulse */}

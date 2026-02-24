@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Phone, ArrowUpRight, Instagram, Facebook, CalendarCheck } from "lucide-react"
+import { Menu, X, Phone, ArrowUpRight, Instagram, Facebook } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
-const baseNavItems = [
+const navItems = [
   { label: "Servicios", href: "/#servicios" },
   { label: "Equipo", href: "/#equipo" },
   { label: "Opiniones", href: "/#opiniones" },
@@ -44,9 +44,6 @@ function useScrollLock(isLocked: boolean) {
 
 export function Header() {
   const clinic = useClinic()
-  const navItems = clinic._meta?.bookingEnabled
-    ? [...baseNavItems.slice(0, -1), { label: "Reservar", href: "/reservar" }, baseNavItems[baseNavItems.length - 1]]
-    : baseNavItems
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -138,17 +135,29 @@ export function Header() {
                 </motion.div>
                 <span className="hidden xl:block">{clinic.phone}</span>
               </a>
-              <a
-                href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary text-sm whitespace-nowrap shrink-0"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Pedir Cita
-                  <ArrowUpRight className="w-4 h-4" />
-                </span>
-              </a>
+              {clinic._meta?.bookingEnabled ? (
+                <Link
+                  href="/reservar"
+                  className="btn-primary text-sm whitespace-nowrap shrink-0"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Pedir Cita
+                    <ArrowUpRight className="w-4 h-4" />
+                  </span>
+                </Link>
+              ) : (
+                <a
+                  href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary text-sm whitespace-nowrap shrink-0"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Pedir Cita
+                    <ArrowUpRight className="w-4 h-4" />
+                  </span>
+                </a>
+              )}
             </div>
 
             {/* Mobile Menu Button — z-[60] stays above overlay */}
@@ -220,18 +229,31 @@ export function Header() {
                 transition={{ delay: 0.4, duration: 0.4 }}
                 className="mt-8 w-full max-w-sm"
               >
-                <a
-                  href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={closeMenu}
-                  className="btn-primary w-full text-center py-4"
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-3 text-lg">
-                    Pedir Cita
-                    <ArrowUpRight className="w-5 h-5" />
-                  </span>
-                </a>
+                {clinic._meta?.bookingEnabled ? (
+                  <Link
+                    href="/reservar"
+                    onClick={closeMenu}
+                    className="btn-primary w-full text-center py-4"
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-3 text-lg">
+                      Pedir Cita
+                      <ArrowUpRight className="w-5 h-5" />
+                    </span>
+                  </Link>
+                ) : (
+                  <a
+                    href={`https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeMenu}
+                    className="btn-primary w-full text-center py-4"
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-3 text-lg">
+                      Pedir Cita
+                      <ArrowUpRight className="w-5 h-5" />
+                    </span>
+                  </a>
+                )}
               </motion.div>
 
               {/* Phone + Social links at bottom */}
