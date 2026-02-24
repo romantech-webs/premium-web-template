@@ -753,7 +753,7 @@ export default function ReservarPage() {
                             {morningSlots.length > 0 && (
                               <div>
                                 <p className="text-xs font-medium text-secondary/40 uppercase tracking-wider mb-2">
-                                  Ma\u00F1ana
+                                  Mañana
                                 </p>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                                   {morningSlots.map((s) => (
@@ -891,7 +891,7 @@ export default function ReservarPage() {
                               htmlFor="booking-phone"
                               className="block text-sm font-medium text-secondary mb-2"
                             >
-                              Tel\u00E9fono *
+                              Teléfono *
                             </label>
                             <input
                               type="tel"
@@ -943,7 +943,7 @@ export default function ReservarPage() {
 
                           {config?.cancellationPolicy && (
                             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-                              <strong>Pol\u00EDtica de cancelaci\u00F3n:</strong>{" "}
+                              <strong>Política de cancelación:</strong>{" "}
                               {config.cancellationPolicy}
                             </div>
                           )}
@@ -951,7 +951,7 @@ export default function ReservarPage() {
                           <div className="text-xs text-secondary/50">
                             Al confirmar tu reserva aceptas nuestra{" "}
                             <Link href="/privacidad" className="text-primary hover:underline">
-                              pol\u00EDtica de privacidad
+                              política de privacidad
                             </Link>
                             .
                           </div>
@@ -995,7 +995,7 @@ export default function ReservarPage() {
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-secondary/60">Duraci\u00F3n</span>
+                            <span className="text-secondary/60">Duración</span>
                             <span className="text-secondary">
                               {formatDuration(selectedService.durationMin)}
                             </span>
@@ -1055,19 +1055,19 @@ export default function ReservarPage() {
 
                   <h2 className="text-2xl font-display font-bold text-secondary mb-2">
                     {bookingResult.status === "confirmed"
-                      ? "\u00A1Reserva confirmada!"
-                      : "\u00A1Reserva recibida!"}
+                      ? "¡Reserva confirmada!"
+                      : "¡Reserva recibida!"}
                   </h2>
                   <p className="text-secondary/60 mb-6">
                     {bookingResult.status === "confirmed"
-                      ? "Tu cita ha sido confirmada con \u00E9xito."
+                      ? "Tu cita ha sido confirmada con éxito."
                       : "Tu solicitud de cita ha sido recibida. Te confirmaremos pronto."}
                   </p>
 
                   {/* Confirmation code */}
                   <div className="bg-neutral rounded-xl p-4 mb-8">
                     <p className="text-xs text-secondary/50 uppercase tracking-wider mb-1">
-                      C\u00F3digo de confirmaci\u00F3n
+                      Código de confirmación
                     </p>
                     <p className="text-2xl font-mono font-bold text-primary tracking-widest">
                       {bookingResult.confirmationCode}
@@ -1099,7 +1099,7 @@ export default function ReservarPage() {
                       <span className="font-medium text-secondary">{selectedTime}</span>
                     </div>
                     <div className="flex justify-between text-sm py-2">
-                      <span className="text-secondary/60">Duraci\u00F3n</span>
+                      <span className="text-secondary/60">Duración</span>
                       <span className="font-medium text-secondary">
                         {formatDuration(selectedService.durationMin)}
                       </span>
@@ -1107,7 +1107,7 @@ export default function ReservarPage() {
                   </div>
 
                   <p className="text-sm text-secondary/50 mb-8">
-                    Recibir\u00E1s un recordatorio 24h antes de tu cita.
+                    Recibirás un recordatorio 24h antes de tu cita.
                   </p>
 
                   {/* Actions */}
@@ -1118,7 +1118,7 @@ export default function ReservarPage() {
                       className="btn-secondary flex-1"
                     >
                       <CalendarPlus className="w-4 h-4 relative z-10" />
-                      <span className="relative z-10">A\u00F1adir al calendario</span>
+                      <span className="relative z-10">Añadir al calendario</span>
                     </button>
                     <Link href="/" className="btn-primary flex-1">
                       <span className="relative z-10">Volver a la web</span>

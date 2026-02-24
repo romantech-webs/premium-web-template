@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Phone, ArrowUpRight, Instagram, Facebook } from "lucide-react"
+import { Menu, X, Phone, ArrowUpRight, Instagram, Facebook, CalendarCheck } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
-const navItems = [
+const baseNavItems = [
   { label: "Servicios", href: "/#servicios" },
   { label: "Equipo", href: "/#equipo" },
   { label: "Opiniones", href: "/#opiniones" },
@@ -44,6 +44,9 @@ function useScrollLock(isLocked: boolean) {
 
 export function Header() {
   const clinic = useClinic()
+  const navItems = clinic._meta?.bookingEnabled
+    ? [...baseNavItems.slice(0, -1), { label: "Reservar", href: "/reservar" }, baseNavItems[baseNavItems.length - 1]]
+    : baseNavItems
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 

@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, Phone, Clock, CheckCircle } from "lucide-react"
+import { ArrowRight, Phone, Clock, CheckCircle, CalendarCheck } from "lucide-react"
+import Link from "next/link"
 import { useClinic } from "@/config/clinic-context"
 
 export function CTA() {
@@ -98,6 +99,24 @@ export function CTA() {
               <Phone className="w-5 h-5" />
               {clinic.phone}
             </motion.a>
+
+            {clinic._meta?.bookingEnabled && (
+              <motion.div
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Link
+                  href="/reservar"
+                  className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-xl font-bold border-2 border-accent/50 text-white hover:bg-accent/20 transition-all duration-300"
+                  style={{
+                    clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))"
+                  }}
+                >
+                  <CalendarCheck className="w-5 h-5" />
+                  Reservar cita
+                </Link>
+              </motion.div>
+            )}
           </div>
 
           {/* Trust indicators with subtle pulse */}
