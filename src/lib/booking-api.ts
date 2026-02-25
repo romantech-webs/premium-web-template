@@ -317,6 +317,42 @@ export async function fetchExceptions(token: string, employeeId: string): Promis
   return res.json()
 }
 
+export async function manualCreateBooking(token: string, data: {
+  employeeId: string; serviceId: string; date: string; time: string;
+  customer: { name: string; phone: string; email?: string; notes?: string };
+}): Promise<BookingResult> {
+  const api = getApiUrl()
+  const pid = getProjectId()
+  const res = await fetch(`${api}/api/booking/book`, {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify({ projectId: pid, source: "manual", ...data }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Error" }))
+    throw new Error(err.error || "Error al crear cita")
+  }
+  return res.json()
+}
+
+export async function rescheduleAppointment(
+  token: string,
+  id: string,
+  data: { date: string; time: string; employeeId?: string }
+): Promise<{ success: boolean; scheduledAt: string; employeeName: string }> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/manage/${id}/reschedule`, {
+    method: "PATCH",
+    headers: authHeaders(token),
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Error" }))
+    throw new Error(err.error || "Error al reagendar cita")
+  }
+  return res.json()
+}
+
 export async function manageException(token: string, data: Record<string, unknown>): Promise<void> {
   const api = getApiUrl()
   const res = await fetch(`${api}/api/booking/manage/exceptions`, {

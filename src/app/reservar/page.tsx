@@ -108,6 +108,36 @@ function generateICalEvent(booking: BookingResult, service: BookingService, clin
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Builds a Google Calendar "Add to Calendar" URL for a completed booking.
+ */
+function getGCalUrl(
+  booking: BookingResult,
+  service: BookingService,
+  clinic: { name: string }
+): string {
+  const start = new Date(booking.scheduledAt)
+  const end = new Date(start.getTime() + service.durationMin * 60_000)
+
+  const fmt = (d: Date) =>
+    d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")
+
+  const title = `${booking.serviceName} - ${clinic.name}`
+  const details = [
+    `Codigo de confirmacion: ${booking.confirmationCode}`,
+    `Profesional: ${booking.employeeName}`,
+  ].join("\n")
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: title,
+    dates: `${fmt(start)}/${fmt(end)}`,
+    details,
+  })
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
 // ─── Stepper ─────────────────────────────────────────────────────────
 
 const STEPS = [
@@ -1118,8 +1148,17 @@ export default function ReservarPage() {
                       className="btn-secondary flex-1"
                     >
                       <CalendarPlus className="w-4 h-4 relative z-10" />
-                      <span className="relative z-10">Añadir al calendario</span>
+                      <span className="relative z-10">Descargar .ics</span>
                     </button>
+                    <a
+                      href={getGCalUrl(bookingResult, selectedService, clinic)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary flex-1 text-center"
+                    >
+                      <Calendar className="w-4 h-4 relative z-10" />
+                      <span className="relative z-10">A\u00F1adir a Google Calendar</span>
+                    </a>
                     <Link href="/" className="btn-primary flex-1">
                       <span className="relative z-10">Volver a la web</span>
                     </Link>
