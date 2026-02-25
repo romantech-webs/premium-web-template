@@ -34,6 +34,9 @@ import {
   Sun,
   Moon,
   Smartphone,
+  MessageCircle,
+  MoreHorizontal,
+  LogOut,
 } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import {
@@ -53,12 +56,16 @@ import {
   manualCreateBooking,
   rescheduleAppointment,
   fetchAvailability,
+  fetchConversations,
+  fetchMessages,
 } from "@/lib/booking-api"
 import type {
   ManagedAppointment,
   BookingService,
   BookingEmployee,
   TimeSlot,
+  Conversation,
+  WhatsAppMessage,
 } from "@/lib/booking-api"
 
 // ─── Constants ───────────────────────────────────────────────────────
@@ -73,7 +80,14 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
 
 const DAY_NAMES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
-type TabId = "hoy" | "calendario" | "citas" | "clientes" | "servicios" | "equipo" | "metricas" | "horarios" | "config"
+// ─── Design System ───────────────────────────────────────────────────
+
+const CARD = "bg-white dark:bg-gray-900 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04),0_6px_16px_rgba(0,0,0,0.04)] border border-black/[0.04] dark:border-white/[0.06] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]"
+const BTN_PRIMARY = "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl bg-primary hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+const BTN_SECONDARY = "inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+const INPUT = "w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+
+type TabId = "hoy" | "calendario" | "citas" | "clientes" | "servicios" | "equipo" | "metricas" | "horarios" | "config" | "mensajes"
 
 interface NavItem {
   id: TabId
@@ -91,7 +105,11 @@ const NAV_ITEMS: NavItem[] = [
   { id: "metricas",   label: "Métricas",   icon: BarChart3 },
   { id: "horarios",   label: "Horarios",   icon: Clock },
   { id: "config",     label: "Config",     icon: Settings },
+  { id: "mensajes",   label: "Mensajes",   icon: MessageCircle },
 ]
+
+const PRIMARY_TABS: TabId[] = ["hoy", "calendario", "citas", "clientes"]
+const SECONDARY_TABS: TabId[] = ["servicios", "equipo", "metricas", "horarios", "config", "mensajes"]
 
 // ─── Dark Mode Hook ─────────────────────────────────────────────────
 
@@ -272,9 +290,10 @@ function StatusBadge({ status }: { status: string }) {
   const info = STATUS_MAP[status] || { label: status, color: "#6B7280", bg: "#6B728015" }
   return (
     <span
-      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:py-0.5 rounded-full text-xs font-semibold whitespace-nowrap"
       style={{ color: info.color, backgroundColor: info.bg }}
     >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: info.color }} />
       {info.label}
     </span>
   )
@@ -350,11 +369,11 @@ function RescheduleModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.06]">
           <div>
             <h3 className="text-lg font-bold text-secondary dark:text-gray-100 font-display">Reagendar cita</h3>
             <p className="text-sm text-gray-500 mt-0.5">
@@ -385,7 +404,7 @@ function RescheduleModal({
                   value={date}
                   min={todayISO}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                 />
               </div>
 
@@ -438,7 +457,7 @@ function RescheduleModal({
             <button
               onClick={handleSubmit}
               disabled={!date || !time || submitting}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
               <span className="relative z-10">Reagendar</span>
@@ -607,30 +626,54 @@ function TabHoy({ token }: { token: string }) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display capitalize">
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display capitalize">
           Hoy &mdash; {formatDateSpanish(today)}
         </h2>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
-          <p className="text-3xl font-bold text-secondary dark:text-gray-100">{stats.total}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">citas hoy</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className={`${CARD} p-4 sm:p-5 relative overflow-hidden`}>
+          <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-primary/5" />
+          <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0 sm:text-center relative">
+            <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center sm:hidden flex-shrink-0">
+              <CalendarDays className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-bold text-secondary dark:text-gray-100">{stats.total}</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 sm:mt-1">citas hoy</p>
+            </div>
+          </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
-          <p className="text-3xl font-bold" style={{ color: "#EAB308" }}>{stats.pending}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">pendientes</p>
+        <div className={`${CARD} p-4 sm:p-5 relative overflow-hidden`}>
+          <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-yellow-500/5" />
+          <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0 sm:text-center relative">
+            <div className="w-10 h-10 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center sm:hidden flex-shrink-0">
+              <Clock className="w-5 h-5 text-yellow-500" />
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-bold" style={{ color: "#EAB308" }}>{stats.pending}</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 sm:mt-1">pendientes</p>
+            </div>
+          </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
-          <p className="text-3xl font-bold" style={{ color: "#3B82F6" }}>{stats.confirmed}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">confirmadas</p>
+        <div className={`${CARD} p-4 sm:p-5 relative overflow-hidden`}>
+          <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-blue-500/5" />
+          <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0 sm:text-center relative">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center sm:hidden flex-shrink-0">
+              <Check className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-bold" style={{ color: "#3B82F6" }}>{stats.confirmed}</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 sm:mt-1">confirmadas</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Timeline */}
       {appointments.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className={`${CARD} p-12 text-center`}>
           <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">No hay citas para hoy</p>
         </div>
@@ -641,7 +684,7 @@ function TabHoy({ token }: { token: string }) {
               key={appt.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 md:p-5"
+              className={`${CARD} p-4 md:p-5`}
             >
               <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
                 {/* Time */}
@@ -913,16 +956,16 @@ function TabCalendario({ token }: { token: string }) {
   // ── Desktop Week View ──
   function renderWeekGrid() {
     return (
-      <div className="hidden md:block bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className={`hidden md:block ${CARD} overflow-hidden`}>
         {/* Day headers */}
-        <div className="grid border-b border-gray-100 dark:border-gray-700" style={{ gridTemplateColumns: "60px repeat(7, 1fr)" }}>
+        <div className="grid border-b border-black/[0.04] dark:border-white/[0.06]" style={{ gridTemplateColumns: "60px repeat(7, 1fr)" }}>
           <div className="p-2" />
           {weekDays.map((day, i) => {
             const isToday = isSameDay(day, today)
             return (
               <div
                 key={i}
-                className={`p-2 text-center border-l border-gray-100 dark:border-gray-700 ${isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""}`}
+                className={`p-2 text-center border-l border-black/[0.04] dark:border-white/[0.06] ${isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""}`}
               >
                 <p className="text-xs text-gray-500 font-medium">{SHORT_DAY_NAMES[i]}</p>
                 <p className={`text-lg font-bold ${isToday ? "text-primary" : "text-secondary"}`}>{day.getDate()}</p>
@@ -953,7 +996,7 @@ function TabCalendario({ token }: { token: string }) {
               const dayAppts = apptsByDay[dayKey] || []
               const isToday = isSameDay(day, today)
               return (
-                <div key={dayIdx} className={`relative border-l border-gray-100 dark:border-gray-700 ${isToday ? "bg-blue-50/30 dark:bg-blue-900/20" : ""}`}>
+                <div key={dayIdx} className={`relative border-l border-black/[0.04] dark:border-white/[0.06] ${isToday ? "bg-blue-50/30 dark:bg-blue-900/20" : ""}`}>
                   {/* Slot click areas */}
                   {Array.from({ length: totalSlots }, (_, slotIdx) => (
                     <div
@@ -1030,7 +1073,7 @@ function TabCalendario({ token }: { token: string }) {
     return (
       <div className="md:hidden space-y-4">
         {/* Mobile day nav */}
-        <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3">
+        <div className={`flex items-center justify-between ${CARD} p-3`}>
           <button onClick={prevDay} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <ChevronLeft className="w-5 h-5 text-gray-600" />
           </button>
@@ -1041,7 +1084,7 @@ function TabCalendario({ token }: { token: string }) {
         </div>
 
         {/* Mobile time grid */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className={`${CARD} overflow-hidden`}>
           <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 320px)" }}>
             <div className="relative" style={{ height: gridHeight }}>
               {/* Slot rows */}
@@ -1118,7 +1161,7 @@ function TabCalendario({ token }: { token: string }) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Calendario</h2>
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Calendario</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={prevWeek}
@@ -1162,11 +1205,11 @@ function TabCalendario({ token }: { token: string }) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl w-full max-w-md overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-black/[0.04] dark:border-white/[0.06] shadow-2xl w-full max-w-md overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal header */}
-              <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex items-center justify-between p-5 border-b border-black/[0.04] dark:border-white/[0.06]">
                 <h3 className="text-lg font-bold text-secondary dark:text-gray-100 font-display">Detalle de cita</h3>
                 <button onClick={() => setSelectedAppt(null)} className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
                   <X className="w-5 h-5" />
@@ -1219,7 +1262,7 @@ function TabCalendario({ token }: { token: string }) {
               </div>
 
               {/* Modal actions */}
-              <div className="p-5 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
+              <div className="p-5 border-t border-black/[0.04] dark:border-white/[0.06] bg-gray-50/80 dark:bg-gray-800/80">
                 <AppointmentActions appt={selectedAppt} token={token} onUpdate={() => { setSelectedAppt(null); loadData() }} />
               </div>
             </motion.div>
@@ -1241,11 +1284,11 @@ function TabCalendario({ token }: { token: string }) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl w-full max-w-md overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-black/[0.04] dark:border-white/[0.06] shadow-2xl w-full max-w-md overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex items-center justify-between p-5 border-b border-black/[0.04] dark:border-white/[0.06]">
                 <h3 className="text-lg font-bold text-secondary dark:text-gray-100 font-display">Nueva cita manual</h3>
                 <button onClick={() => setCreateSlot(null)} className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
                   <X className="w-5 h-5" />
@@ -1262,7 +1305,7 @@ function TabCalendario({ token }: { token: string }) {
                       type="date"
                       value={createSlot.date}
                       onChange={(e) => setCreateSlot({ ...createSlot, date: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                   </div>
                   <div>
@@ -1271,7 +1314,7 @@ function TabCalendario({ token }: { token: string }) {
                       type="time"
                       value={createSlot.time}
                       onChange={(e) => setCreateSlot({ ...createSlot, time: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                   </div>
                 </div>
@@ -1282,7 +1325,7 @@ function TabCalendario({ token }: { token: string }) {
                   <select
                     value={createEmployee}
                     onChange={(e) => setCreateEmployee(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white dark:bg-gray-700"
                   >
                     <option value="">Seleccionar...</option>
                     {employees.map(emp => (
@@ -1297,7 +1340,7 @@ function TabCalendario({ token }: { token: string }) {
                   <select
                     value={createService}
                     onChange={(e) => setCreateService(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white dark:bg-gray-700"
                   >
                     <option value="">Seleccionar...</option>
                     {services.filter(s => s.active).map(svc => (
@@ -1314,7 +1357,7 @@ function TabCalendario({ token }: { token: string }) {
                     placeholder="Nombre completo"
                     value={createName}
                     onChange={(e) => setCreateName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                   />
                 </div>
 
@@ -1326,7 +1369,7 @@ function TabCalendario({ token }: { token: string }) {
                     placeholder="612345678"
                     value={createPhone}
                     onChange={(e) => setCreatePhone(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                   />
                 </div>
 
@@ -1340,11 +1383,11 @@ function TabCalendario({ token }: { token: string }) {
               </div>
 
               {/* Footer */}
-              <div className="p-5 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50 flex items-center gap-3">
+              <div className="p-5 border-t border-black/[0.04] dark:border-white/[0.06] bg-gray-50/80 dark:bg-gray-800/80 flex items-center gap-3">
                 <button
                   onClick={handleCreate}
                   disabled={createSaving}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {createSaving && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span className="relative z-10">Crear cita</span>
@@ -1424,10 +1467,10 @@ function TabCitas({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Citas</h2>
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Citas</h2>
         <button
           onClick={exportCSV}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-secondary dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
         >
           <Download className="w-4 h-4" />
           <span>Exportar CSV</span>
@@ -1435,12 +1478,12 @@ function TabCitas({ token }: { token: string }) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
+      <div className={`${CARD} p-4`}>
         <div className="flex flex-col sm:flex-row gap-3">
           <select
             value={filterStatus}
             onChange={(e) => { setFilterStatus(e.target.value); handleFilterChange() }}
-            className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white dark:bg-gray-700"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white dark:bg-gray-700"
           >
             <option value="">Todas</option>
             <option value="pending">Pendiente</option>
@@ -1453,14 +1496,14 @@ function TabCitas({ token }: { token: string }) {
             type="date"
             value={filterFrom}
             onChange={(e) => { setFilterFrom(e.target.value); handleFilterChange() }}
-            className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             placeholder="Desde"
           />
           <input
             type="date"
             value={filterTo}
             onChange={(e) => { setFilterTo(e.target.value); handleFilterChange() }}
-            className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             placeholder="Hasta"
           />
         </div>
@@ -1471,17 +1514,17 @@ function TabCitas({ token }: { token: string }) {
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : appointments.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className={`${CARD} p-12 text-center`}>
           <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500">No hay citas con estos filtros</p>
         </div>
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className={`hidden md:block ${CARD} overflow-hidden`}>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
+                <tr className="border-b border-black/[0.04] dark:border-white/[0.06] bg-gray-50/80 dark:bg-gray-800/80">
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Fecha/Hora</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Profesional</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Servicio</th>
@@ -1494,7 +1537,7 @@ function TabCitas({ token }: { token: string }) {
               </thead>
               <tbody>
                 {appointments.map((appt) => (
-                  <tr key={appt.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={appt.id} className="border-b border-black/[0.03] dark:border-white/[0.04] hover:bg-primary/[0.03] dark:hover:bg-primary/[0.05] transition-colors">
                     <td className="px-4 py-3 font-medium">{formatShortDate(appt.scheduledAt)}</td>
                     <td className="px-4 py-3 text-gray-600">{appt.employeeName || "-"}</td>
                     <td className="px-4 py-3 text-gray-600">{appt.serviceName || "-"}</td>
@@ -1529,7 +1572,7 @@ function TabCitas({ token }: { token: string }) {
                 key={appt.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 space-y-3"
+                className={`${CARD} p-4 space-y-3`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-secondary">{formatShortDate(appt.scheduledAt)}</span>
@@ -1713,7 +1756,7 @@ function TabClientes({ token }: { token: string }) {
         </div>
 
         {/* Client info header */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5">
+        <div className={`${CARD} p-5`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -1750,7 +1793,7 @@ function TabClientes({ token }: { token: string }) {
               {client.customerEmail && (
                 <a
                   href={`mailto:${client.customerEmail}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-secondary dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
                 >
                   <Mail className="w-4 h-4" />
                   Email
@@ -1762,19 +1805,19 @@ function TabClientes({ token }: { token: string }) {
 
         {/* Stats cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
+          <div className={`${CARD} p-4 text-center`}>
             <p className="text-2xl font-bold text-secondary dark:text-gray-100">{client.totalVisits}</p>
             <p className="text-xs text-gray-500 mt-1">Total citas</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
+          <div className={`${CARD} p-4 text-center`}>
             <p className="text-2xl font-bold" style={{ color: "#22C55E" }}>{completed}</p>
             <p className="text-xs text-gray-500 mt-1">Completadas</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
+          <div className={`${CARD} p-4 text-center`}>
             <p className="text-2xl font-bold" style={{ color: "#EF4444" }}>{cancelled}</p>
             <p className="text-xs text-gray-500 mt-1">Canceladas</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center">
+          <div className={`${CARD} p-4 text-center`}>
             <p className="text-2xl font-bold" style={{ color: "#9CA3AF" }}>{noShows}</p>
             <p className="text-xs text-gray-500 mt-1">No shows</p>
           </div>
@@ -1794,10 +1837,10 @@ function TabClientes({ token }: { token: string }) {
           <h3 className="text-lg font-bold text-secondary dark:text-gray-100 font-display mb-4">Historial de citas</h3>
 
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className={`hidden md:block ${CARD} overflow-hidden`}>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
+                <tr className="border-b border-black/[0.04] dark:border-white/[0.06] bg-gray-50/80 dark:bg-gray-800/80">
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Fecha/Hora</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Servicio</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Profesional</th>
@@ -1807,7 +1850,7 @@ function TabClientes({ token }: { token: string }) {
               </thead>
               <tbody>
                 {client.appointments.map((appt) => (
-                  <tr key={appt.id} className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={appt.id} className="border-b border-black/[0.03] dark:border-white/[0.04] hover:bg-primary/[0.03] dark:hover:bg-primary/[0.05] transition-colors">
                     <td className="px-4 py-3 font-medium">{formatShortDate(appt.scheduledAt)}</td>
                     <td className="px-4 py-3 text-gray-600">{appt.serviceName || "-"}</td>
                     <td className="px-4 py-3 text-gray-600">{appt.employeeName || "-"}</td>
@@ -1826,7 +1869,7 @@ function TabClientes({ token }: { token: string }) {
                 key={appt.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 space-y-2"
+                className={`${CARD} p-4 space-y-2`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-secondary">{formatShortDate(appt.scheduledAt)}</span>
@@ -1853,10 +1896,10 @@ function TabClientes({ token }: { token: string }) {
   // Main client list view
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Clientes</h2>
+      <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Clientes</h2>
 
       {/* Search bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
+      <div className={`${CARD} p-4`}>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -1864,7 +1907,7 @@ function TabClientes({ token }: { token: string }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar por nombre, teléfono o email..."
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-gray-400"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all placeholder:text-gray-400"
           />
           {searchQuery && (
             <button
@@ -1882,7 +1925,7 @@ function TabClientes({ token }: { token: string }) {
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : filteredClients.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className={`${CARD} p-12 text-center`}>
           <ContactRound className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500">
             {debouncedQuery ? "No se encontraron clientes con esa búsqueda" : "No hay clientes registrados aún"}
@@ -1897,10 +1940,10 @@ function TabClientes({ token }: { token: string }) {
           </p>
 
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className={`hidden md:block ${CARD} overflow-hidden`}>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
+                <tr className="border-b border-black/[0.04] dark:border-white/[0.06] bg-gray-50/80 dark:bg-gray-800/80">
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Cliente</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Teléfono</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-300">Email</th>
@@ -1913,7 +1956,7 @@ function TabClientes({ token }: { token: string }) {
                   <tr
                     key={client.customerPhone || client.customerName}
                     onClick={() => setSelectedClient(client)}
-                    className="border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+                    className="border-b border-black/[0.03] dark:border-white/[0.04] hover:bg-primary/[0.03] dark:hover:bg-primary/[0.05] transition-colors cursor-pointer"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -1957,7 +2000,7 @@ function TabClientes({ token }: { token: string }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => setSelectedClient(client)}
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 space-y-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition-colors"
+                className={`${CARD} p-4 space-y-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition-colors`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -2100,7 +2143,7 @@ function TabServicios({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Servicios</h2>
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Servicios</h2>
         <button
           onClick={() => { resetForm(); setShowForm(true) }}
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors"
@@ -2116,7 +2159,7 @@ function TabServicios({ token }: { token: string }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5 space-y-4 overflow-hidden"
+            className={`${CARD} p-5 space-y-4 overflow-hidden`}
           >
             <h3 className="font-semibold text-secondary dark:text-gray-100">Nuevo servicio</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -2125,12 +2168,12 @@ function TabServicios({ token }: { token: string }) {
                 placeholder="Nombre del servicio"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
               />
               <select
                 value={formDuration}
                 onChange={(e) => setFormDuration(Number(e.target.value))}
-                className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white dark:bg-gray-700"
+                className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white dark:bg-gray-700"
               >
                 {durationOptions.map(d => (
                   <option key={d} value={d}>{d} min</option>
@@ -2141,14 +2184,14 @@ function TabServicios({ token }: { token: string }) {
                 placeholder="Precio (ej: 50)"
                 value={formPrice}
                 onChange={(e) => setFormPrice(e.target.value)}
-                className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
               />
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={handleCreate}
                 disabled={saving || !formName.trim()}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving && <Loader2 className="w-3 h-3 animate-spin" />}
                 <span className="relative z-10">Crear</span>
@@ -2167,7 +2210,7 @@ function TabServicios({ token }: { token: string }) {
       {/* Services list */}
       <div className="space-y-3">
         {services.map((svc) => (
-          <div key={svc.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div key={svc.id} className={`${CARD} overflow-hidden`}>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 sm:p-5">
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-secondary dark:text-gray-100 truncate">{svc.name}</p>
@@ -2205,7 +2248,7 @@ function TabServicios({ token }: { token: string }) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="border-t border-gray-100 dark:border-gray-700 p-4 sm:p-5 space-y-4 bg-gray-50/50 dark:bg-gray-700/50 overflow-hidden"
+                  className="border-t border-black/[0.04] dark:border-white/[0.06] p-4 sm:p-5 space-y-4 bg-gray-50/80 dark:bg-gray-800/80 overflow-hidden"
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
@@ -2213,12 +2256,12 @@ function TabServicios({ token }: { token: string }) {
                       placeholder="Nombre"
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
-                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                     <select
                       value={formDuration}
                       onChange={(e) => setFormDuration(Number(e.target.value))}
-                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white dark:bg-gray-700"
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white dark:bg-gray-700"
                     >
                       {durationOptions.map(d => (
                         <option key={d} value={d}>{d} min</option>
@@ -2229,21 +2272,21 @@ function TabServicios({ token }: { token: string }) {
                       placeholder="Precio"
                       value={formPrice}
                       onChange={(e) => setFormPrice(e.target.value)}
-                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                     <input
                       type="text"
                       placeholder="Descripción"
                       value={formDescription}
                       onChange={(e) => setFormDescription(e.target.value)}
-                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                   </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => handleUpdate(svc)}
                       disabled={saving}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {saving && <Loader2 className="w-3 h-3 animate-spin" />}
                       <span className="relative z-10">Guardar</span>
@@ -2262,7 +2305,7 @@ function TabServicios({ token }: { token: string }) {
         ))}
 
         {services.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+          <div className={`${CARD} p-12 text-center`}>
             <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">No hay servicios configurados</p>
           </div>
@@ -2389,7 +2432,7 @@ function TabEquipo({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Equipo</h2>
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Equipo</h2>
         <button
           onClick={() => { resetForm(); setShowForm(true) }}
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors"
@@ -2405,7 +2448,7 @@ function TabEquipo({ token }: { token: string }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5 space-y-4 overflow-hidden"
+            className={`${CARD} p-5 space-y-4 overflow-hidden`}
           >
             <h3 className="font-semibold text-secondary dark:text-gray-100">Nuevo profesional</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -2414,21 +2457,21 @@ function TabEquipo({ token }: { token: string }) {
                 placeholder="Nombre *"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
               />
               <input
                 type="text"
                 placeholder="Ej: Fisioterapeuta"
                 value={formRole}
                 onChange={(e) => setFormRole(e.target.value)}
-                className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
               />
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={handleCreate}
                 disabled={saving || !formName.trim()}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving && <Loader2 className="w-3 h-3 animate-spin" />}
                 <span className="relative z-10">Crear</span>
@@ -2447,7 +2490,7 @@ function TabEquipo({ token }: { token: string }) {
       {/* Employee list */}
       <div className="space-y-3">
         {employees.map((emp) => (
-          <div key={emp.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div key={emp.id} className={`${CARD} overflow-hidden`}>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 sm:p-5">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -2511,7 +2554,7 @@ function TabEquipo({ token }: { token: string }) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="border-t border-gray-100 dark:border-gray-700 p-4 sm:p-5 space-y-4 bg-gray-50/50 dark:bg-gray-700/50 overflow-hidden"
+                  className="border-t border-black/[0.04] dark:border-white/[0.06] p-4 sm:p-5 space-y-4 bg-gray-50/80 dark:bg-gray-800/80 overflow-hidden"
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
@@ -2519,14 +2562,14 @@ function TabEquipo({ token }: { token: string }) {
                       placeholder="Nombre"
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
-                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                     <input
                       type="text"
                       placeholder="Rol"
                       value={formRole}
                       onChange={(e) => setFormRole(e.target.value)}
-                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                     />
                   </div>
 
@@ -2565,7 +2608,7 @@ function TabEquipo({ token }: { token: string }) {
                     <button
                       onClick={() => handleUpdate(emp)}
                       disabled={saving}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {saving && <Loader2 className="w-3 h-3 animate-spin" />}
                       <span className="relative z-10">Guardar</span>
@@ -2584,7 +2627,7 @@ function TabEquipo({ token }: { token: string }) {
         ))}
 
         {employees.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+          <div className={`${CARD} p-12 text-center`}>
             <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">No hay profesionales configurados</p>
           </div>
@@ -2788,7 +2831,7 @@ function TabMetricas({ token }: { token: string }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Métricas</h2>
+          <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Métricas</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 capitalize">{monthLabel}</p>
         </div>
         <button
@@ -2806,7 +2849,7 @@ function TabMetricas({ token }: { token: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center"
+          className={`${CARD} p-4 text-center`}
         >
           <p className="text-3xl font-bold text-secondary dark:text-gray-100">{stats.total}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Total citas</p>
@@ -2815,7 +2858,7 @@ function TabMetricas({ token }: { token: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center"
+          className={`${CARD} p-4 text-center`}
         >
           <p className="text-3xl font-bold" style={{ color: "#3B82F6" }}>{stats.confirmed}</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Confirmadas</p>
@@ -2824,7 +2867,7 @@ function TabMetricas({ token }: { token: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center"
+          className={`${CARD} p-4 text-center`}
         >
           <p className="text-3xl font-bold" style={{ color: "#EF4444" }}>{stats.cancelRate}%</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Tasa cancelación</p>
@@ -2833,7 +2876,7 @@ function TabMetricas({ token }: { token: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-center"
+          className={`${CARD} p-4 text-center`}
         >
           <p className="text-3xl font-bold text-primary">{stats.revenue.toFixed(0)}&euro;</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Ingresos estimados</p>
@@ -2845,7 +2888,7 @@ function TabMetricas({ token }: { token: string }) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5"
+        className={`${CARD} p-5`}
       >
         <h3 className="text-lg font-semibold text-secondary dark:text-gray-100 font-display mb-4">Citas por estado</h3>
         <div className="space-y-3">
@@ -2881,7 +2924,7 @@ function TabMetricas({ token }: { token: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5"
+          className={`${CARD} p-5`}
         >
           <h3 className="text-lg font-semibold text-secondary dark:text-gray-100 font-display mb-4">Servicios populares</h3>
           {popularServices.length === 0 ? (
@@ -2913,7 +2956,7 @@ function TabMetricas({ token }: { token: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5"
+          className={`${CARD} p-5`}
         >
           <h3 className="text-lg font-semibold text-secondary dark:text-gray-100 font-display mb-4">Origen de citas</h3>
           {sourceBreakdown.length === 0 ? (
@@ -2953,7 +2996,7 @@ function TabMetricas({ token }: { token: string }) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5"
+        className={`${CARD} p-5`}
       >
         <h3 className="text-lg font-semibold text-secondary dark:text-gray-100 font-display mb-4">Rendimiento por profesional</h3>
         {employeePerformance.length === 0 ? (
@@ -3118,7 +3161,7 @@ function TabHorarios({ token }: { token: string }) {
 
   if (employees.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-12 text-center">
+      <div className={`${CARD} p-12 text-center`}>
         <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
         <p className="text-gray-500">No hay profesionales configurados</p>
       </div>
@@ -3128,11 +3171,11 @@ function TabHorarios({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Horarios</h2>
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Horarios</h2>
         <select
           value={selectedEmployee}
           onChange={(e) => setSelectedEmployee(e.target.value)}
-          className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white dark:bg-gray-700"
+          className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white dark:bg-gray-700"
         >
           {employees.map(emp => (
             <option key={emp.id} value={emp.id}>{emp.name}{emp.role ? ` — ${emp.role}` : ""}</option>
@@ -3145,7 +3188,7 @@ function TabHorarios({ token }: { token: string }) {
         {DAY_NAMES.map((dayName, dayIndex) => {
           const daySchedules = schedules.filter(s => s.dayOfWeek === dayIndex)
           return (
-            <div key={dayIndex} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 sm:p-5">
+            <div key={dayIndex} className={`${CARD} p-4 sm:p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-secondary dark:text-gray-100">{dayName}</h3>
                 <button
@@ -3190,14 +3233,14 @@ function TabHorarios({ token }: { token: string }) {
                         type="time"
                         value={addStart}
                         onChange={(e) => setAddStart(e.target.value)}
-                        className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                       />
                       <span className="text-gray-400">-</span>
                       <input
                         type="time"
                         value={addEnd}
                         onChange={(e) => setAddEnd(e.target.value)}
-                        className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                       />
                       <button
                         onClick={() => handleAddSchedule(dayIndex)}
@@ -3228,7 +3271,7 @@ function TabHorarios({ token }: { token: string }) {
           <h3 className="text-lg font-bold text-secondary dark:text-gray-100 font-display">Excepciones</h3>
           <button
             onClick={() => setShowExceptionForm(!showExceptionForm)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-secondary dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
           >
             <Plus className="w-4 h-4" /> Añadir vacaciones
           </button>
@@ -3240,26 +3283,26 @@ function TabHorarios({ token }: { token: string }) {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5 space-y-4 overflow-hidden"
+              className={`${CARD} p-5 space-y-4 overflow-hidden`}
             >
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="date"
                   value={excDate}
                   onChange={(e) => setExcDate(e.target.value)}
-                  className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                 />
                 <input
                   type="text"
                   placeholder="Motivo (opcional)"
                   value={excReason}
                   onChange={(e) => setExcReason(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
                 />
                 <button
                   onClick={handleAddException}
                   disabled={saving || !excDate}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:brightness-110 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving && <Loader2 className="w-3 h-3 animate-spin" />}
                   <span className="relative z-10">Añadir</span>
@@ -3270,13 +3313,13 @@ function TabHorarios({ token }: { token: string }) {
         </AnimatePresence>
 
         {exceptions.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-8 text-center">
+          <div className={`${CARD} p-8 text-center`}>
             <p className="text-gray-400 text-sm">No hay excepciones configuradas</p>
           </div>
         ) : (
           <div className="space-y-2">
             {exceptions.map((exc) => (
-              <div key={exc.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 flex items-center justify-between">
+              <div key={exc.id} className={`${CARD} p-4 flex items-center justify-between`}>
                 <div className="flex items-center gap-4">
                   <span className="text-sm font-medium text-secondary dark:text-gray-100">
                     {new Date(exc.date + "T00:00:00").toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
@@ -3373,9 +3416,9 @@ function TabConfig({ token }: { token: string }) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display">Configuración</h2>
+      <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Configuración</h2>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-5 sm:p-6 space-y-6">
+      <div className={`${CARD} p-5 sm:p-6 space-y-6`}>
         {/* Enabled toggle */}
         <div className="flex items-center justify-between">
           <div>
@@ -3392,7 +3435,7 @@ function TabConfig({ token }: { token: string }) {
           </button>
         </div>
 
-        <hr className="border-gray-100 dark:border-gray-700" />
+        <hr className="border-black/[0.04] dark:border-white/[0.06]" />
 
         {/* Number fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -3404,7 +3447,7 @@ function TabConfig({ token }: { token: string }) {
               max={120}
               value={slotDuration}
               onChange={(e) => setSlotDuration(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             />
           </div>
           <div>
@@ -3415,7 +3458,7 @@ function TabConfig({ token }: { token: string }) {
               max={365}
               value={maxAdvanceDays}
               onChange={(e) => setMaxAdvanceDays(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             />
           </div>
           <div>
@@ -3426,7 +3469,7 @@ function TabConfig({ token }: { token: string }) {
               max={72}
               value={minAdvanceHours}
               onChange={(e) => setMinAdvanceHours(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             />
           </div>
           <div>
@@ -3437,12 +3480,12 @@ function TabConfig({ token }: { token: string }) {
               max={60}
               value={bufferMinutes}
               onChange={(e) => setBufferMinutes(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             />
           </div>
         </div>
 
-        <hr className="border-gray-100 dark:border-gray-700" />
+        <hr className="border-black/[0.04] dark:border-white/[0.06]" />
 
         {/* Auto-confirm toggle */}
         <div className="flex items-center justify-between">
@@ -3460,7 +3503,7 @@ function TabConfig({ token }: { token: string }) {
           </button>
         </div>
 
-        <hr className="border-gray-100 dark:border-gray-700" />
+        <hr className="border-black/[0.04] dark:border-white/[0.06]" />
 
         {/* Notification fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -3471,7 +3514,7 @@ function TabConfig({ token }: { token: string }) {
               placeholder="correo@ejemplo.com"
               value={notifEmail}
               onChange={(e) => setNotifEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             />
           </div>
           <div>
@@ -3481,7 +3524,7 @@ function TabConfig({ token }: { token: string }) {
               placeholder="123456789"
               value={telegramChatId}
               onChange={(e) => setTelegramChatId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
             />
           </div>
         </div>
@@ -3493,7 +3536,7 @@ function TabConfig({ token }: { token: string }) {
             placeholder="Escribe la política de cancelación..."
             value={cancellationPolicy}
             onChange={(e) => setCancellationPolicy(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all resize-none"
           />
         </div>
 
@@ -3525,6 +3568,213 @@ function TabConfig({ token }: { token: string }) {
   )
 }
 
+// ─── Tab: Mensajes ──────────────────────────────────────────────────
+
+function TabMensajes({ token }: { token: string }) {
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [messages, setMessages] = useState<WhatsAppMessage[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingMessages, setLoadingMessages] = useState(false)
+  const [selectedPhone, setSelectedPhone] = useState<string | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const loadConversations = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await fetchConversations(token)
+      setConversations(res.conversations || [])
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
+    }
+  }, [token])
+
+  useEffect(() => { loadConversations() }, [loadConversations])
+
+  async function openConversation(phone: string) {
+    setSelectedPhone(phone)
+    setLoadingMessages(true)
+    try {
+      const res = await fetchMessages(token, phone, 100)
+      // Reverse to show oldest first (API returns newest first)
+      setMessages((res.messages || []).reverse())
+    } catch {
+      setMessages([])
+    } finally {
+      setLoadingMessages(false)
+    }
+  }
+
+  // Scroll to bottom when messages load
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages])
+
+  function formatMessageTime(iso: string): string {
+    const d = new Date(iso)
+    const now = new Date()
+    const isToday = d.toDateString() === now.toDateString()
+    const yesterday = new Date(now)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const isYesterday = d.toDateString() === yesterday.toDateString()
+
+    const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
+    if (isToday) return time
+    if (isYesterday) return `Ayer ${time}`
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")} ${time}`
+  }
+
+  // Conversation detail view
+  if (selectedPhone) {
+    return (
+      <div className="flex flex-col h-[calc(100vh-180px)] md:h-[calc(100vh-140px)]">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            onClick={() => { setSelectedPhone(null); setMessages([]) }}
+            className={BTN_SECONDARY}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Volver</span>
+          </button>
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
+              <Phone className="w-5 h-5 text-green-600" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-semibold text-secondary dark:text-gray-100 truncate">{selectedPhone}</p>
+              <p className="text-xs text-gray-400">{messages.length} mensajes</p>
+            </div>
+          </div>
+          <a
+            href={`https://wa.me/${selectedPhone.replace(/[^0-9]/g, "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={BTN_PRIMARY + " !px-3 !py-2"}
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">WhatsApp</span>
+          </a>
+        </div>
+
+        {/* Messages */}
+        <div className={`${CARD} flex-1 overflow-y-auto p-4`}>
+          {loadingMessages ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
+                <MessageCircle className="w-7 h-7 text-gray-300" />
+              </div>
+              <p className="text-gray-400 text-sm">No hay mensajes con este contacto</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {messages.map((msg) => {
+                const isOutbound = msg.direction === "outbound"
+                return (
+                  <div key={msg.id} className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}>
+                    <div
+                      className={`max-w-[80%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 ${
+                        isOutbound
+                          ? "bg-primary text-white rounded-br-md"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-md"
+                      }`}
+                    >
+                      {msg.messageType && (
+                        <p className={`text-[10px] font-medium mb-1 ${isOutbound ? "text-white/60" : "text-gray-400"}`}>
+                          {msg.messageType}
+                        </p>
+                      )}
+                      <p className="text-sm whitespace-pre-wrap break-words">{msg.content || "(sin contenido)"}</p>
+                      <p className={`text-[10px] mt-1 text-right ${isOutbound ? "text-white/50" : "text-gray-400"}`}>
+                        {formatMessageTime(msg.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* Read-only notice */}
+        <div className="mt-3 text-center">
+          <p className="text-xs text-gray-400">Solo lectura — los mensajes se envían desde el sistema automático</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Conversation list view
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Mensajes</h2>
+        <button onClick={loadConversations} className={BTN_SECONDARY}>
+          <RefreshCw className="w-4 h-4" />
+          <span className="hidden sm:inline">Actualizar</span>
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      ) : conversations.length === 0 ? (
+        <div className={`${CARD} p-12 text-center`}>
+          <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mx-auto mb-4">
+            <MessageCircle className="w-8 h-8 text-gray-300" />
+          </div>
+          <p className="text-gray-500 text-lg font-medium">Sin conversaciones</p>
+          <p className="text-gray-400 text-sm mt-1">Los mensajes de WhatsApp aparecerán aquí</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {conversations.map((conv) => (
+            <motion.button
+              key={conv.phone}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => openConversation(conv.phone)}
+              className={`${CARD} p-4 w-full text-left hover:shadow-md transition-all active:scale-[0.99]`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-semibold text-secondary dark:text-gray-100 text-sm truncate">{conv.phone}</p>
+                    <span className="text-[11px] text-gray-400 flex-shrink-0">
+                      {formatMessageTime(conv.lastAt)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mt-0.5">
+                    <p className="text-xs text-gray-500 truncate">
+                      {conv.lastDirection === "outbound" ? "Tú: " : ""}
+                      {conv.lastMessage || "(sin contenido)"}
+                    </p>
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-500 flex-shrink-0">
+                      {conv.messageCount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Main Admin Page ─────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -3535,24 +3785,51 @@ export default function AdminPage() {
   const { theme, toggle: toggleTheme } = useTheme()
   const { canInstall, install: installPWA, dismiss: dismissPWA } = usePWA()
 
-  // Authentication
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
+
+  // Authentication — read from URL params OR localStorage (PWA support)
   useEffect(() => {
     const urlToken = new URLSearchParams(window.location.search).get("token")
-    if (!urlToken) {
+    const storedToken = localStorage.getItem("admin-token")
+    const tokenToValidate = urlToken || storedToken
+
+    if (!tokenToValidate) {
       setAuthState("invalid")
       return
     }
-    validateOwnerToken(urlToken).then((res) => {
+
+    validateOwnerToken(tokenToValidate).then((res) => {
       if (res.valid) {
-        setToken(urlToken)
+        setToken(tokenToValidate)
         setAuthState("valid")
+        // Persist token for PWA
+        localStorage.setItem("admin-token", tokenToValidate)
+        // Clean token from URL for security
+        if (urlToken) {
+          window.history.replaceState({}, "", window.location.pathname)
+        }
       } else {
+        localStorage.removeItem("admin-token")
         setAuthState("invalid")
       }
     }).catch(() => {
-      setAuthState("invalid")
+      // If offline and we have a stored token, use it optimistically
+      if (storedToken && !navigator.onLine) {
+        setToken(storedToken)
+        setAuthState("valid")
+      } else {
+        localStorage.removeItem("admin-token")
+        setAuthState("invalid")
+      }
     })
   }, [])
+
+  function handleLogout() {
+    localStorage.removeItem("admin-token")
+    setToken(null)
+    setAuthState("invalid")
+    window.location.href = "/"
+  }
 
   // ─── Loading screen ───────────────────────────────────────────────
 
@@ -3576,7 +3853,7 @@ export default function AdminPage() {
           <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6">
             <Shield className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-secondary dark:text-gray-100 dark:text-gray-100 font-display mb-2">Token inválido</h1>
+          <h1 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display mb-2">Token inválido</h1>
           <p className="text-gray-500 dark:text-gray-400 mb-6">
             El enlace de acceso no es válido o ha expirado. Contacta con soporte para obtener uno nuevo.
           </p>
@@ -3624,15 +3901,15 @@ export default function AdminPage() {
       {/* Desktop sidebar + content grid */}
       <div className={`grid grid-cols-1 md:grid-cols-[240px_1fr] ${canInstall ? "h-[calc(100%-44px)]" : "h-full"}`}>
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex flex-col bg-secondary dark:bg-gray-800 text-white">
+        <aside className="hidden md:flex flex-col bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 text-white">
           {/* Clinic name */}
-          <div className="p-5 border-b border-white/10">
+          <div className="p-5 border-b border-white/[0.06]">
             <h1 className="text-base font-bold font-display truncate">{clinic.name}</h1>
-            <p className="text-xs text-white/50 mt-0.5">Panel de administración</p>
+            <p className="text-xs text-white/40 mt-0.5">Panel de administración</p>
           </div>
 
           {/* Nav items */}
-          <nav className="flex-1 py-4">
+          <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon
               const isActive = activeTab === item.id
@@ -3640,48 +3917,63 @@ export default function AdminPage() {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all ${
                     isActive
-                      ? "bg-white/20 border-l-2 border-primary text-white"
-                      : "text-white/70 hover:bg-white/10 hover:text-white border-l-2 border-transparent"
+                      ? "bg-white/[0.12] text-white shadow-sm"
+                      : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
                   }`}
                 >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? "text-primary" : ""}`} />
                   {item.label}
+                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
                 </button>
               )
             })}
           </nav>
 
           {/* Footer */}
-          <div className="p-5 border-t border-white/10">
+          <div className="p-4 border-t border-white/[0.06] space-y-2">
             <a
               href="/"
               className="flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Volver a la web
             </a>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-xs text-white/40 hover:text-red-400 transition-colors w-full"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Cerrar sesión
+            </button>
           </div>
         </aside>
 
         {/* Main content */}
         <div className="flex flex-col min-h-0">
-          {/* Top header bar */}
-          <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 sm:px-6 py-4 flex items-center justify-between flex-shrink-0">
+          {/* Top header bar — glass effect */}
+          <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-black/[0.04] dark:border-white/[0.06] px-4 sm:px-6 py-4 flex items-center justify-between flex-shrink-0 sticky top-0 z-30">
             <h2 className="text-lg font-bold text-secondary dark:text-gray-100 font-display md:block hidden">{activeNavItem.label}</h2>
             {/* Mobile: show clinic name */}
             <h2 className="text-lg font-bold text-secondary dark:text-gray-100 font-display md:hidden truncate">{clinic.name}</h2>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <span className="text-xs text-gray-400 hidden sm:block">
                 {formatDateSpanish(new Date())}
               </span>
               {/* Dark mode toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
               >
                 {theme === "dark" ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+              </button>
+              {/* Mobile logout */}
+              <button
+                onClick={handleLogout}
+                className="md:hidden p-2 rounded-xl text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="Cerrar sesión"
+              >
+                <LogOut className="w-4.5 h-4.5" />
               </button>
             </div>
           </header>
@@ -3705,35 +3997,88 @@ export default function AdminPage() {
                 {activeTab === "metricas" && <TabMetricas token={token} />}
                 {activeTab === "horarios" && <TabHorarios token={token} />}
                 {activeTab === "config" && <TabConfig token={token} />}
+                {activeTab === "mensajes" && <TabMensajes token={token} />}
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
       </div>
 
-      {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-secondary dark:bg-gray-800 border-t border-white/10">
-        <div className="flex items-center justify-around py-2 pb-[env(safe-area-inset-bottom)]">
-          {NAV_ITEMS.map((item) => {
+      {/* Mobile bottom tab bar — 4 primary + More */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-900 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+        <div className="flex items-center justify-around py-1.5 pb-[env(safe-area-inset-bottom)]">
+          {PRIMARY_TABS.map((tabId) => {
+            const item = NAV_ITEMS.find(n => n.id === tabId)!
             const Icon = item.icon
-            const isActive = activeTab === item.id
+            const isActive = activeTab === tabId
             return (
               <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
-                  isActive
-                    ? "text-primary"
-                    : "text-white/50 hover:text-white/80"
-                }`}
+                key={tabId}
+                onClick={() => { setActiveTab(tabId); setShowMoreMenu(false) }}
+                className="flex flex-col items-center gap-0.5 min-w-[56px] py-1.5 transition-colors"
               >
-                <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <div className={`p-1.5 rounded-xl transition-colors ${isActive ? "bg-primary/10" : ""}`}>
+                  <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-gray-400 dark:text-gray-500"}`} />
+                </div>
+                <span className={`text-[10px] font-medium ${isActive ? "text-primary" : "text-gray-400 dark:text-gray-500"}`}>{item.label}</span>
               </button>
             )
           })}
+          {/* More button */}
+          <button
+            onClick={() => setShowMoreMenu(!showMoreMenu)}
+            className="flex flex-col items-center gap-0.5 min-w-[56px] py-1.5 transition-colors"
+          >
+            <div className={`p-1.5 rounded-xl transition-colors ${SECONDARY_TABS.includes(activeTab) || showMoreMenu ? "bg-primary/10" : ""}`}>
+              <MoreHorizontal className={`w-5 h-5 ${SECONDARY_TABS.includes(activeTab) || showMoreMenu ? "text-primary" : "text-gray-400 dark:text-gray-500"}`} />
+            </div>
+            <span className={`text-[10px] font-medium ${SECONDARY_TABS.includes(activeTab) || showMoreMenu ? "text-primary" : "text-gray-400 dark:text-gray-500"}`}>Más</span>
+          </button>
         </div>
       </nav>
+
+      {/* More menu bottom sheet */}
+      <AnimatePresence>
+        {showMoreMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="md:hidden fixed inset-0 z-40 bg-black/30"
+            onClick={() => setShowMoreMenu(false)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="absolute bottom-[calc(56px+env(safe-area-inset-bottom))] inset-x-0 bg-white dark:bg-gray-900 rounded-t-3xl shadow-2xl p-5 pb-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-700 mx-auto mb-5" />
+              <div className="grid grid-cols-4 gap-3">
+                {SECONDARY_TABS.map((tabId) => {
+                  const item = NAV_ITEMS.find(n => n.id === tabId)!
+                  const Icon = item.icon
+                  const isActive = activeTab === tabId
+                  return (
+                    <button
+                      key={tabId}
+                      onClick={() => { setActiveTab(tabId); setShowMoreMenu(false) }}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-colors active:bg-gray-50 dark:active:bg-gray-800"
+                    >
+                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors ${isActive ? "bg-primary/10" : "bg-gray-50 dark:bg-gray-800"}`}>
+                        <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-gray-500 dark:text-gray-400"}`} />
+                      </div>
+                      <span className={`text-[11px] font-medium ${isActive ? "text-primary" : "text-gray-600 dark:text-gray-400"}`}>{item.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -363,3 +363,47 @@ export async function manageException(token: string, data: Record<string, unknow
     throw new Error(err.error || "Error al gestionar excepción")
   }
 }
+
+// ─── Messages API ────────────────────────────────────────────────────
+
+export interface Conversation {
+  phone: string
+  lastMessage: string | null
+  lastDirection: string
+  lastAt: string
+  messageCount: number
+}
+
+export interface WhatsAppMessage {
+  id: string
+  direction: "inbound" | "outbound"
+  messageType: string | null
+  recipientPhone: string | null
+  senderPhone: string | null
+  content: string | null
+  status: string | null
+  createdAt: string
+}
+
+export async function fetchConversations(token: string): Promise<{ conversations: Conversation[] }> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/manage/messages?limit=50`, {
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error("Error al cargar conversaciones")
+  return res.json()
+}
+
+export async function fetchMessages(
+  token: string,
+  phone: string,
+  limit = 50
+): Promise<{ messages: WhatsAppMessage[] }> {
+  const api = getApiUrl()
+  const res = await fetch(
+    `${api}/api/booking/manage/messages?phone=${encodeURIComponent(phone)}&limit=${limit}`,
+    { headers: authHeaders(token) }
+  )
+  if (!res.ok) throw new Error("Error al cargar mensajes")
+  return res.json()
+}
