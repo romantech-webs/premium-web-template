@@ -883,7 +883,16 @@ function TabCalendario({ token }: { token: string }) {
 
   const [filterEmployee, setFilterEmployee] = useState("")
 
-  // Group appointments by day (filtered by selected employee)
+  const activeEmployees = useMemo(() => employees.filter(e => e.active), [employees])
+
+  // Auto-select first active employee when employees load
+  useEffect(() => {
+    if (activeEmployees.length > 0 && !filterEmployee) {
+      setFilterEmployee(activeEmployees[0].id)
+    }
+  }, [activeEmployees, filterEmployee])
+
+  // Group appointments by day filtered by selected employee
   const apptsByDay = useMemo(() => {
     const map: Record<string, ManagedAppointment[]> = {}
     const source = filterEmployee
@@ -1212,14 +1221,13 @@ function TabCalendario({ token }: { token: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Calendario</h2>
-          {employees.length > 1 && (
+          {activeEmployees.length > 1 && (
             <select
               value={filterEmployee}
               onChange={(e) => setFilterEmployee(e.target.value)}
               className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white"
             >
-              <option value="">Todos</option>
-              {employees.filter(e => e.active).map(emp => (
+              {activeEmployees.map(emp => (
                 <option key={emp.id} value={emp.id}>{emp.name}</option>
               ))}
             </select>
