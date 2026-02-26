@@ -86,6 +86,7 @@ export interface ClinicConfig {
   }
   heroHeadline: string[]
   heroDescription: string
+  heroShowRatingBadge?: boolean
   specialty: string
   ctaLabel: string
   ctaHeadline: string
