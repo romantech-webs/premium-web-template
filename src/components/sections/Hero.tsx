@@ -370,6 +370,7 @@ export function Hero() {
                   alt={`${clinic.name} - ${clinic.tagline}`}
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  style={clinic.heroImagePosition ? { objectPosition: clinic.heroImagePosition } : undefined}
                   priority
                   sizes="50vw"
                 />
@@ -377,6 +378,7 @@ export function Hero() {
               </div>
 
               {/* Floating badge - Rating */}
+              {clinic.heroShowRatingBadge !== false && (
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -397,6 +399,7 @@ export function Hero() {
                   </div>
                 </motion.div>
               </motion.div>
+              )}
 
               {/* Floating badge - Specialty */}
               <motion.div
