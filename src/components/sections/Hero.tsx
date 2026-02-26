@@ -370,7 +370,6 @@ export function Hero() {
                   alt={`${clinic.name} - ${clinic.tagline}`}
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                  style={clinic.heroImagePosition ? { objectPosition: clinic.heroImagePosition } : undefined}
                   priority
                   sizes="50vw"
                 />
