@@ -881,19 +881,22 @@ function TabCalendario({ token }: { token: string }) {
   const slotHeightPx = 48
   const hourSlots = 60 / slotDurationMin
 
-  // Group appointments by day + employee
-  const apptsByDayEmp = useMemo(() => {
+  const [filterEmployee, setFilterEmployee] = useState("")
+
+  // Group appointments by day (filtered by selected employee)
+  const apptsByDay = useMemo(() => {
     const map: Record<string, ManagedAppointment[]> = {}
-    for (const appt of appointments) {
+    const source = filterEmployee
+      ? appointments.filter(a => a.employeeId === filterEmployee)
+      : appointments
+    for (const appt of source) {
       const d = new Date(appt.scheduledAt)
-      const key = `${toDateISO(d)}-${appt.employeeId}`
+      const key = toDateISO(d)
       if (!map[key]) map[key] = []
       map[key].push(appt)
     }
     return map
-  }, [appointments])
-
-  const activeEmployees = useMemo(() => employees.filter(e => e.active), [employees])
+  }, [appointments, filterEmployee])
 
   function getApptPosition(appt: ManagedAppointment) {
     const d = new Date(appt.scheduledAt)
@@ -917,7 +920,7 @@ function TabCalendario({ token }: { token: string }) {
     const dateStr = toDateISO(day)
     const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`
     setCreateSlot({ date: dateStr, time: timeStr })
-    setCreateEmployee(empId || (employees.length > 0 ? employees[0].id : ""))
+    setCreateEmployee(empId || filterEmployee || (employees.length > 0 ? employees[0].id : ""))
     const activeServices = services.filter(s => s.active)
     setCreateService(activeServices.length > 0 ? activeServices[0].id : "")
     setCreateName("")
@@ -1001,21 +1004,16 @@ function TabCalendario({ token }: { token: string }) {
 
   // ── Desktop Week View ──
   function renderWeekGrid() {
-    const empCount = Math.max(1, activeEmployees.length)
-    const gridCols = `60px repeat(${7 * empCount}, 1fr)`
-    const showEmpHeaders = activeEmployees.length > 1
-
     return (
       <div className={`hidden md:block ${CARD} overflow-hidden`}>
-        {/* Row 1: Day headers */}
-        <div className="grid border-b border-black/[0.04] dark:border-white/[0.06]" style={{ gridTemplateColumns: gridCols }}>
+        {/* Day headers */}
+        <div className="grid border-b border-black/[0.04] dark:border-white/[0.06]" style={{ gridTemplateColumns: "60px repeat(7, 1fr)" }}>
           <div className="p-2" />
           {weekDays.map((day, i) => {
             const isToday = isSameDay(day, today)
             return (
               <div
                 key={i}
-                style={{ gridColumn: `span ${empCount}` }}
                 className={`p-2 text-center border-l border-black/[0.04] dark:border-white/[0.06] ${isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""}`}
               >
                 <p className="text-xs text-gray-500 font-medium">{SHORT_DAY_NAMES[i]}</p>
@@ -1025,32 +1023,9 @@ function TabCalendario({ token }: { token: string }) {
           })}
         </div>
 
-        {/* Row 2: Employee sub-headers (only when multiple employees) */}
-        {showEmpHeaders && (
-          <div className="grid border-b border-black/[0.04] dark:border-white/[0.06]" style={{ gridTemplateColumns: gridCols }}>
-            <div className="p-1" />
-            {weekDays.flatMap((day, i) =>
-              activeEmployees.map(emp => {
-                const isToday = isSameDay(day, today)
-                return (
-                  <div
-                    key={`sub-${i}-${emp.id}`}
-                    className={`px-1 py-1.5 text-center border-l border-black/[0.04] dark:border-white/[0.06] ${isToday ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: emp.color || "#6B7280" }} />
-                      <span className="text-[9px] font-medium text-gray-500 dark:text-gray-400 truncate">{emp.name}</span>
-                    </div>
-                  </div>
-                )
-              })
-            )}
-          </div>
-        )}
-
         {/* Grid body */}
         <div ref={scrollRef} className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 260px)" }}>
-          <div className="relative grid" style={{ gridTemplateColumns: gridCols, height: gridHeight }}>
+          <div className="relative grid" style={{ gridTemplateColumns: "60px repeat(7, 1fr)", height: gridHeight }}>
             {/* Time labels column */}
             <div className="relative">
               {timeLabels.map((label, i) => (
@@ -1064,75 +1039,72 @@ function TabCalendario({ token }: { token: string }) {
               ))}
             </div>
 
-            {/* Day × Employee columns */}
-            {weekDays.flatMap((day, dayIdx) =>
-              activeEmployees.map((emp, empIdx) => {
-                const dayKey = toDateISO(day)
-                const cellAppts = apptsByDayEmp[`${dayKey}-${emp.id}`] || []
-                const isToday = isSameDay(day, today)
-                const isFirstEmp = empIdx === 0
-                return (
-                  <div key={`${dayIdx}-${emp.id}`} className={`relative border-l border-black/[0.04] dark:border-white/[0.06] ${isToday ? "bg-blue-50/30 dark:bg-blue-900/20" : ""}`}>
-                    {/* Slot click areas */}
-                    {Array.from({ length: totalSlots }, (_, slotIdx) => (
-                      <div
-                        key={slotIdx}
-                        className="absolute inset-x-0 border-t border-gray-50 hover:bg-primary/5 cursor-pointer transition-colors"
-                        style={{ top: slotIdx * slotHeightPx, height: slotHeightPx }}
-                        onClick={() => handleCellClick(dayIdx, slotIdx, emp.id)}
-                      />
-                    ))}
+            {/* Day columns */}
+            {weekDays.map((day, dayIdx) => {
+              const dayKey = toDateISO(day)
+              const dayAppts = apptsByDay[dayKey] || []
+              const isToday = isSameDay(day, today)
+              return (
+                <div key={dayIdx} className={`relative border-l border-black/[0.04] dark:border-white/[0.06] ${isToday ? "bg-blue-50/30 dark:bg-blue-900/20" : ""}`}>
+                  {/* Slot click areas */}
+                  {Array.from({ length: totalSlots }, (_, slotIdx) => (
+                    <div
+                      key={slotIdx}
+                      className="absolute inset-x-0 border-t border-gray-50 hover:bg-primary/5 cursor-pointer transition-colors"
+                      style={{ top: slotIdx * slotHeightPx, height: slotHeightPx }}
+                      onClick={() => handleCellClick(dayIdx, slotIdx)}
+                    />
+                  ))}
 
-                    {/* Hour lines */}
-                    {Array.from({ length: CAL_END_HOUR - CAL_START_HOUR }, (_, h) => (
-                      <div
-                        key={`hr-${h}`}
-                        className="absolute inset-x-0 border-t border-gray-200 pointer-events-none"
-                        style={{ top: h * hourSlots * slotHeightPx }}
-                      />
-                    ))}
+                  {/* Hour lines */}
+                  {Array.from({ length: CAL_END_HOUR - CAL_START_HOUR }, (_, h) => (
+                    <div
+                      key={`hr-${h}`}
+                      className="absolute inset-x-0 border-t border-gray-200 pointer-events-none"
+                      style={{ top: h * hourSlots * slotHeightPx }}
+                    />
+                  ))}
 
-                    {/* Appointments */}
-                    {cellAppts.map((appt) => {
-                      const { top, height } = getApptPosition(appt)
-                      const statusInfo = STATUS_MAP[appt.status] || { color: "#6B7280", bg: "#6B728015" }
-                      return (
-                        <div
-                          key={appt.id}
-                          className="absolute left-0.5 right-0.5 rounded-md px-1.5 py-0.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity z-10"
-                          style={{
-                            top,
-                            height,
-                            backgroundColor: statusInfo.bg,
-                            borderLeft: `3px solid ${statusInfo.color}`,
-                          }}
-                          onClick={(e) => { e.stopPropagation(); setSelectedAppt(appt) }}
-                        >
-                          <p className="text-[10px] font-bold text-gray-700 dark:text-gray-200 truncate leading-tight">
-                            {formatTime(appt.scheduledAt)} {appt.customerName}
+                  {/* Appointments */}
+                  {dayAppts.map((appt) => {
+                    const { top, height } = getApptPosition(appt)
+                    const statusInfo = STATUS_MAP[appt.status] || { color: "#6B7280", bg: "#6B728015" }
+                    return (
+                      <div
+                        key={appt.id}
+                        className="absolute left-0.5 right-0.5 rounded-md px-1.5 py-0.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity z-10"
+                        style={{
+                          top,
+                          height,
+                          backgroundColor: statusInfo.bg,
+                          borderLeft: `3px solid ${statusInfo.color}`,
+                        }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedAppt(appt) }}
+                      >
+                        <p className="text-[10px] font-bold text-gray-700 dark:text-gray-200 truncate leading-tight">
+                          {formatTime(appt.scheduledAt)} {appt.customerName}
+                        </p>
+                        {height >= slotHeightPx * 0.8 && (
+                          <p className="text-[10px] text-gray-500 truncate leading-tight">
+                            {appt.serviceName || ""}
                           </p>
-                          {height >= slotHeightPx * 0.8 && (
-                            <p className="text-[10px] text-gray-500 truncate leading-tight">
-                              {appt.serviceName || ""}
-                            </p>
-                          )}
-                        </div>
-                      )
-                    })}
-
-                    {/* Current time indicator — only first employee column per day */}
-                    {isToday && isFirstEmp && currentTimeTop !== null && (
-                      <div className="absolute inset-x-0 z-20 pointer-events-none" style={{ top: currentTimeTop }}>
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 rounded-full bg-red-500 -ml-1 flex-shrink-0" />
-                          <div className="flex-1 h-[2px] bg-red-500" />
-                        </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                )
-              })
-            )}
+                    )
+                  })}
+
+                  {/* Current time indicator */}
+                  {isToday && currentTimeTop !== null && (
+                    <div className="absolute inset-x-0 z-20 pointer-events-none" style={{ top: currentTimeTop }}>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 rounded-full bg-red-500 -ml-1 flex-shrink-0" />
+                        <div className="flex-1 h-[2px] bg-red-500" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -1145,7 +1117,7 @@ function TabCalendario({ token }: { token: string }) {
     const dayKey = toDateISO(day)
     const isToday = isSameDay(day, today)
     const dayLabel = day.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })
-    const empCount = Math.max(1, activeEmployees.length)
+    const dayAppts = apptsByDay[dayKey] || []
 
     return (
       <div className="md:hidden space-y-4">
@@ -1160,19 +1132,6 @@ function TabCalendario({ token }: { token: string }) {
           </button>
         </div>
 
-        {/* Employee sub-headers (only when multiple employees) */}
-        {activeEmployees.length > 1 && (
-          <div className={`${CARD} flex overflow-hidden`}>
-            <div className="w-14 flex-shrink-0" />
-            {activeEmployees.map(emp => (
-              <div key={emp.id} className="flex-1 px-1 py-2 border-l border-black/[0.04] flex items-center justify-center gap-1 min-w-0">
-                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: emp.color || "#6B7280" }} />
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-300 truncate">{emp.name}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* Mobile time grid */}
         <div className={`${CARD} overflow-hidden`}>
           <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 320px)" }}>
@@ -1181,19 +1140,14 @@ function TabCalendario({ token }: { token: string }) {
               {Array.from({ length: totalSlots }, (_, slotIdx) => (
                 <div
                   key={slotIdx}
-                  className="absolute inset-x-0 flex border-t border-gray-50"
+                  className="absolute inset-x-0 flex border-t border-gray-50 hover:bg-primary/5 cursor-pointer transition-colors"
                   style={{ top: slotIdx * slotHeightPx, height: slotHeightPx }}
+                  onClick={() => handleCellClick(mobileDayOffset, slotIdx)}
                 >
                   <div className="w-14 flex-shrink-0 flex items-start justify-end pr-2 pt-0.5">
                     <span className="text-[10px] text-gray-400 font-medium">{timeLabels[slotIdx]}</span>
                   </div>
-                  {activeEmployees.map(emp => (
-                    <div
-                      key={emp.id}
-                      className="flex-1 border-l border-gray-100 hover:bg-primary/5 cursor-pointer transition-colors"
-                      onClick={() => handleCellClick(mobileDayOffset, slotIdx, emp.id)}
-                    />
-                  ))}
+                  <div className="flex-1 border-l border-gray-100" />
                 </div>
               ))}
 
@@ -1206,37 +1160,34 @@ function TabCalendario({ token }: { token: string }) {
                 />
               ))}
 
-              {/* Appointments per employee */}
-              {activeEmployees.flatMap((emp, empIdx) => {
-                const cellAppts = apptsByDayEmp[`${dayKey}-${emp.id}`] || []
-                return cellAppts.map((appt) => {
-                  const { top, height } = getApptPosition(appt)
-                  const statusInfo = STATUS_MAP[appt.status] || { color: "#6B7280", bg: "#6B728015" }
-                  return (
-                    <div
-                      key={appt.id}
-                      className="absolute rounded-md px-1.5 py-0.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity z-10"
-                      style={{
-                        top,
-                        height,
-                        left: `calc(3.5rem + ${empIdx} * (100% - 3.5rem) / ${empCount})`,
-                        width: `calc((100% - 3.5rem) / ${empCount} - 4px)`,
-                        backgroundColor: statusInfo.bg,
-                        borderLeft: `3px solid ${statusInfo.color}`,
-                      }}
-                      onClick={(e) => { e.stopPropagation(); setSelectedAppt(appt) }}
-                    >
-                      <p className="text-xs font-bold text-gray-700 dark:text-gray-200 truncate leading-tight">
-                        {formatTime(appt.scheduledAt)} {appt.customerName}
+              {/* Appointments */}
+              {dayAppts.map((appt) => {
+                const { top, height } = getApptPosition(appt)
+                const statusInfo = STATUS_MAP[appt.status] || { color: "#6B7280", bg: "#6B728015" }
+                return (
+                  <div
+                    key={appt.id}
+                    className="absolute rounded-md px-2 py-0.5 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity z-10"
+                    style={{
+                      top,
+                      height,
+                      left: "3.75rem",
+                      right: "0.25rem",
+                      backgroundColor: statusInfo.bg,
+                      borderLeft: `3px solid ${statusInfo.color}`,
+                    }}
+                    onClick={(e) => { e.stopPropagation(); setSelectedAppt(appt) }}
+                  >
+                    <p className="text-xs font-bold text-gray-700 dark:text-gray-200 truncate leading-tight">
+                      {formatTime(appt.scheduledAt)} {appt.customerName}
+                    </p>
+                    {height >= slotHeightPx * 0.8 && (
+                      <p className="text-[11px] text-gray-500 truncate leading-tight">
+                        {appt.serviceName || ""}
                       </p>
-                      {height >= slotHeightPx * 0.8 && (
-                        <p className="text-[11px] text-gray-500 truncate leading-tight">
-                          {appt.serviceName || ""}
-                        </p>
-                      )}
-                    </div>
-                  )
-                })
+                    )}
+                  </div>
+                )
               })}
 
               {/* Current time */}
@@ -1259,7 +1210,21 @@ function TabCalendario({ token }: { token: string }) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Calendario</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-secondary dark:text-gray-100 font-display">Calendario</h2>
+          {employees.length > 1 && (
+            <select
+              value={filterEmployee}
+              onChange={(e) => setFilterEmployee(e.target.value)}
+              className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all bg-white"
+            >
+              <option value="">Todos</option>
+              {employees.filter(e => e.active).map(emp => (
+                <option key={emp.id} value={emp.id}>{emp.name}</option>
+              ))}
+            </select>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={prevWeek}
