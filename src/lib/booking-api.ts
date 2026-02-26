@@ -372,6 +372,19 @@ export interface Conversation {
   lastDirection: string
   lastAt: string
   messageCount: number
+  pendingCount: number
+}
+
+export interface WhatsAppStatus {
+  status: 'connected' | 'disconnected' | 'qr_pending' | 'not_configured' | 'error'
+  phoneNumber: string | null
+  lastSeenAt: string | null
+}
+
+export interface WhatsAppQRResponse {
+  status: 'connected' | 'qr_pending' | 'not_configured' | 'error'
+  qr: string | null
+  phoneNumber?: string | null
 }
 
 export interface WhatsAppMessage {
@@ -405,5 +418,38 @@ export async function fetchMessages(
     { headers: authHeaders(token) }
   )
   if (!res.ok) throw new Error("Error al cargar mensajes")
+  return res.json()
+}
+
+// ─── WhatsApp Management APIs ────────────────────────────────────
+
+export async function fetchWhatsAppStatus(token: string): Promise<WhatsAppStatus> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/manage/whatsapp`, {
+    headers: authHeaders(token),
+  })
+  if (!res.ok) return { status: "error", phoneNumber: null, lastSeenAt: null }
+  return res.json()
+}
+
+export async function reconnectWhatsApp(token: string): Promise<WhatsAppQRResponse> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/manage/whatsapp`, {
+    method: "POST",
+    headers: authHeaders(token),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Error" }))
+    throw new Error(err.error || "Error al reconectar WhatsApp")
+  }
+  return res.json()
+}
+
+export async function pollWhatsAppQR(token: string): Promise<WhatsAppQRResponse> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/manage/whatsapp/qr`, {
+    headers: authHeaders(token),
+  })
+  if (!res.ok) return { status: "error", qr: null }
   return res.json()
 }

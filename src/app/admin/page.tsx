@@ -58,6 +58,9 @@ import {
   fetchAvailability,
   fetchConversations,
   fetchMessages,
+  fetchWhatsAppStatus,
+  reconnectWhatsApp,
+  pollWhatsAppQR,
 } from "@/lib/booking-api"
 import type {
   ManagedAppointment,
@@ -66,6 +69,8 @@ import type {
   TimeSlot,
   Conversation,
   WhatsAppMessage,
+  WhatsAppStatus,
+  WhatsAppQRResponse,
 } from "@/lib/booking-api"
 
 // ─── Constants ───────────────────────────────────────────────────────
@@ -580,10 +585,16 @@ function AppointmentActions({
 
 // ─── Tab: Hoy ────────────────────────────────────────────────────────
 
-function TabHoy({ token }: { token: string }) {
+function TabHoy({ token, isPro, setActiveTab }: { token: string; isPro: boolean; setActiveTab: (tab: TabId) => void }) {
   const clinic = useClinic()
   const [appointments, setAppointments] = useState<ManagedAppointment[]>([])
   const [loading, setLoading] = useState(true)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem("admin-onboarding-dismissed")
+    if (!dismissed) setShowOnboarding(true)
+  }, [])
 
   const today = useMemo(() => new Date(), [])
   const todayISO = toDateISO(today)
@@ -670,6 +681,39 @@ function TabHoy({ token }: { token: string }) {
           </div>
         </div>
       </div>
+
+      {/* Onboarding banner */}
+      {showOnboarding && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`${CARD} p-5 border-l-4 border-l-primary relative`}
+        >
+          <button
+            onClick={() => { setShowOnboarding(false); localStorage.setItem("admin-onboarding-dismissed", "1") }}
+            className="absolute top-3 right-3 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <p className="font-semibold text-secondary dark:text-gray-100 mb-3">Primeros pasos</p>
+          <div className="space-y-2.5">
+            <button onClick={() => setActiveTab("servicios")} className="flex items-center gap-3 w-full text-left group">
+              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-xs font-bold text-primary">1</div>
+              <span className="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Revisa tus servicios y precios</span>
+            </button>
+            {isPro && (
+              <button onClick={() => setActiveTab("config")} className="flex items-center gap-3 w-full text-left group">
+                <div className="w-7 h-7 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 text-xs font-bold text-green-600">2</div>
+                <span className="text-sm text-gray-600 dark:text-gray-300 group-hover:text-green-600 transition-colors">Conecta tu WhatsApp desde Config</span>
+              </button>
+            )}
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 text-xs font-bold text-blue-600">{isPro ? "3" : "2"}</div>
+              <span className="text-sm text-gray-600 dark:text-gray-300">Comparte tu enlace de reservas con tus clientes</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Timeline */}
       {appointments.length === 0 ? (
@@ -3343,7 +3387,7 @@ function TabHorarios({ token }: { token: string }) {
 
 // ─── Tab: Configuración ──────────────────────────────────────────────
 
-function TabConfig({ token }: { token: string }) {
+function TabConfig({ token, isPro }: { token: string; isPro: boolean }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -3358,6 +3402,19 @@ function TabConfig({ token }: { token: string }) {
   const [telegramChatId, setTelegramChatId] = useState("")
   const [cancellationPolicy, setCancellationPolicy] = useState("")
 
+  // Bot config (Pro only)
+  const [botEnabled, setBotEnabled] = useState(true)
+  const [autoRespondDelay, setAutoRespondDelay] = useState(15)
+  const [knowledgeBase, setKnowledgeBase] = useState("")
+
+  // WhatsApp status
+  const [waStatus, setWaStatus] = useState<WhatsAppStatus | null>(null)
+  const [waLoading, setWaLoading] = useState(false)
+  const [reconnecting, setReconnecting] = useState(false)
+  const [qrData, setQrData] = useState<string | null>(null)
+  const [qrConnected, setQrConnected] = useState(false)
+  const qrPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const load = useCallback(async () => {
     setLoading(true)
     try {
@@ -3369,9 +3426,20 @@ function TabConfig({ token }: { token: string }) {
         setMinAdvanceHours(Number(cfg.minAdvanceHours) || 2)
         setBufferMinutes(Number(cfg.bufferMinutes) || 0)
         setAutoConfirm(cfg.autoConfirm === true)
-        setNotifEmail((cfg.notifEmail as string) || "")
-        setTelegramChatId((cfg.telegramChatId as string) || "")
+        // Fix: use correct API field names
+        setNotifEmail((cfg.ownerEmail as string) || "")
+        setTelegramChatId((cfg.notifyTelegramChatId as string) || "")
         setCancellationPolicy((cfg.cancellationPolicy as string) || "")
+        // Bot config
+        const delay = cfg.autoRespondDelayMin
+        if (delay === null) {
+          setBotEnabled(false)
+          setAutoRespondDelay(15)
+        } else {
+          setBotEnabled(true)
+          setAutoRespondDelay(Number(delay) || 15)
+        }
+        setKnowledgeBase((cfg.knowledgeBase as string) || "")
       }
     } catch {
       // ignore
@@ -3381,6 +3449,53 @@ function TabConfig({ token }: { token: string }) {
   }, [token])
 
   useEffect(() => { load() }, [load])
+
+  // Load WhatsApp status for Pro
+  useEffect(() => {
+    if (!isPro) return
+    setWaLoading(true)
+    fetchWhatsAppStatus(token).then(setWaStatus).finally(() => setWaLoading(false))
+  }, [token, isPro])
+
+  // Cleanup QR polling on unmount
+  useEffect(() => {
+    return () => {
+      if (qrPollRef.current) clearInterval(qrPollRef.current)
+    }
+  }, [])
+
+  async function handleReconnect() {
+    setReconnecting(true)
+    setQrConnected(false)
+    try {
+      const res = await reconnectWhatsApp(token)
+      if (res.qr) {
+        setQrData(res.qr)
+        // Start polling
+        qrPollRef.current = setInterval(async () => {
+          try {
+            const poll = await pollWhatsAppQR(token)
+            if (poll.status === "connected") {
+              setQrData(null)
+              setQrConnected(true)
+              setWaStatus({ status: "connected", phoneNumber: poll.phoneNumber || null, lastSeenAt: new Date().toISOString() })
+              if (qrPollRef.current) clearInterval(qrPollRef.current)
+              qrPollRef.current = null
+              setTimeout(() => setQrConnected(false), 4000)
+            } else if (poll.qr) {
+              setQrData(poll.qr)
+            }
+          } catch {
+            // ignore poll errors
+          }
+        }, 3000)
+      }
+    } catch {
+      // ignore
+    } finally {
+      setReconnecting(false)
+    }
+  }
 
   async function handleSave() {
     setSaving(true)
@@ -3393,9 +3508,13 @@ function TabConfig({ token }: { token: string }) {
         minAdvanceHours,
         bufferMinutes,
         autoConfirm,
-        notifEmail: notifEmail || null,
-        telegramChatId: telegramChatId || null,
+        // Fix: use correct API field names
+        ownerEmail: notifEmail || null,
+        notifyTelegramChatId: telegramChatId || null,
         cancellationPolicy: cancellationPolicy || null,
+        // Bot config
+        autoRespondDelayMin: botEnabled ? autoRespondDelay : null,
+        knowledgeBase: knowledgeBase || null,
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
@@ -3447,7 +3566,7 @@ function TabConfig({ token }: { token: string }) {
               max={120}
               value={slotDuration}
               onChange={(e) => setSlotDuration(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              className={INPUT}
             />
           </div>
           <div>
@@ -3458,7 +3577,7 @@ function TabConfig({ token }: { token: string }) {
               max={365}
               value={maxAdvanceDays}
               onChange={(e) => setMaxAdvanceDays(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              className={INPUT}
             />
           </div>
           <div>
@@ -3469,7 +3588,7 @@ function TabConfig({ token }: { token: string }) {
               max={72}
               value={minAdvanceHours}
               onChange={(e) => setMinAdvanceHours(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              className={INPUT}
             />
           </div>
           <div>
@@ -3480,7 +3599,7 @@ function TabConfig({ token }: { token: string }) {
               max={60}
               value={bufferMinutes}
               onChange={(e) => setBufferMinutes(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              className={INPUT}
             />
           </div>
         </div>
@@ -3514,7 +3633,7 @@ function TabConfig({ token }: { token: string }) {
               placeholder="correo@ejemplo.com"
               value={notifEmail}
               onChange={(e) => setNotifEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              className={INPUT}
             />
           </div>
           <div>
@@ -3524,7 +3643,7 @@ function TabConfig({ token }: { token: string }) {
               placeholder="123456789"
               value={telegramChatId}
               onChange={(e) => setTelegramChatId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+              className={INPUT}
             />
           </div>
         </div>
@@ -3536,7 +3655,7 @@ function TabConfig({ token }: { token: string }) {
             placeholder="Escribe la política de cancelación..."
             value={cancellationPolicy}
             onChange={(e) => setCancellationPolicy(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all resize-none"
+            className={`${INPUT} resize-none`}
           />
         </div>
 
@@ -3564,6 +3683,162 @@ function TabConfig({ token }: { token: string }) {
           )}
         </div>
       </div>
+
+      {/* Bot de WhatsApp — Pro only */}
+      {isPro && (
+        <div className={`${CARD} p-5 sm:p-6 space-y-6 border border-green-200 dark:border-green-900/40`}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+              <MessageCircle className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <p className="font-semibold text-secondary dark:text-gray-100">Bot de WhatsApp</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Asistente inteligente para reservas por WhatsApp</p>
+            </div>
+          </div>
+
+          {/* WhatsApp connection status */}
+          <div className="rounded-xl bg-gray-50 dark:bg-gray-800/50 p-4">
+            {waLoading ? (
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                <span className="text-sm text-gray-500">Comprobando conexión...</span>
+              </div>
+            ) : qrConnected ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-3"
+              >
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+                <span className="text-sm font-medium text-green-700 dark:text-green-400">WhatsApp conectado correctamente</span>
+                <Check className="w-4 h-4 text-green-500" />
+              </motion.div>
+            ) : qrData ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-yellow-400 animate-pulse" />
+                  <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400">Esperando escaneo del código QR</span>
+                </div>
+                <div className="flex flex-col items-center gap-3 py-2">
+                  <img
+                    src={qrData.startsWith("data:") ? qrData : `data:image/png;base64,${qrData}`}
+                    alt="WhatsApp QR Code"
+                    className="w-48 h-48 rounded-xl border border-gray-200 dark:border-gray-700"
+                  />
+                  <p className="text-xs text-gray-500 text-center max-w-xs">
+                    Abre WhatsApp en tu móvil &rarr; Dispositivos vinculados &rarr; Vincular un dispositivo &rarr; Escanea este código
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Verificando automáticamente...
+                  </div>
+                </div>
+              </div>
+            ) : waStatus?.status === "connected" ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <div>
+                    <span className="text-sm font-medium text-green-700 dark:text-green-400">WhatsApp conectado</span>
+                    {waStatus.phoneNumber && (
+                      <span className="text-xs text-gray-500 ml-2">+{waStatus.phoneNumber}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : waStatus?.status === "not_configured" ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-gray-300" />
+                  <span className="text-sm text-gray-500">WhatsApp no configurado</span>
+                </div>
+                <button
+                  onClick={handleReconnect}
+                  disabled={reconnecting}
+                  className={BTN_PRIMARY + " !text-xs !px-4 !py-2"}
+                >
+                  {reconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Smartphone className="w-3.5 h-3.5" />}
+                  Conectar
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <span className="text-sm font-medium text-red-600 dark:text-red-400">WhatsApp desconectado</span>
+                </div>
+                <button
+                  onClick={handleReconnect}
+                  disabled={reconnecting}
+                  className={BTN_PRIMARY + " !text-xs !px-4 !py-2"}
+                >
+                  {reconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                  Reconectar
+                </button>
+              </div>
+            )}
+          </div>
+
+          <hr className="border-black/[0.04] dark:border-white/[0.06]" />
+
+          {/* Bot toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-secondary dark:text-gray-100">Bot activado</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">El bot responde automáticamente a los mensajes de tus clientes</p>
+            </div>
+            <button
+              onClick={() => setBotEnabled(!botEnabled)}
+              className={`relative w-12 h-6 rounded-full transition-colors ${botEnabled ? "bg-green-400" : "bg-gray-300"}`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${botEnabled ? "translate-x-6" : "translate-x-0"}`}
+              />
+            </button>
+          </div>
+
+          {botEnabled && (
+            <>
+              {/* Delay slider */}
+              <div>
+                <label className="block text-sm font-medium text-secondary dark:text-gray-200 mb-1.5">
+                  Tiempo de espera: <span className="text-primary font-bold">{autoRespondDelay} min</span>
+                </label>
+                <input
+                  type="range"
+                  min={1}
+                  max={60}
+                  value={autoRespondDelay}
+                  onChange={(e) => setAutoRespondDelay(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500"
+                />
+                <div className="flex justify-between text-[11px] text-gray-400 mt-1">
+                  <span>1 min</span>
+                  <span>60 min</span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  El bot espera este tiempo antes de responder, para que puedas contestar tú primero. Si respondes antes, el bot no interviene.
+                </p>
+              </div>
+
+              {/* Knowledge base */}
+              <div>
+                <label className="block text-sm font-medium text-secondary dark:text-gray-200 mb-1.5">
+                  Información adicional para el bot
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="El bot ya conoce tus servicios, equipo y horarios automáticamente. Aquí puedes añadir información extra: promociones, indicaciones para llegar, parking, normas especiales..."
+                  value={knowledgeBase}
+                  onChange={(e) => setKnowledgeBase(e.target.value)}
+                  className={`${INPUT} resize-none`}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -3686,11 +3961,20 @@ function TabMensajes({ token }: { token: string }) {
                           : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-md"
                       }`}
                     >
-                      {msg.messageType && (
-                        <p className={`text-[10px] font-medium mb-1 ${isOutbound ? "text-white/60" : "text-gray-400"}`}>
-                          {msg.messageType}
-                        </p>
-                      )}
+                      {isOutbound && msg.messageType && (() => {
+                        const typeMap: Record<string, { label: string; bg: string; text: string }> = {
+                          bot_reply: { label: "Bot", bg: "bg-green-500/20", text: "text-green-100" },
+                          owner_reply: { label: "Tú", bg: "bg-blue-400/20", text: "text-blue-100" },
+                          confirmation: { label: "Confirmación", bg: "bg-purple-400/20", text: "text-purple-100" },
+                          reminder: { label: "Recordatorio", bg: "bg-amber-400/20", text: "text-amber-100" },
+                        }
+                        const t = typeMap[msg.messageType || ""]
+                        return t ? (
+                          <span className={`inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-md mb-1 ${t.bg} ${t.text}`}>
+                            {t.label}
+                          </span>
+                        ) : null
+                      })()}
                       <p className="text-sm whitespace-pre-wrap break-words">{msg.content || "(sin contenido)"}</p>
                       <p className={`text-[10px] mt-1 text-right ${isOutbound ? "text-white/50" : "text-gray-400"}`}>
                         {formatMessageTime(msg.createdAt)}
@@ -3746,8 +4030,11 @@ function TabMensajes({ token }: { token: string }) {
               className={`${CARD} p-4 w-full text-left hover:shadow-md transition-all active:scale-[0.99]`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                <div className="relative w-11 h-11 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
                   <MessageCircle className="w-5 h-5 text-green-600" />
+                  {conv.pendingCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-white dark:border-gray-900 animate-pulse" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
@@ -3761,9 +4048,16 @@ function TabMensajes({ token }: { token: string }) {
                       {conv.lastDirection === "outbound" ? "Tú: " : ""}
                       {conv.lastMessage || "(sin contenido)"}
                     </p>
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-500 flex-shrink-0">
-                      {conv.messageCount}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {conv.pendingCount > 0 && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                          {conv.pendingCount}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-500">
+                        {conv.messageCount}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -3781,6 +4075,7 @@ export default function AdminPage() {
   const clinic = useClinic()
   const [token, setToken] = useState<string | null>(null)
   const [authState, setAuthState] = useState<"loading" | "valid" | "invalid">("loading")
+  const [bookingPlan, setBookingPlan] = useState<string>("none")
   const [activeTab, setActiveTab] = useState<TabId>("hoy")
   const { theme, toggle: toggleTheme } = useTheme()
   const { canInstall, install: installPWA, dismiss: dismissPWA } = usePWA()
@@ -3798,10 +4093,11 @@ export default function AdminPage() {
       return
     }
 
-    validateOwnerToken(tokenToValidate).then((res) => {
+    validateOwnerToken(tokenToValidate).then((res: Record<string, unknown>) => {
       if (res.valid) {
         setToken(tokenToValidate)
         setAuthState("valid")
+        setBookingPlan((res.bookingPlan as string) || "none")
         // Persist token for PWA
         localStorage.setItem("admin-token", tokenToValidate)
         // Clean token from URL for security
@@ -3988,7 +4284,7 @@ export default function AdminPage() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                {activeTab === "hoy" && <TabHoy token={token} />}
+                {activeTab === "hoy" && <TabHoy token={token} isPro={bookingPlan === "pro"} setActiveTab={setActiveTab} />}
                 {activeTab === "calendario" && <TabCalendario token={token} />}
                 {activeTab === "citas" && <TabCitas token={token} />}
                 {activeTab === "clientes" && <TabClientes token={token} />}
@@ -3996,7 +4292,7 @@ export default function AdminPage() {
                 {activeTab === "equipo" && <TabEquipo token={token} />}
                 {activeTab === "metricas" && <TabMetricas token={token} />}
                 {activeTab === "horarios" && <TabHorarios token={token} />}
-                {activeTab === "config" && <TabConfig token={token} />}
+                {activeTab === "config" && <TabConfig token={token} isPro={bookingPlan === "pro"} />}
                 {activeTab === "mensajes" && <TabMensajes token={token} />}
               </motion.div>
             </AnimatePresence>
