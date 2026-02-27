@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import { Cormorant_Garamond, Montserrat } from "next/font/google"
 import { getClinicConfig } from "@/config/load-config"
 import { ClinicProvider } from "@/config/clinic-context"
-import { generateLocalBusinessSchema, generateFAQSchema, generateServiceSchema, generateBreadcrumbSchema } from "@/lib/schema"
+import { generateLocalBusinessSchema, generateFAQSchema, generateServiceSchema, generateBreadcrumbSchema, isHealthSchemaType } from "@/lib/schema"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { WhatsAppWidget } from "@/components/layout/WhatsAppWidget"
@@ -47,6 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: config.seo.defaultDescription,
     keywords: config.seo.keywords,
+    alternates: { canonical: baseUrl },
     openGraph: {
       title: config.seo.defaultTitle,
       description: config.seo.defaultDescription,
@@ -104,12 +105,14 @@ export default async function RootLayout({
             __html: JSON.stringify(generateLocalBusinessSchema(config, baseUrl)),
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateFAQSchema(config)),
-          }}
-        />
+        {isHealthSchemaType(config.schemaType) && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(generateFAQSchema(config)),
+            }}
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -121,8 +124,6 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(generateBreadcrumbSchema(baseUrl, [
               { name: "Inicio", path: "/" },
-              { name: "Servicios", path: "/#servicios" },
-              { name: "Contacto", path: "/contacto" },
             ])),
           }}
         />

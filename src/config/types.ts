@@ -46,6 +46,7 @@ export interface ClinicConfig {
     id: string
     name: string
     description: string
+    longDescription?: string
     benefits: string[]
     icon: string
   }>

@@ -1,5 +1,16 @@
 import type { ClinicConfig } from "@/config/types"
 
+// Google restricted FAQPage rich results to gov/health sites (Aug 2023)
+const HEALTH_SCHEMA_TYPES = [
+  "Dentist", "PhysicalTherapy", "PsychologicalTreatment", "MedicalClinic",
+  "Podiatric", "DieteticsAndNutrition", "SpeechPathology", "VeterinaryCare",
+  "Optician", "HealthClub",
+]
+
+export function isHealthSchemaType(schemaType: string): boolean {
+  return HEALTH_SCHEMA_TYPES.includes(schemaType)
+}
+
 export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: string) {
   return {
     "@context": "https://schema.org",
@@ -75,6 +86,38 @@ export function generateServiceSchema(clinic: ClinicConfig, baseUrl: string) {
         },
       },
     })),
+  }
+}
+
+export function generateIndividualServiceSchema(
+  clinic: ClinicConfig,
+  service: { id: string; name: string; description: string; longDescription?: string },
+  baseUrl: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.name,
+    description: service.longDescription || service.description,
+    url: `${baseUrl}/servicios/${service.id}`,
+    provider: {
+      "@type": clinic.schemaType,
+      name: clinic.name,
+      url: baseUrl,
+      telephone: clinic.phone,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: clinic.address.street,
+        addressLocality: clinic.address.city,
+        addressRegion: clinic.address.province,
+        postalCode: clinic.address.postalCode,
+        addressCountry: clinic.address.country,
+      },
+    },
+    areaServed: {
+      "@type": "City",
+      name: clinic.address.city,
+    },
   }
 }
 
