@@ -92,21 +92,36 @@ export default async function PrivacidadPage() {
             {" "}<a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer">www.aepd.es</a>).
           </p>
 
-          <h2>7. Medidas de Seguridad</h2>
+          <h2>7. Asistente Automatizado y WhatsApp</h2>
+          <p>
+            {clinic.name} puede utilizar un asistente automatizado basado en inteligencia artificial
+            para gestionar citas y responder consultas a través de WhatsApp. Sus mensajes son procesados
+            por dicho asistente con el fin de atender su solicitud de la forma más eficiente posible.
+          </p>
+          <p>
+            Si envía una nota de voz, esta se transcribe automáticamente a texto para poder atender
+            su consulta. La grabación original no se almacena de forma permanente.
+          </p>
+          <p>
+            El responsable de la clínica tiene prioridad para responder personalmente. El asistente
+            solo interviene cuando el responsable no ha respondido en un plazo razonable.
+          </p>
+
+          <h2>8. Medidas de Seguridad</h2>
           <p>
             {clinic.name} ha adoptado todas las medidas técnicas y organizativas necesarias para
             garantizar la seguridad e integridad de los datos de carácter personal que trate, así
             como para evitar su pérdida, alteración y/o acceso por parte de terceros no autorizados.
           </p>
 
-          <h2>8. Datos de Menores</h2>
+          <h2>9. Datos de Menores</h2>
           <p>
             Nuestros servicios no están dirigidos a menores de 14 años. Si eres menor de 14 años,
             necesitarás el consentimiento de tus padres o tutores legales para el tratamiento de
             tus datos personales.
           </p>
 
-          <h2>9. Modificaciones</h2>
+          <h2>10. Modificaciones</h2>
           <p>
             {clinic.name} se reserva el derecho a modificar la presente política para adaptarla a
             novedades legislativas o jurisprudenciales, así como a prácticas de la industria. En

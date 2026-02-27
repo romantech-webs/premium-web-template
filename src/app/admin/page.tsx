@@ -61,6 +61,8 @@ import {
   fetchWhatsAppStatus,
   reconnectWhatsApp,
   pollWhatsAppQR,
+  openBillingPortal,
+  rotateOwnerToken,
 } from "@/lib/booking-api"
 import type {
   ManagedAppointment,
@@ -3926,6 +3928,108 @@ function TabConfig({ token, isPro }: { token: string; isPro: boolean }) {
           )}
         </div>
       )}
+
+      {/* ─── Cuenta y Suscripción ─────────────────────────────────────── */}
+      <div className={`${CARD} p-5 sm:p-6 space-y-5`}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <p className="font-semibold text-secondary dark:text-gray-100">Cuenta y suscripción</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Gestiona tu suscripción y acceso</p>
+          </div>
+        </div>
+
+        {/* Billing portal */}
+        <BillingPortalButton token={token} />
+
+        <hr className="border-black/[0.04] dark:border-white/[0.06]" />
+
+        {/* Token rotation */}
+        <TokenRotationButton token={token} />
+      </div>
+    </div>
+  )
+}
+
+function BillingPortalButton({ token }: { token: string }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  async function handleOpen() {
+    setLoading(true)
+    setError("")
+    try {
+      const { url } = await openBillingPortal(token)
+      window.open(url, "_blank")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al abrir portal")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="font-medium text-secondary dark:text-gray-100">Gestionar suscripción</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Ver facturas, cambiar método de pago o cancelar</p>
+      </div>
+      <div className="flex flex-col items-end gap-1">
+        <button onClick={handleOpen} disabled={loading} className={BTN_SECONDARY + " !text-xs"}>
+          {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />}
+          Portal de facturación
+        </button>
+        {error && <span className="text-xs text-red-500">{error}</span>}
+      </div>
+    </div>
+  )
+}
+
+function TokenRotationButton({ token: currentToken }: { token: string }) {
+  const [loading, setLoading] = useState(false)
+  const [rotated, setRotated] = useState(false)
+  const [error, setError] = useState("")
+
+  async function handleRotate() {
+    if (!confirm("¿Regenerar enlace de acceso? El enlace actual dejará de funcionar y tendrás que usar el nuevo.")) return
+    setLoading(true)
+    setError("")
+    try {
+      const { token: newToken } = await rotateOwnerToken(currentToken)
+      setRotated(true)
+      // Update URL with new token
+      const url = new URL(window.location.href)
+      url.searchParams.set("token", newToken)
+      window.history.replaceState({}, "", url.toString())
+      setTimeout(() => setRotated(false), 5000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al regenerar token")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="font-medium text-secondary dark:text-gray-100">Enlace de acceso</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Regenerar enlace de acceso al panel de administración</p>
+      </div>
+      <div className="flex flex-col items-end gap-1">
+        {rotated ? (
+          <span className="inline-flex items-center gap-1.5 text-green-600 text-sm font-medium">
+            <Check className="w-4 h-4" /> Enlace regenerado
+          </span>
+        ) : (
+          <button onClick={handleRotate} disabled={loading} className={BTN_SECONDARY + " !text-xs"}>
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+            Regenerar enlace
+          </button>
+        )}
+        {error && <span className="text-xs text-red-500">{error}</span>}
+      </div>
     </div>
   )
 }

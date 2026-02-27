@@ -453,3 +453,57 @@ export async function pollWhatsAppQR(token: string): Promise<WhatsAppQRResponse>
   if (!res.ok) return { status: "error", qr: null }
   return res.json()
 }
+
+// ─── Billing Portal ──────────────────────────────────────────────────
+
+export async function openBillingPortal(token: string): Promise<{ url: string }> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/owner/billing-portal`, {
+    method: "POST",
+    headers: authHeaders(token),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Error" }))
+    throw new Error(err.error || "No se pudo abrir el portal de facturación")
+  }
+  return res.json()
+}
+
+// ─── Token Rotation ──────────────────────────────────────────────────
+
+export async function rotateOwnerToken(token: string): Promise<{ token: string }> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/owner/rotate-token`, {
+    method: "POST",
+    headers: authHeaders(token),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Error" }))
+    throw new Error(err.error || "No se pudo regenerar el token")
+  }
+  return res.json()
+}
+
+// ─── Owner Metrics ───────────────────────────────────────────────────
+
+export interface OwnerMetrics {
+  total: number
+  completed: number
+  cancelled: number
+  noShow: number
+  completionRate: number
+  cancellationRate: number
+  noShowRate: number
+  upcomingThisWeek: number
+  topServices: { name: string; count: number }[]
+  topEmployees: { name: string; count: number }[]
+}
+
+export async function fetchOwnerMetrics(token: string, period: "week" | "month" | "30d" = "month"): Promise<OwnerMetrics> {
+  const api = getApiUrl()
+  const res = await fetch(`${api}/api/booking/owner/metrics?period=${period}`, {
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error("Error cargando métricas")
+  return res.json()
+}

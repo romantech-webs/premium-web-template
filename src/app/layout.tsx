@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { WhatsAppWidget } from "@/components/layout/WhatsAppWidget"
 import { MobileCTABar } from "@/components/layout/MobileCTABar"
+import { CookieConsent } from "@/components/layout/CookieConsent"
 import "./globals.css"
 
 const cormorant = Cormorant_Garamond({
@@ -152,19 +153,32 @@ export default async function RootLayout({
             }}
           />
         )}
-        {/* GA4 */}
+        {/* GA4 — blocked until cookie consent (type=text/plain, activated by CookieConsent component) */}
         {config.tracking?.ga4Id && (
           <>
             <script
-              async
+              type="text/plain"
+              data-consent="analytics"
               src={`https://www.googletagmanager.com/gtag/js?id=${config.tracking.ga4Id}`}
             />
             <script
+              type="text/plain"
+              data-consent="analytics"
               dangerouslySetInnerHTML={{
                 __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${safeGa4Id}');`,
               }}
             />
           </>
+        )}
+        {/* Meta Pixel — blocked until cookie consent */}
+        {config.tracking?.metaPixelId && (
+          <script
+            type="text/plain"
+            data-consent="analytics"
+            dangerouslySetInnerHTML={{
+              __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${config.tracking.metaPixelId}');fbq('track','PageView');`,
+            }}
+          />
         )}
       </head>
       <body className={`${cormorant.variable} ${montserrat.variable} font-sans overflow-x-hidden`}>
@@ -177,6 +191,7 @@ export default async function RootLayout({
           <Footer />
           <WhatsAppWidget />
           <MobileCTABar />
+          <CookieConsent />
         </ClinicProvider>
       </body>
     </html>
