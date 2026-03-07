@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Linkedin, ArrowUpRight, ChevronDown } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
+import { useOpenStatus } from "@/lib/use-open-status"
 import { cn } from "@/lib/utils"
 
 const TikTokIcon = () => (
@@ -42,6 +43,7 @@ function MobileAccordion({ title, children }: { title: string; children: React.R
 
 export function Footer() {
   const clinic = useClinic()
+  const openStatus = useOpenStatus(clinic.schedule)
   const currentYear = new Date().getFullYear()
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
@@ -54,7 +56,7 @@ export function Footer() {
       <div className="lg:hidden container-wide px-4 py-10 relative">
         {/* Brand + socials + CTA */}
         <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex items-center justify-center gap-3 mb-3">
             {clinic.logo ? (
               <Image src={clinic.logo} alt={clinic.name} width={40} height={40} className="rounded-xl shrink-0" />
             ) : (
@@ -64,6 +66,17 @@ export function Footer() {
             )}
             <span className="text-lg font-bold tracking-tight">{clinic.name}</span>
           </div>
+          {openStatus && (
+            <div className="flex items-center justify-center gap-2 text-sm mb-3">
+              <span className={cn("relative flex h-2 w-2", openStatus.isOpen && "animate-pulse")}>
+                {openStatus.isOpen && <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />}
+                <span className={cn("relative inline-flex rounded-full h-2 w-2", openStatus.isOpen ? "bg-emerald-400" : "bg-red-400")} />
+              </span>
+              <span className={cn("font-medium", openStatus.isOpen ? "text-emerald-400" : "text-red-400/80")}>
+                {openStatus.label}
+              </span>
+            </div>
+          )}
 
           {/* Social links */}
           <div className="flex justify-center gap-3 mb-6">
@@ -166,6 +179,28 @@ export function Footer() {
               </div>
             </div>
             <p className="text-white/60 leading-relaxed">{clinic.tagline}</p>
+            {openStatus && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className={cn(
+                  "relative flex h-2.5 w-2.5",
+                  openStatus.isOpen && "animate-pulse"
+                )}>
+                  {openStatus.isOpen && (
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                  )}
+                  <span className={cn(
+                    "relative inline-flex rounded-full h-2.5 w-2.5",
+                    openStatus.isOpen ? "bg-emerald-400" : "bg-red-400"
+                  )} />
+                </span>
+                <span className={cn(
+                  "font-medium",
+                  openStatus.isOpen ? "text-emerald-400" : "text-red-400/80"
+                )}>
+                  {openStatus.label}
+                </span>
+              </div>
+            )}
             <div className="flex gap-3">
               {clinic.social.instagram && (
                 <a href={clinic.social.instagram} target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 transition-all duration-300" aria-label="Instagram">

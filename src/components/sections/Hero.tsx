@@ -70,7 +70,7 @@ export function Hero() {
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-white" />
+          <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-transparent to-white" />
 
           {/* Floating rating badge on image — top-24 clears the fixed header */}
           <motion.div
@@ -255,7 +255,7 @@ export function Hero() {
               )}
               {clinic.heroHeadline?.[2] && (
               <motion.span
-                className="block text-3xl sm:text-4xl lg:text-5xl mt-2 font-semibold text-secondary/70"
+                className="block text-2xl sm:text-3xl lg:text-4xl mt-2 font-medium text-secondary/50"
                 variants={clipReveal}
                 initial="hidden"
                 animate="visible"
@@ -373,7 +373,7 @@ export function Hero() {
                   priority
                   sizes="50vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-secondary/50 via-secondary/10 to-primary/5" />
               </div>
 
               {/* Floating badge - Rating */}

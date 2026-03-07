@@ -9,7 +9,7 @@ export function Team() {
   const clinic = useClinic()
 
   return (
-    <section id="equipo" className="section-padding bg-neutral relative overflow-hidden">
+    <section id="equipo" className="section-padding bg-neutral relative overflow-hidden section-divider">
       {/* Background */}
       <div className="absolute inset-0 opacity-50">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />

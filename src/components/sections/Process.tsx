@@ -12,7 +12,7 @@ export function Process() {
   const clinic = useClinic()
 
   return (
-    <section className="section-padding bg-neutral">
+    <section className="section-padding bg-neutral section-divider">
       <div className="container-wide">
         {/* Section Header */}
         <motion.div

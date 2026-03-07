@@ -47,7 +47,8 @@
 
   /* Premium Button - Primary */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold text-white overflow-hidden transition-all duration-300;
+    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold text-white overflow-hidden;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary), black 15%) 100%);
     clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
   }
@@ -63,7 +64,7 @@
   }
 
   .btn-primary:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02);
     box-shadow: 0 20px 40px -10px color-mix(in srgb, var(--color-primary) 50%, transparent);
   }
 
@@ -73,7 +74,8 @@
 
   /* Premium Button - Secondary */
   .btn-secondary {
-    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold transition-all duration-300;
+    @apply relative inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     border: 2px solid var(--color-secondary);
     color: var(--color-secondary);
     clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
@@ -82,7 +84,8 @@
   .btn-secondary:hover {
     background: var(--color-secondary);
     color: white;
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 20px 40px -10px color-mix(in srgb, var(--color-secondary) 40%, transparent);
   }
 
   /* WhatsApp Button */
@@ -169,6 +172,22 @@
     width: 60%;
     background: linear-gradient(90deg, var(--color-accent) 0%, transparent 100%);
   }
+
+  /* Section divider — elegant gradient line */
+  .section-divider {
+    position: relative;
+  }
+
+  .section-divider::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(80%, 600px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-primary) 20%, transparent), transparent);
+  }
 }
 
 @layer utilities {
@@ -176,15 +195,12 @@
     text-wrap: balance;
   }
 
-  /* Noise texture overlay */
-  .noise-overlay {
-    position: relative;
-  }
-
+  /* Noise texture overlay — fixed to viewport */
   .noise-overlay::after {
     content: '';
-    position: absolute;
+    position: fixed;
     inset: 0;
+    z-index: 9999;
     opacity: 0.03;
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");

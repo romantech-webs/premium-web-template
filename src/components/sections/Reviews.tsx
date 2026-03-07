@@ -154,14 +154,13 @@ export function Reviews() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
                 className={cn("group relative", isFeatured && "md:col-span-2")}
               >
                 <div className={cn(
-                  "card-athletic h-full p-8 bg-gradient-to-br from-white to-neutral relative overflow-hidden",
+                  "h-full p-8 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/20 hover:-translate-y-1",
                   isFeatured && "border-l-4 border-l-primary"
                 )}>
-                  <div className="absolute bottom-0 left-0 w-0 h-1 bg-accent group-hover:w-full transition-all duration-500" />
                   <div className={cn(
                     "rounded-xl bg-primary/10 flex items-center justify-center mb-6",
                     isFeatured ? "w-14 h-14" : "w-12 h-12"

@@ -124,11 +124,11 @@ export function Services() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.5, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
                 className="group w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
               >
                 <Link href={`/servicios/${service.id}`} className="block h-full">
-                  <div className="relative h-full p-8 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div className="relative h-full p-8 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/10 hover:border-primary/20 hover:-translate-y-1 transition-all duration-300">
                     <div className="text-4xl font-bold leading-none mb-4 bg-gradient-to-b from-primary/15 to-transparent bg-clip-text text-transparent">
                       {String(index + 1).padStart(2, '0')}
                     </div>

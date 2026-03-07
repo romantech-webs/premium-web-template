@@ -64,13 +64,13 @@ export function Header() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+          "fixed left-0 right-0 z-50 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
           isScrolled
-            ? "bg-white/95 backdrop-blur-xl shadow-lg shadow-black/5 py-3"
-            : "bg-white/50 backdrop-blur-md py-6"
+            ? "top-3 mx-auto max-w-[calc(100%-1.5rem)] lg:max-w-5xl rounded-2xl bg-white/85 backdrop-blur-2xl shadow-xl shadow-black/[0.08] border border-white/40 py-2 px-6"
+            : "top-0 bg-transparent py-5"
         )}
       >
-        <div className="container-wide px-4 sm:px-6 lg:px-8">
+        <div className={cn(!isScrolled && "container-wide px-4 sm:px-6 lg:px-8")}>
           <nav className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group min-w-0 relative z-10">

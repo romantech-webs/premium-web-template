@@ -11,7 +11,7 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section id="faq" className="section-padding bg-neutral">
+    <section id="faq" className="section-padding bg-neutral section-divider">
       <div className="container-narrow">
         {/* Section Header */}
         <motion.div
