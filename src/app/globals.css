@@ -223,6 +223,102 @@
   }
 }
 
+/* ==================== LUXURY THEME ==================== */
+.theme-luxury {
+  background-color: #fdfbf7;
+}
+
+/* Buttons — rounded, no angular clip-path */
+.theme-luxury .btn-primary {
+  clip-path: none;
+  border-radius: 9999px;
+  background: var(--color-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  padding: 1rem 2.5rem;
+}
+
+.theme-luxury .btn-primary::before {
+  border-radius: 9999px;
+  background: var(--color-accent);
+}
+
+.theme-luxury .btn-primary:hover {
+  box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--color-secondary) 40%, transparent);
+}
+
+.theme-luxury .btn-secondary {
+  clip-path: none;
+  border-radius: 9999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  padding: 1rem 2.5rem;
+}
+
+.theme-luxury .btn-secondary:hover {
+  box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--color-secondary) 30%, transparent);
+}
+
+.theme-luxury .btn-whatsapp {
+  clip-path: none;
+  border-radius: 9999px;
+}
+
+/* Cards — rounded, no angular clip-path */
+.theme-luxury .card-athletic {
+  clip-path: none;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.theme-luxury .card-athletic::before {
+  display: none;
+}
+
+@media (hover: hover) {
+  .theme-luxury .card-athletic:hover {
+    box-shadow: 0 16px 40px -12px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
+}
+
+/* Section labels — more elegant */
+.theme-luxury .section-label {
+  letter-spacing: 0.25em;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+.theme-luxury .section-label::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--color-accent);
+  animation: none;
+}
+
+.theme-luxury .section-label::after {
+  width: 24px;
+}
+
+/* Underline accent — thinner, more elegant */
+.theme-luxury .underline-accent::after {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--color-accent) 0%, transparent 100%);
+}
+
+/* Noise overlay — subtler */
+.theme-luxury.noise-overlay::after {
+  opacity: 0.015;
+}
+
+/* Headings — slightly lighter weight feel */
+.theme-luxury h1, .theme-luxury h2, .theme-luxury h3 {
+  letter-spacing: -0.02em;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

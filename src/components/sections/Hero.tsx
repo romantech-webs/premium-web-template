@@ -19,8 +19,211 @@ function getHeadlineSizeClasses(headline: string[] | undefined) {
   return { main: "text-3xl sm:text-4xl", sub: "text-2xl sm:text-3xl" }
 }
 
+function LuxuryHero() {
+  const clinic = useClinic()
+  const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
+
+  return (
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Full-screen background image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/hero.webp"
+          alt={`${clinic.name} - ${clinic.tagline}`}
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
+        {/* Dark elegant overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
+        {/* Subtle warm tint */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(196,168,130,0.1) 0%, transparent 60%)' }} />
+      </div>
+
+      {/* Content — centered */}
+      <div className="relative z-10 w-full">
+        {/* Mobile */}
+        <div className="lg:hidden px-6 pt-28 pb-16 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/30 rounded-full mb-8"
+          >
+            <div className="flex -space-x-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-3 h-3 text-amber-400" fill="currentColor" />
+              ))}
+            </div>
+            <span className="text-xs text-white/80 font-medium">
+              {clinic.reviews.rating} · {clinic.reviews.count} reseñas
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-3xl sm:text-4xl font-display font-bold text-white leading-[1.1] mb-4"
+          >
+            {clinic.heroHeadline?.[0] || ""}
+            {clinic.heroHeadline?.[1] && (
+              <span className="block text-accent mt-1">{clinic.heroHeadline[1]}</span>
+            )}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="text-base text-white/70 mb-8 leading-relaxed max-w-md mx-auto"
+          >
+            {clinic.heroDescription}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="flex flex-col gap-3 max-w-xs mx-auto"
+          >
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white text-white text-sm font-medium uppercase tracking-[0.15em] rounded-full hover:bg-white hover:text-secondary transition-all duration-300"
+            >
+              {clinic.ctaLabel || 'Reservar Cita'}
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+              href={`tel:${clinic.phone.replace(/\s/g, "")}`}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 text-white/70 text-sm font-medium uppercase tracking-[0.15em] hover:text-white transition-colors"
+            >
+              <Phone className="w-4 h-4" />
+              {clinic.phone}
+            </a>
+          </motion.div>
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden lg:block text-center px-8 pt-32 pb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="inline-flex items-center gap-3 px-5 py-2 border border-white/25 rounded-full mb-10"
+          >
+            <div className="flex -space-x-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 text-amber-400" fill="currentColor" />
+              ))}
+            </div>
+            <div className="w-px h-4 bg-white/20" />
+            <span className="text-sm text-white/80 font-medium">
+              {clinic.reviews.rating} · {clinic.reviews.count} reseñas
+            </span>
+          </motion.div>
+
+          <motion.h1
+            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-bold text-white leading-[1.05] mb-6 max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className="block">{clinic.heroHeadline?.[0] || ""}</span>
+            {clinic.heroHeadline?.[1] && (
+              <span className="text-accent">{clinic.heroHeadline[1]}</span>
+            )}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="text-lg sm:text-xl text-white/65 mb-12 max-w-2xl mx-auto leading-relaxed"
+          >
+            {clinic.heroDescription}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="flex gap-5 justify-center"
+          >
+            <motion.a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white text-sm font-medium uppercase tracking-[0.15em] rounded-full hover:bg-white hover:text-secondary transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {clinic.ctaLabel || 'Reservar Cita'}
+              <ArrowRight className="w-5 h-5" />
+            </motion.a>
+            <motion.a
+              href={`tel:${clinic.phone.replace(/\s/g, "")}`}
+              className="inline-flex items-center gap-3 px-10 py-4 text-white/60 text-sm font-medium uppercase tracking-[0.15em] hover:text-white transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Phone className="w-5 h-5" />
+              Llamar Ahora
+            </motion.a>
+          </motion.div>
+
+          {/* Stats — horizontal, minimal */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.8 }}
+            className="mt-20 flex justify-center gap-12"
+          >
+            {[
+              { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
+              { end: clinic.services.length, label: "Tratamientos" },
+              { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-3xl font-display font-bold text-white">
+                  <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
+                </p>
+                <p className="text-[10px] text-white/40 mt-1 uppercase tracking-[0.2em]">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1 }}
+      >
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2"
+        >
+          <span className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-medium select-none">
+            Scroll
+          </span>
+          <div className="w-px h-8 bg-gradient-to-b from-white/20 to-transparent" />
+        </motion.div>
+      </motion.div>
+    </section>
+  )
+}
+
 export function Hero() {
   const clinic = useClinic()
+  if (clinic.theme === 'luxury') return <LuxuryHero />
+
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
   const featuredReview = clinic.reviews.featured.length > 0
     ? clinic.reviews.featured.reduce((best, r) => r.text.length > best.text.length ? r : best, clinic.reviews.featured[0])

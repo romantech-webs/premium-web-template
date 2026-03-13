@@ -122,6 +122,7 @@ export interface ClinicConfig {
     ga4Id?: string
     metaPixelId?: string
   }
+  theme?: 'default' | 'luxury'
   _meta?: {
     projectId: string
     widgetApiUrl: string
