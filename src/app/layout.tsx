@@ -150,7 +150,7 @@ export default async function RootLayout({
         {widgetApiUrl && projectId && (
           <script
             dangerouslySetInnerHTML={{
-              __html: `(function(){var sid=Math.random().toString(36).slice(2);var api="${safeApiUrl}/api/widget/track";var pid="${safePid}";function t(e){fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({projectId:pid,event:e,sessionId:sid}),keepalive:true}).catch(function(){});}t("page_view");var scrolled=false;window.addEventListener("scroll",function(){if(!scrolled&&window.scrollY/(document.body.scrollHeight-window.innerHeight)>0.5){scrolled=true;t("scroll_50");}});document.addEventListener("click",function(e){if(e.target.closest("a[href^='tel:'],a[href^='mailto:'],button")){t("cta_click");}});})();`,
+              __html: `(function(){if(location.search.indexOf("_notrack")!==-1)return;var sid=Math.random().toString(36).slice(2);var api="${safeApiUrl}/api/widget/track";var pid="${safePid}";var sent={};function t(e){if(sent[e])return;sent[e]=1;fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({projectId:pid,event:e,sessionId:sid}),keepalive:true}).catch(function(){});}t("page_view");var scrolled=false;window.addEventListener("scroll",function(){if(!scrolled&&window.scrollY/(document.body.scrollHeight-window.innerHeight)>0.5){scrolled=true;t("scroll_50");}});document.addEventListener("click",function(e){if(e.target.closest("a[href^='tel:'],a[href^='mailto:'],button")){sent.cta_click=0;t("cta_click");}});})();`,
             }}
           />
         )}
