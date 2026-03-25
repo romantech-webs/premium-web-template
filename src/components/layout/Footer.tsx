@@ -49,7 +49,7 @@ export function Footer() {
 
   return (
     <footer className="bg-secondary text-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px]" />
+      {clinic.theme !== 'luxury' && <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px]" />}
       <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
 
       {/* Mobile Footer */}

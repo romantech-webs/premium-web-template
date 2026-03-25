@@ -7,6 +7,7 @@ import { CountUp } from "@/components/count-up"
 
 export function SocialProof() {
   const clinic = useClinic()
+  if (clinic.theme === 'luxury') return null
 
   const stats = [
     {

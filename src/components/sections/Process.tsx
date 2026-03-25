@@ -10,6 +10,7 @@ function getIcon(iconName: string) {
 
 export function Process() {
   const clinic = useClinic()
+  const isLuxury = clinic.theme === 'luxury'
 
   return (
     <section className="section-padding bg-neutral section-divider">
@@ -60,16 +61,18 @@ export function Process() {
                     {/* Step number + icon */}
                     <div className="flex items-center gap-3 mb-4 lg:mb-5">
                       <div className="relative w-12 h-12">
-                        <motion.div
-                          className="absolute inset-0 rounded-full"
-                          animate={{
-                            boxShadow: [
-                              "0 0 0 0px color-mix(in srgb, var(--color-primary) 30%, transparent)",
-                              "0 0 0 10px color-mix(in srgb, var(--color-primary) 0%, transparent)"
-                            ]
-                          }}
-                          transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: index * 0.4 }}
-                        />
+                        {!isLuxury && (
+                          <motion.div
+                            className="absolute inset-0 rounded-full"
+                            animate={{
+                              boxShadow: [
+                                "0 0 0 0px color-mix(in srgb, var(--color-primary) 30%, transparent)",
+                                "0 0 0 10px color-mix(in srgb, var(--color-primary) 0%, transparent)"
+                              ]
+                            }}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: index * 0.4 }}
+                          />
+                        )}
                         <div className="relative w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-display font-bold text-lg shadow-lg shadow-primary/30">
                           {step.step}
                         </div>

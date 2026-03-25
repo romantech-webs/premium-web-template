@@ -127,5 +127,7 @@ export interface ClinicConfig {
     projectId: string
     widgetApiUrl: string
     bookingEnabled?: boolean
+    leadId?: string
+    isDemo?: boolean
   }
 }

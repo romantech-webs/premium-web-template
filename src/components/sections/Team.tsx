@@ -7,13 +7,16 @@ import { useClinic } from "@/config/clinic-context"
 
 export function Team() {
   const clinic = useClinic()
+  const isLuxury = clinic.theme === 'luxury'
 
   return (
     <section id="equipo" className="section-padding bg-neutral relative overflow-hidden section-divider">
       {/* Background */}
-      <div className="absolute inset-0 opacity-50">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
-      </div>
+      {!isLuxury && (
+        <div className="absolute inset-0 opacity-50">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
+        </div>
+      )}
 
       <div className="container-wide relative">
         {/* Section Header */}
@@ -47,10 +50,14 @@ export function Team() {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 {/* Image */}
                 <div className="relative">
-                  {/* Background shape - more subtle rotation */}
-                  <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-[2rem] -rotate-2" />
-                  {/* Second gradient layer for depth */}
-                  <div className="absolute -inset-6 bg-gradient-to-tl from-primary/10 to-transparent rounded-[2.5rem] rotate-1 -z-10" />
+                  {!isLuxury && (
+                    <>
+                      {/* Background shape - more subtle rotation */}
+                      <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-[2rem] -rotate-2" />
+                      {/* Second gradient layer for depth */}
+                      <div className="absolute -inset-6 bg-gradient-to-tl from-primary/10 to-transparent rounded-[2.5rem] rotate-1 -z-10" />
+                    </>
+                  )}
 
                   <div className="relative aspect-square rounded-[1.5rem] overflow-hidden shadow-2xl">
                     {member.image && member.image !== "/images/team/placeholder.jpg" ? (
@@ -75,27 +82,29 @@ export function Team() {
                   </div>
 
                   {/* Floating badge with animation */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 }}
-                    className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-4 hidden md:block"
-                  >
+                  {!isLuxury && (
                     <motion.div
-                      className="flex items-center gap-3"
-                      animate={{ y: [0, -4, 0] }}
-                      transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 }}
+                      className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-xl p-4 hidden md:block"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                        <Award className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-secondary">{member.role}</p>
-                        <p className="text-xs text-secondary/50">{clinic.name}</p>
-                      </div>
+                      <motion.div
+                        className="flex items-center gap-3"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                          <Award className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-secondary">{member.role}</p>
+                          <p className="text-xs text-secondary/50">{clinic.name}</p>
+                        </div>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
+                  )}
                 </div>
 
                 {/* Info */}

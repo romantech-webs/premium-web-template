@@ -13,6 +13,7 @@ function getIcon(iconName: string) {
 
 export function Services() {
   const clinic = useClinic()
+  const isLuxury = clinic.theme === 'luxury'
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -37,7 +38,7 @@ export function Services() {
   return (
     <section id="servicios" className="section-padding bg-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-      <div className="absolute top-1/2 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      {!isLuxury && <div className="absolute top-1/2 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />}
 
       <div className="container-wide relative">
         {/* Section Header */}
@@ -129,9 +130,11 @@ export function Services() {
               >
                 <Link href={`/servicios/${service.id}`} className="block h-full">
                   <div className="relative h-full p-8 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/10 hover:border-primary/20 hover:-translate-y-1 transition-all duration-300">
-                    <div className="text-4xl font-bold leading-none mb-4 bg-gradient-to-b from-primary/15 to-transparent bg-clip-text text-transparent">
-                      {String(index + 1).padStart(2, '0')}
-                    </div>
+                    {!isLuxury && (
+                      <div className="text-4xl font-bold leading-none mb-4 bg-gradient-to-b from-primary/15 to-transparent bg-clip-text text-transparent">
+                        {String(index + 1).padStart(2, '0')}
+                      </div>
+                    )}
                     <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:rotate-3 group-hover:scale-110 transition-all duration-300">
                       <Icon className="w-7 h-7 text-primary group-hover:text-white transition-colors duration-300" weight={DEFAULT_ICON_WEIGHT} />
                     </div>

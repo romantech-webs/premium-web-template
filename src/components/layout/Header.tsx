@@ -65,12 +65,14 @@ export function Header() {
       <header
         className={cn(
           "fixed left-0 right-0 z-50 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
-          isScrolled
-            ? "top-3 mx-auto max-w-[calc(100%-1.5rem)] lg:max-w-5xl rounded-2xl bg-white/85 backdrop-blur-2xl shadow-xl shadow-black/[0.08] border border-white/40 py-2 px-6"
-            : "top-0 bg-transparent py-5"
+          clinic.theme === 'luxury'
+            ? "top-0 bg-white/95 backdrop-blur-sm py-3 shadow-sm"
+            : isScrolled
+              ? "top-3 mx-auto max-w-[calc(100%-1.5rem)] lg:max-w-5xl rounded-2xl bg-white/85 backdrop-blur-2xl shadow-xl shadow-black/[0.08] border border-white/40 py-2 px-6"
+              : "top-0 bg-transparent py-5"
         )}
       >
-        <div className={cn(!isScrolled && "container-wide px-4 sm:px-6 lg:px-8")}>
+        <div className={cn((clinic.theme === 'luxury' || !isScrolled) && "container-wide px-4 sm:px-6 lg:px-8")}>
           <nav className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group min-w-0 relative z-10">
@@ -121,18 +123,24 @@ export function Header() {
                 className="flex items-center gap-2 text-sm font-semibold text-secondary/70 hover:text-primary transition-colors whitespace-nowrap"
                 aria-label={`Llamar al ${clinic.phone}`}
               >
-                <motion.div
-                  className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
-                  animate={{
-                    boxShadow: [
-                      "0 0 0 0px color-mix(in srgb, var(--color-primary) 20%, transparent)",
-                      "0 0 0 6px color-mix(in srgb, var(--color-primary) 0%, transparent)"
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
-                >
-                  <Phone className="w-4 h-4 text-primary" />
-                </motion.div>
+                {clinic.theme === 'luxury' ? (
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4 text-primary" />
+                  </div>
+                ) : (
+                  <motion.div
+                    className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
+                    animate={{
+                      boxShadow: [
+                        "0 0 0 0px color-mix(in srgb, var(--color-primary) 20%, transparent)",
+                        "0 0 0 6px color-mix(in srgb, var(--color-primary) 0%, transparent)"
+                      ]
+                    }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
+                  >
+                    <Phone className="w-4 h-4 text-primary" />
+                  </motion.div>
+                )}
                 <span className="hidden xl:block">{clinic.phone}</span>
               </a>
               {clinic._meta?.bookingEnabled ? (

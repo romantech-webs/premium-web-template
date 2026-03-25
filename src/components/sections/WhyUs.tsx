@@ -11,6 +11,7 @@ function getIcon(iconName: string) {
 
 export function WhyUs() {
   const clinic = useClinic()
+  const isLuxury = clinic.theme === 'luxury'
 
   const stats = [
     { end: clinic.services.length, label: "Tratamientos", icon: "Layers" },
@@ -22,12 +23,16 @@ export function WhyUs() {
   return (
     <section className="section-padding bg-secondary text-white relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px]" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[120px]" />
-      <div className="absolute top-0 left-0 w-32 h-32">
-        <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-accent to-transparent" style={{ height: '2px' }} />
-        <div className="absolute top-0 left-0 h-full bg-gradient-to-b from-accent to-transparent" style={{ width: '2px' }} />
-      </div>
+      {!isLuxury && (
+        <>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px]" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[120px]" />
+          <div className="absolute top-0 left-0 w-32 h-32">
+            <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-accent to-transparent" style={{ height: '2px' }} />
+            <div className="absolute top-0 left-0 h-full bg-gradient-to-b from-accent to-transparent" style={{ width: '2px' }} />
+          </div>
+        </>
+      )}
 
       <div className="container-wide relative">
         {/* Mobile layout: Stats first, then features as timeline */}
@@ -181,7 +186,7 @@ export function WhyUs() {
                 )
               })}
             </div>
-            <div className="absolute -bottom-6 -right-6 w-32 h-32 border-4 border-accent/30 rounded-2xl -z-10" />
+            {!isLuxury && <div className="absolute -bottom-6 -right-6 w-32 h-32 border-4 border-accent/30 rounded-2xl -z-10" />}
           </motion.div>
         </div>
       </div>

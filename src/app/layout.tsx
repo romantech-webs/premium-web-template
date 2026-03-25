@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/Footer"
 import { WhatsAppWidget } from "@/components/layout/WhatsAppWidget"
 import { MobileCTABar } from "@/components/layout/MobileCTABar"
 import { CookieConsent } from "@/components/layout/CookieConsent"
+import { DemoBanner } from "@/components/layout/DemoBanner"
 import "./globals.css"
 
 const cormorant = Cormorant_Garamond({
@@ -189,6 +190,7 @@ export default async function RootLayout({
           <Header />
           <main id="main-content">{children}</main>
           <Footer />
+          <DemoBanner />
           <WhatsAppWidget />
           <MobileCTABar />
           <CookieConsent />

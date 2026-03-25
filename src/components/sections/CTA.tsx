@@ -8,6 +8,7 @@ import { useClinic } from "@/config/clinic-context"
 export function CTA() {
   const clinic = useClinic()
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
+  const isLuxury = clinic.theme === 'luxury'
 
   return (
     <section className="section-padding relative overflow-hidden">
@@ -21,32 +22,36 @@ export function CTA() {
         }}
       />
 
-      {/* Pattern overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(
-            -45deg,
-            white,
-            white 1px,
-            transparent 1px,
-            transparent 30px
-          )`
-        }} />
-      </div>
+      {!isLuxury && (
+        <>
+          {/* Pattern overlay */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `repeating-linear-gradient(
+                -45deg,
+                white,
+                white 1px,
+                transparent 1px,
+                transparent 30px
+              )`
+            }} />
+          </div>
 
-      {/* Gradient orbs */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary/30 rounded-full blur-[150px]" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/20 rounded-full blur-[120px]" />
+          {/* Gradient orbs */}
+          <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary/30 rounded-full blur-[150px]" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/20 rounded-full blur-[120px]" />
 
-      {/* Corner accents */}
-      <div className="absolute top-0 right-0 w-40 h-40">
-        <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-accent to-transparent" />
-        <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-accent to-transparent" />
-      </div>
-      <div className="absolute bottom-0 left-0 w-40 h-40">
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-transparent" />
-        <div className="absolute bottom-0 left-0 w-1 h-full bg-gradient-to-t from-accent to-transparent" />
-      </div>
+          {/* Corner accents */}
+          <div className="absolute top-0 right-0 w-40 h-40">
+            <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-accent to-transparent" />
+            <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-accent to-transparent" />
+          </div>
+          <div className="absolute bottom-0 left-0 w-40 h-40">
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-transparent" />
+            <div className="absolute bottom-0 left-0 w-1 h-full bg-gradient-to-t from-accent to-transparent" />
+          </div>
+        </>
+      )}
 
       <div className="container-narrow relative z-10">
         <motion.div
@@ -76,11 +81,10 @@ export function CTA() {
                 <Link
                   href="/reservar"
                   className="btn-primary inline-flex items-center justify-center gap-3 px-10 py-5 font-bold transition-all duration-300 shadow-2xl shadow-black/20"
-                  style={{
-                    clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
-                    background: "white",
-                    color: "var(--color-secondary)",
-                  }}
+                  style={isLuxury
+                    ? { borderRadius: '4px', background: 'white', color: 'var(--color-secondary)' }
+                    : { clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))", background: "white", color: "var(--color-secondary)" }
+                  }
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     Reservar cita online
@@ -96,11 +100,10 @@ export function CTA() {
                 className="btn-primary inline-flex items-center justify-center gap-3 px-10 py-5 font-bold bg-white text-secondary hover:bg-accent hover:text-white transition-all duration-300 shadow-2xl shadow-black/20"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                style={{
-                  clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
-                  background: "white",
-                  color: "var(--color-secondary)",
-                }}
+                style={isLuxury
+                  ? { borderRadius: '4px', background: 'white', color: 'var(--color-secondary)' }
+                  : { clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))", background: "white", color: "var(--color-secondary)" }
+                }
               >
                 <span className="relative z-10 flex items-center gap-3">
                   Reservar por WhatsApp
@@ -114,9 +117,10 @@ export function CTA() {
               className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-xl font-bold border-2 border-white/30 text-white hover:bg-white/10 transition-all duration-300"
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              style={{
-                clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))"
-              }}
+              style={isLuxury
+                ? { borderRadius: '4px' }
+                : { clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))" }
+              }
             >
               <Phone className="w-5 h-5" />
               {clinic.phone}

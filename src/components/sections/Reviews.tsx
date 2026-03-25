@@ -32,7 +32,7 @@ export function Reviews() {
   return (
     <section id="opiniones" className="section-padding bg-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-      <div className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]" />
+      {clinic.theme !== 'luxury' && <div className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]" />}
 
       <div className="container-wide relative">
         {/* Section Header */}
