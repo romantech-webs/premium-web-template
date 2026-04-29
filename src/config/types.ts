@@ -25,6 +25,29 @@ export interface ClinicConfig {
   googleMapsEmbed: string
   coordinates: { lat: number; lng: number }
   schedule: Array<{ days: string; hours: string }>
+  /**
+   * Optional human label for the primary center (e.g. "Centro Ocaña").
+   * If omitted, the primary center uses `clinic.name` as its label
+   * when rendered alongside additional `centers`.
+   */
+  primaryCenterName?: string
+  /**
+   * Additional centers (besides the primary one defined by `address`,
+   * `phone`, `googleMapsEmbed`). Triggers the multi-center Location layout.
+   */
+  centers?: Array<{
+    name?: string
+    address: {
+      street: string
+      city: string
+      province: string
+      postalCode: string
+      country?: string
+    }
+    phone: string
+    googleMapsUrl: string
+    googleMapsEmbed: string
+  }>
   social: {
     instagram: string | null
     facebook: string | null
