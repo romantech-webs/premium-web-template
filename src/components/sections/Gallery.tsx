@@ -56,6 +56,7 @@ export function Gallery() {
   const clinic = useClinic()
   const images = clinic.gallery
   const total = images.length
+  if (!total) return null
   const lastIsFeature = total >= 4 && (total - 2) % 2 === 0
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)

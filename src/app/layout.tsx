@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: config.seo.defaultDescription,
       images: [`${baseUrl}/og-image.jpg`],
     },
-    robots: {
+    robots: config._meta?.noindex ? { index: false, follow: false } : {
       index: true,
       follow: true,
     },

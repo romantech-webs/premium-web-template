@@ -79,3 +79,33 @@ export async function DELETE(request: NextRequest) {
   invalidateConfig(slug)
   return NextResponse.json({ success: true })
 }
+
+export async function PATCH(request: NextRequest) {
+  const secret = process.env.DEPLOY_SECRET
+  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { slug, meta } = await request.json()
+  if (!slug || !/^[a-z0-9-]+$/.test(slug) || !meta || typeof meta !== "object") {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+  }
+
+  const siteDir = path.resolve(SITES_DIR, slug)
+  if (!siteDir.startsWith(path.resolve(SITES_DIR) + path.sep)) {
+    return NextResponse.json({ error: "Invalid slug" }, { status: 400 })
+  }
+
+  const configPath = path.join(siteDir, "config.json")
+  try {
+    const { readFile } = await import("fs/promises")
+    const raw = await readFile(configPath, "utf-8")
+    const config = JSON.parse(raw)
+    config._meta = { ...config._meta, ...meta }
+    await writeFile(configPath, JSON.stringify(config, null, 2), "utf-8")
+    invalidateConfig(slug)
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: "Site not found" }, { status: 404 })
+  }
+}

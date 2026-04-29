@@ -129,5 +129,6 @@ export interface ClinicConfig {
     bookingEnabled?: boolean
     leadId?: string
     isDemo?: boolean
+    noindex?: boolean
   }
 }
