@@ -41,7 +41,7 @@ function LuxuryHero() {
           sizes="100vw"
         />
         {/* Subtle dark overlay */}
-        <div className="absolute inset-0 bg-black/30" />
+        {!clinic.heroNoOverlay && <div className="absolute inset-0 bg-black/30" />}
       </div>
 
       {/* Content — bottom-left aligned */}
@@ -232,7 +232,9 @@ export function Hero() {
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-transparent to-white" />
+          {!clinic.heroNoOverlay && (
+            <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-transparent to-white" />
+          )}
 
           {/* Floating rating badge on image — top-24 clears the fixed header */}
           <motion.div
@@ -535,7 +537,9 @@ export function Hero() {
                   priority
                   sizes="50vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/50 via-secondary/10 to-primary/5" />
+                {!clinic.heroNoOverlay && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/50 via-secondary/10 to-primary/5" />
+                )}
               </div>
 
               {/* Floating badge - Rating */}

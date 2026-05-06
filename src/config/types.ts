@@ -111,6 +111,7 @@ export interface ClinicConfig {
   heroHeadline: string[]
   heroDescription: string
   heroShowRatingBadge?: boolean
+  heroNoOverlay?: boolean
   specialty: string
   ctaLabel: string
   ctaHeadline: string
