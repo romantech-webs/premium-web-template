@@ -16,7 +16,6 @@ function buildNavItems(pages: Record<string, unknown> | undefined): NavItem[] {
   if (has("urgencias")) items.push({ label: "Urgencias 24h", href: "/urgencias", emphasis: "urgent" })
   else if (has("urgencias-24h")) items.push({ label: "Urgencias 24h", href: "/urgencias-24h", emphasis: "urgent" })
   if (has("precios")) items.push({ label: "Precios", href: "/precios" })
-  items.push({ label: "Opiniones", href: "/#opiniones" })
   const aboutKey = ["sobre-maxi", "sobre", "sobre-mi", "quien-soy"].find(has)
   if (aboutKey) items.push({ label: "Sobre mí", href: `/${aboutKey}` })
   items.push({ label: "Contacto", href: "/contacto" })
@@ -76,7 +75,7 @@ export function Header() {
           clinic.theme === 'luxury'
             ? "top-0 bg-white/95 backdrop-blur-sm py-3 shadow-sm"
             : isScrolled
-              ? "top-3 mx-auto max-w-[calc(100%-1.5rem)] lg:max-w-5xl rounded-2xl bg-white/85 backdrop-blur-2xl shadow-xl shadow-black/[0.08] border border-white/40 py-2 px-6"
+              ? "top-3 mx-auto max-w-[calc(100%-1.5rem)] lg:max-w-6xl rounded-2xl bg-white/85 backdrop-blur-2xl shadow-xl shadow-black/[0.08] border border-white/40 py-2 px-4"
               : "top-0 bg-transparent py-5"
         )}
       >
@@ -130,7 +129,7 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "relative px-5 py-2 text-sm font-medium transition-colors group",
+                    "relative px-3 py-2 text-sm font-medium transition-colors group whitespace-nowrap",
                     item.emphasis === "urgent"
                       ? "text-accent hover:text-accent/80 font-semibold"
                       : "text-secondary/70 hover:text-secondary"
@@ -183,9 +182,8 @@ export function Header() {
                   href="/reservar"
                   className="btn-primary text-sm whitespace-nowrap shrink-0"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 whitespace-nowrap">
                     {clinic.ctaLabel || "Pedir presupuesto"}
-                    <ArrowUpRight className="w-4 h-4" />
                   </span>
                 </Link>
               ) : (
@@ -195,9 +193,8 @@ export function Header() {
                   rel="noopener noreferrer"
                   className="btn-primary text-sm whitespace-nowrap shrink-0"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 whitespace-nowrap">
                     {clinic.ctaLabel || "Pedir presupuesto"}
-                    <ArrowUpRight className="w-4 h-4" />
                   </span>
                 </a>
               )}

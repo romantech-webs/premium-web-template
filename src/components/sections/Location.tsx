@@ -48,6 +48,10 @@ function MapFrame({ embed, title }: { embed: string; title: string }) {
 }
 
 function AddressCard({ center }: { center: CenterCard }) {
+  const a = center.address
+  const isSAB = !a.street && !a.postalCode
+  const cityLine = [a.postalCode, a.city].filter(Boolean).join(" ").trim()
+  const provinceLine = a.province && a.province.trim().toLowerCase() !== a.city.trim().toLowerCase() ? a.province : ""
   return (
     <div className="bg-neutral rounded-2xl p-5 lg:p-6">
       <div className="flex items-start gap-4">
@@ -55,11 +59,19 @@ function AddressCard({ center }: { center: CenterCard }) {
           <MapPin className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h3 className="font-semibold text-secondary mb-2">Dirección</h3>
+          <h3 className="font-semibold text-secondary mb-2">
+            {isSAB ? "Zona de servicio" : "Dirección"}
+          </h3>
           <p className="text-secondary/70 text-sm">
-            {center.address.street}<br />
-            {center.address.postalCode} {center.address.city}<br />
-            {center.address.province}
+            {isSAB ? (
+              <>{a.city} y comarca</>
+            ) : (
+              <>
+                {a.street && <>{a.street}<br /></>}
+                {cityLine && <>{cityLine}<br /></>}
+                {provinceLine}
+              </>
+            )}
           </p>
           <a
             href={center.googleMapsUrl}
