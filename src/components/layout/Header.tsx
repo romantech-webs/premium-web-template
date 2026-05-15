@@ -8,13 +8,20 @@ import { Menu, X, Phone, ArrowUpRight, Instagram, Facebook } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 import { cn } from "@/lib/utils"
 
-const navItems = [
-  { label: "Servicios", href: "/#servicios" },
-  { label: "Equipo", href: "/#equipo" },
-  { label: "Opiniones", href: "/#opiniones" },
-  { label: "Ubicación", href: "/#ubicacion" },
-  { label: "Contacto", href: "/contacto" },
-]
+type NavItem = { label: string; href: string; emphasis?: "urgent" }
+
+function buildNavItems(pages: Record<string, unknown> | undefined): NavItem[] {
+  const items: NavItem[] = [{ label: "Servicios", href: "/#servicios" }]
+  const has = (k: string) => pages && Object.prototype.hasOwnProperty.call(pages, k)
+  if (has("urgencias")) items.push({ label: "Urgencias 24h", href: "/urgencias", emphasis: "urgent" })
+  else if (has("urgencias-24h")) items.push({ label: "Urgencias 24h", href: "/urgencias-24h", emphasis: "urgent" })
+  if (has("precios")) items.push({ label: "Precios", href: "/precios" })
+  items.push({ label: "Opiniones", href: "/#opiniones" })
+  const aboutKey = ["sobre-maxi", "sobre", "sobre-mi", "quien-soy"].find(has)
+  if (aboutKey) items.push({ label: "Sobre mí", href: `/${aboutKey}` })
+  items.push({ label: "Contacto", href: "/contacto" })
+  return items
+}
 
 function useScrollLock(isLocked: boolean) {
   useEffect(() => {
@@ -46,6 +53,7 @@ export function Header() {
   const clinic = useClinic()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const navItems = buildNavItems(clinic.pages as Record<string, unknown> | undefined)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -108,10 +116,24 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="relative px-5 py-2 text-sm font-medium text-secondary/70 hover:text-secondary transition-colors group"
+                  className={cn(
+                    "relative px-5 py-2 text-sm font-medium transition-colors group",
+                    item.emphasis === "urgent"
+                      ? "text-accent hover:text-accent/80 font-semibold"
+                      : "text-secondary/70 hover:text-secondary"
+                  )}
                 >
+                  {item.emphasis === "urgent" && (
+                    <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                    </span>
+                  )}
                   {item.label}
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-1/2" />
+                  <span className={cn(
+                    "absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] transition-all duration-300 group-hover:w-1/2",
+                    item.emphasis === "urgent" ? "bg-accent" : "bg-accent"
+                  )} />
                 </Link>
               ))}
             </div>
