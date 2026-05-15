@@ -57,14 +57,20 @@ export function Footer() {
         {/* Brand + socials + CTA */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-3 mb-3">
-            {clinic.logo ? (
-              <Image src={clinic.logo} alt={clinic.name} width={40} height={40} className="rounded-xl shrink-0" />
+            {clinic.logo && clinic.logoStyle === "wordmark" ? (
+              <Image src={clinic.logo} alt={clinic.name} width={200} height={80} className="h-9 w-auto brightness-0 invert" />
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight shrink-0">
-                {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
-              </div>
+              <>
+                {clinic.logo ? (
+                  <Image src={clinic.logo} alt={clinic.name} width={40} height={40} className="rounded-xl shrink-0" />
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight shrink-0">
+                    {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
+                  </div>
+                )}
+                <span className="text-lg font-bold tracking-tight">{clinic.name}</span>
+              </>
             )}
-            <span className="text-lg font-bold tracking-tight">{clinic.name}</span>
           </div>
           {openStatus && (
             <div className="flex items-center justify-center gap-2 text-sm mb-3">
@@ -166,17 +172,23 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
-              {clinic.logo ? (
-                <Image src={clinic.logo} alt={clinic.name} width={44} height={44} className="rounded-xl shrink-0" />
+              {clinic.logo && clinic.logoStyle === "wordmark" ? (
+                <Image src={clinic.logo} alt={clinic.name} width={200} height={80} className="h-11 w-auto brightness-0 invert" />
               ) : (
-                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight shrink-0">
-                  {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
-                </div>
+                <>
+                  {clinic.logo ? (
+                    <Image src={clinic.logo} alt={clinic.name} width={44} height={44} className="rounded-xl shrink-0" />
+                  ) : (
+                    <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight shrink-0">
+                      {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-xl font-bold tracking-tight">{clinic.name}</span>
+                    <p className="text-[10px] uppercase tracking-[0.15em] text-white/40">{clinic.tagline}</p>
+                  </div>
+                </>
               )}
-              <div>
-                <span className="text-xl font-bold tracking-tight">{clinic.name}</span>
-                <p className="text-[10px] uppercase tracking-[0.15em] text-white/40">{clinic.tagline}</p>
-              </div>
             </div>
             <p className="text-white/60 leading-relaxed">{clinic.tagline}</p>
             {openStatus && (
