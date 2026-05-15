@@ -1,3 +1,20 @@
+export interface BlogPost {
+  title: string
+  metaDescription: string
+  h1: string
+  publishedDate: string
+  modifiedDate?: string
+  category?: string
+  readingTime?: string
+  intro: string
+  sections: Array<{ heading: string; body: string }>
+  faq?: Array<{ q?: string; a?: string; question?: string; answer?: string }>
+  callToAction?: string
+  relatedKeywords?: string[]
+  internalLinks?: string[]
+  image?: string
+}
+
 export interface CustomPage {
   title: string
   metaDescription: string
@@ -181,6 +198,7 @@ export interface ClinicConfig {
   yearsActive?: number
   urgenciasBadge?: { label: string; description?: string }
   pages?: Record<string, CustomPage>
+  blog?: { posts: Record<string, BlogPost> }
   _meta?: {
     projectId: string
     widgetApiUrl: string
