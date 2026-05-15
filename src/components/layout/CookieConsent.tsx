@@ -56,7 +56,7 @@ export function CookieConsent() {
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 99998,
+        zIndex: 99990,
         padding: "16px",
         background: "rgba(0,0,0,0.9)",
         backdropFilter: "blur(8px)",

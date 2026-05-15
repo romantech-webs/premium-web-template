@@ -31,19 +31,11 @@ export function CountUp({
     const el = ref.current
     if (!el || hasAnimated.current) return
 
-    const rect = el.getBoundingClientRect()
-    const alreadyVisible = rect.top < window.innerHeight && rect.bottom > 0
-    if (alreadyVisible) {
-      hasAnimated.current = true
-      return
-    }
-
-    setCount(0)
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true
+          setCount(0)
           const start = performance.now()
 
           function animate(now: number) {
