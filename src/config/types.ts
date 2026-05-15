@@ -148,10 +148,19 @@ export interface ClinicConfig {
   }
   theme?: 'default' | 'luxury'
   customDomain?: string
+  serviceAreas?: string[]
+  priceRange?: string
+  paymentMethods?: string[]
+  addressRegion?: string
+  yearsActive?: number
+  urgenciasBadge?: { label: string; description?: string }
   _meta?: {
     projectId: string
     widgetApiUrl: string
     bookingEnabled?: boolean
+    bookingPlan?: string
+    productsEnabled?: boolean
+    productsPlan?: string
     leadId?: string
     isDemo?: boolean
     noindex?: boolean

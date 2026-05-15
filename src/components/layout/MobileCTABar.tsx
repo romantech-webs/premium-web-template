@@ -15,13 +15,13 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function MobileCTABar() {
   const clinic = useClinic()
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   const [overlayOpen, setOverlayOpen] = useState(false)
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 300)
+      setIsVisible(window.scrollY < 50 || window.scrollY > 200)
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
@@ -59,7 +59,7 @@ export function MobileCTABar() {
               aria-label="Pedir cita por WhatsApp"
             >
               <WhatsAppIcon className="w-5 h-5" />
-              Pedir Cita
+              {clinic.ctaLabel || "Pedir Cita"}
             </a>
             <a
               href={`tel:${clinic.phone.replace(/\s/g, "")}`}

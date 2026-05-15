@@ -23,13 +23,22 @@ export function CountUp({
   duration = 2000,
   className,
 }: CountUpProps) {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(end)
   const ref = useRef<HTMLSpanElement>(null)
   const hasAnimated = useRef(false)
 
   useEffect(() => {
     const el = ref.current
-    if (!el) return
+    if (!el || hasAnimated.current) return
+
+    const rect = el.getBoundingClientRect()
+    const alreadyVisible = rect.top < window.innerHeight && rect.bottom > 0
+    if (alreadyVisible) {
+      hasAnimated.current = true
+      return
+    }
+
+    setCount(0)
 
     const observer = new IntersectionObserver(
       ([entry]) => {

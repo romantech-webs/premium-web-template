@@ -89,6 +89,14 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <head>
+        {/* Preload LCP hero image */}
+        <link
+          rel="preload"
+          as="image"
+          href="/images/hero.webp"
+          // @ts-expect-error fetchpriority not in React types yet
+          fetchpriority="high"
+        />
         {/* Dynamic CSS variables from config */}
         <style
           dangerouslySetInnerHTML={{
@@ -135,7 +143,7 @@ export default async function RootLayout({
             __html: `window.__WIDGET_API_URL="${safeApiUrl}";window.__PROJECT_ID="${safePid}";`,
           }}
         />
-        {widgetApiUrl && (
+        {widgetApiUrl && (config._meta?.bookingEnabled || config._meta?.productsEnabled) && (
           <script
             src={`${widgetApiUrl}/widget.js`}
             data-project-name={config.name}

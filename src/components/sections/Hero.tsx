@@ -49,7 +49,7 @@ function LuxuryHero() {
         {/* Mobile */}
         <div className="lg:hidden px-6 pt-28 pb-12 text-left">
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
             className="text-xs text-white/60 font-medium uppercase tracking-[0.2em] mb-4"
@@ -58,7 +58,7 @@ function LuxuryHero() {
           </motion.p>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-3xl sm:text-4xl font-display font-bold text-white leading-[1.1] mb-4"
@@ -70,7 +70,7 @@ function LuxuryHero() {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
             className="text-base text-white/70 mb-8 leading-relaxed max-w-md"
@@ -79,7 +79,7 @@ function LuxuryHero() {
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
           >
@@ -99,7 +99,7 @@ function LuxuryHero() {
         <div className="hidden lg:block px-8 pb-24 pt-32">
           <div className="container-wide">
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-xs text-white/60 font-medium uppercase tracking-[0.25em] mb-6"
@@ -109,7 +109,7 @@ function LuxuryHero() {
 
             <motion.h1
               className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-bold text-white leading-[1.05] mb-6 max-w-4xl"
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -120,7 +120,7 @@ function LuxuryHero() {
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-lg sm:text-xl text-white/70 mb-10 max-w-xl leading-relaxed"
@@ -129,7 +129,7 @@ function LuxuryHero() {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
             >
@@ -160,7 +160,7 @@ function LuxuryHero() {
       {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
       >
@@ -188,9 +188,11 @@ export function Hero() {
     ? clinic.reviews.featured.reduce((best, r) => r.text.length > best.text.length ? r : best, clinic.reviews.featured[0])
     : null
   const headlineSize = getHeadlineSizeClasses(clinic.heroHeadline)
+  const fullHeadline = (clinic.heroHeadline || []).filter(Boolean).join(" ")
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary/5">
+      <h1 className="sr-only">{fullHeadline}</h1>
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-[0.03]">
@@ -238,7 +240,7 @@ export function Hero() {
 
           {/* Floating rating badge on image — top-24 clears the fixed header */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
             className="absolute top-24 left-4 inline-flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg"
@@ -256,25 +258,24 @@ export function Hero() {
 
         {/* Content below image */}
         <div className="px-4 pt-6 pb-8">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <motion.div
+            initial={false}
+            aria-hidden="true"
             className={cn(headlineSize.main, "font-display font-bold text-secondary leading-[1.05] mb-4 text-balance")}
           >
             <span className="block">{clinic.heroHeadline?.[0] || ""}</span>
             {clinic.heroHeadline?.[1] && (
-              <span className="text-primary">{clinic.heroHeadline[1]}</span>
+              <span className="text-primary">{" "}{clinic.heroHeadline[1]}</span>
             )}
             {clinic.heroHeadline?.[2] && (
               <span className={cn("block mt-1 font-semibold text-secondary/70", headlineSize.sub)}>
                 {clinic.heroHeadline[2]}
               </span>
             )}
-          </motion.h1>
+          </motion.div>
 
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.5 }}
             className="text-base text-secondary/60 mb-6 leading-relaxed"
@@ -285,7 +286,7 @@ export function Hero() {
           {/* Mini testimonial — mobile */}
           {featuredReview && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.5 }}
               className="mb-6 p-4 bg-neutral rounded-xl border-l-4 border-l-accent"
@@ -306,7 +307,7 @@ export function Hero() {
 
           {/* CTA buttons — full width */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
             className="flex gap-3"
@@ -333,14 +334,14 @@ export function Hero() {
 
           {/* Stats — horizontal scroll */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.5 }}
             className="mt-8 pt-6 border-t border-gray-200 flex justify-between"
           >
             {[
               { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
-              { end: clinic.services.length, label: "Tratamientos" },
+              { end: clinic.services.length, label: "Servicios" },
               { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
             ].map((stat, i) => (
               <div key={i} className="text-center">
@@ -359,14 +360,14 @@ export function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Content */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="text-left"
           >
             {/* Trust badge */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
               className="inline-flex items-center gap-3 px-4 py-2 bg-white rounded-full shadow-lg shadow-black/5 border border-gray-100 mb-8 relative"
@@ -392,47 +393,27 @@ export function Hero() {
               </span>
             </motion.div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6">
-              <motion.span
-                className="block"
-                variants={clipReveal}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {clinic.heroHeadline?.[0] || ""}
-              </motion.span>
+            {/* Headline (visual; SEO h1 is sr-only above) */}
+            <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6" aria-hidden="true">
+              <span className="block">{clinic.heroHeadline?.[0] || ""}</span>
               {clinic.heroHeadline?.[1] && (
-              <motion.span
-                className="relative inline-block"
-                variants={clipReveal}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.55, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <span className="text-primary">{clinic.heroHeadline[1]}</span>
-                <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 200 12" fill="none">
-                  <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
-                </svg>
-              </motion.span>
+                <span className="relative inline-block">
+                  <span className="text-primary">{clinic.heroHeadline[1]}</span>
+                  <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 200 12" fill="none">
+                    <path d="M2 10C50 4 150 4 198 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+                  </svg>
+                </span>
               )}
               {clinic.heroHeadline?.[2] && (
-              <motion.span
-                className="block text-2xl sm:text-3xl lg:text-4xl mt-2 font-medium text-secondary/50"
-                variants={clipReveal}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.7, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {clinic.heroHeadline[2]}
-              </motion.span>
+                <span className="block text-2xl sm:text-3xl lg:text-4xl mt-2 font-medium text-secondary/50">
+                  {clinic.heroHeadline[2]}
+                </span>
               )}
-            </h1>
+            </div>
 
             {/* Description */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-lg sm:text-xl text-secondary/60 mb-8 max-w-xl leading-relaxed"
@@ -443,7 +424,7 @@ export function Hero() {
             {/* Mini testimonial — desktop */}
             {featuredReview && (
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55, duration: 0.5 }}
                 className="mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-xl border-l-4 border-l-accent shadow-sm max-w-xl"
@@ -464,7 +445,7 @@ export function Hero() {
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
               className="flex flex-row gap-4 justify-start"
@@ -496,7 +477,7 @@ export function Hero() {
 
             {/* Stats */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
               className="mt-12 pt-10 border-t border-gray-200 grid grid-cols-3 gap-6"
@@ -521,7 +502,7 @@ export function Hero() {
 
           {/* Hero Image — desktop */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, x: 50 }}
+            initial={false}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="relative group"
@@ -545,7 +526,7 @@ export function Hero() {
               {/* Floating badge - Rating */}
               {clinic.heroShowRatingBadge !== false && (
               <motion.div
-                initial={{ opacity: 0, x: -30 }}
+                initial={false}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
                 className="absolute -left-6 top-1/4 bg-white rounded-2xl shadow-xl p-4"
@@ -568,7 +549,7 @@ export function Hero() {
 
               {/* Floating badge - Specialty */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
                 className="absolute -right-4 bottom-20 bg-white rounded-2xl shadow-xl p-4"
@@ -597,7 +578,7 @@ export function Hero() {
       {/* Scroll indicator — desktop only */}
       <motion.div
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
       >
