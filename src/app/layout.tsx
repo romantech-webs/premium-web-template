@@ -2,7 +2,7 @@ import { headers } from "next/headers"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Cormorant_Garamond, Montserrat } from "next/font/google"
-import { getClinicConfig } from "@/config/load-config"
+import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import { ClinicProvider } from "@/config/clinic-context"
 import { generateLocalBusinessSchema, generateFAQSchema, generateServiceSchema, generateBreadcrumbSchema, isHealthSchemaType } from "@/lib/schema"
 import { Header } from "@/components/layout/Header"
@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const result = await getSlugAndConfig()
   if (!result) return { title: "No encontrado" }
   const { slug, config } = result
-  const baseUrl = `https://${slug}.romantechwebs.com`
+  const baseUrl = getBaseUrl(slug, config)
 
   return {
     title: {
@@ -78,7 +78,7 @@ export default async function RootLayout({
   const result = await getSlugAndConfig()
   if (!result) return notFound()
   const { slug, config } = result
-  const baseUrl = `https://${slug}.romantechwebs.com`
+  const baseUrl = getBaseUrl(slug, config)
   const widgetApiUrl = config._meta?.widgetApiUrl || process.env.WIDGET_API_URL || ""
   const projectId = config._meta?.projectId || ""
   // Sanitize for safe inline script interpolation

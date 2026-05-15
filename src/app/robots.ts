@@ -1,6 +1,6 @@
 import { headers } from "next/headers"
 import type { MetadataRoute } from "next"
-import { getClinicConfig } from "@/config/load-config"
+import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const h = await headers()
@@ -15,7 +15,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     return { rules: { userAgent: "*", disallow: "/" } }
   }
 
-  const baseUrl = `https://${slug}.romantechwebs.com`
+  const baseUrl = getBaseUrl(slug, config)
 
   return {
     rules: {

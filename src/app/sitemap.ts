@@ -1,6 +1,6 @@
 import { headers } from "next/headers"
 import type { MetadataRoute } from "next"
-import { getClinicConfig } from "@/config/load-config"
+import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const h = await headers()
@@ -8,8 +8,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   if (!slug) return []
 
-  const baseUrl = `https://${slug}.romantechwebs.com`
   const config = await getClinicConfig(slug)
+  const baseUrl = getBaseUrl(slug, config)
 
   const serviceUrls: MetadataRoute.Sitemap = (config?.services || []).map((s) => ({
     url: `${baseUrl}/servicios/${s.id}`,

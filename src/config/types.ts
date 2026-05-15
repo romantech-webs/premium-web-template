@@ -147,6 +147,7 @@ export interface ClinicConfig {
     metaPixelId?: string
   }
   theme?: 'default' | 'luxury'
+  customDomain?: string
   _meta?: {
     projectId: string
     widgetApiUrl: string

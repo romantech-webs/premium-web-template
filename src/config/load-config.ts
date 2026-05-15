@@ -38,3 +38,8 @@ export async function getClinicConfig(slug: string): Promise<ClinicConfig | null
 export function invalidateConfig(slug: string) {
   cache.delete(slug)
 }
+
+export function getBaseUrl(slug: string, config: Pick<ClinicConfig, "customDomain"> | null | undefined): string {
+  if (config?.customDomain) return `https://${config.customDomain}`
+  return `https://${slug}.romantechwebs.com`
+}

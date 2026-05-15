@@ -2,7 +2,7 @@ import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
-import { getClinicConfig } from "@/config/load-config"
+import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import { generateIndividualServiceSchema, generateBreadcrumbSchema } from "@/lib/schema"
 import { ServicePageClient } from "./client"
 
@@ -24,7 +24,7 @@ export async function generateMetadata(
   const { slug, config } = result
   const service = config.services.find((s) => s.id === id)
   if (!service) return { title: "Servicio no encontrado" }
-  const baseUrl = `https://${slug}.romantechwebs.com`
+  const baseUrl = getBaseUrl(slug, config)
 
   return {
     title: service.name,
@@ -48,7 +48,7 @@ export default async function ServicePage(
   const { slug, config } = result
   const service = config.services.find((s) => s.id === id)
   if (!service) return notFound()
-  const baseUrl = `https://${slug}.romantechwebs.com`
+  const baseUrl = getBaseUrl(slug, config)
 
   // Find related FAQs (questions mentioning the service name)
   const serviceNameLower = service.name.toLowerCase()
