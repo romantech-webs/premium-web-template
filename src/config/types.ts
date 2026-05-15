@@ -18,6 +18,8 @@ export interface CustomPage {
 export interface ClinicConfig {
   name: string
   logo: string | null
+  /** "wordmark" = logo image already contains the brand name; the header hides the duplicate text. "icon" = small icon, keep the text next to it. Defaults to "icon". */
+  logoStyle?: "icon" | "wordmark"
   tagline: string
   description: string
   colors: {

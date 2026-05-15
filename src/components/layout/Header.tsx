@@ -83,31 +83,44 @@ export function Header() {
         <div className={cn((clinic.theme === 'luxury' || !isScrolled) && "container-wide px-4 sm:px-6 lg:px-8")}>
           <nav className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group min-w-0 relative z-10">
-              <div className="relative shrink-0">
-                <div className={cn(
-                  "absolute inset-0 rounded-xl transition-all duration-300",
-                  isScrolled ? "bg-primary/10" : "bg-white/20"
-                )} />
-                {clinic.logo ? (
-                  <Image
-                    src={clinic.logo}
-                    alt={clinic.name}
-                    width={44}
-                    height={44}
-                    className="relative rounded-xl"
-                  />
-                ) : (
-                  <div className="relative w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight">
-                    {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
+            <Link href="/" className="flex items-center gap-3 group min-w-0 relative z-10" aria-label={clinic.name}>
+              {clinic.logo && clinic.logoStyle === "wordmark" ? (
+                <Image
+                  src={clinic.logo}
+                  alt={clinic.name}
+                  width={200}
+                  height={80}
+                  priority
+                  className="h-10 sm:h-11 w-auto"
+                />
+              ) : (
+                <>
+                  <div className="relative shrink-0">
+                    <div className={cn(
+                      "absolute inset-0 rounded-xl transition-all duration-300",
+                      isScrolled ? "bg-primary/10" : "bg-white/20"
+                    )} />
+                    {clinic.logo ? (
+                      <Image
+                        src={clinic.logo}
+                        alt={clinic.name}
+                        width={44}
+                        height={44}
+                        className="relative rounded-xl"
+                      />
+                    ) : (
+                      <div className="relative w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-sm tracking-tight">
+                        {clinic.name.split(/\s+/).filter(w => w.length > 2).slice(0, 3).map(w => w[0].toUpperCase()).join("")}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="hidden sm:block min-w-0">
-                <span className="block text-xl font-bold tracking-tight text-secondary truncate">
-                  {clinic.name}
-                </span>
-              </div>
+                  <div className="hidden sm:block min-w-0">
+                    <span className="block text-xl font-bold tracking-tight text-secondary truncate">
+                      {clinic.name}
+                    </span>
+                  </div>
+                </>
+              )}
             </Link>
 
             {/* Desktop Navigation */}
