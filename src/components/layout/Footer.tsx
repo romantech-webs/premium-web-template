@@ -299,7 +299,31 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/40">
+        {/* Service areas (location landings, if any) */}
+        {(() => {
+          const pages = clinic.pages || {}
+          const locationSlugs = Object.keys(pages).filter(s => s.startsWith("fontanero-") || s.startsWith("dentista-") || s.startsWith("electricista-"))
+          if (locationSlugs.length === 0) return null
+          return (
+            <div className="mt-12 pt-8 border-t border-white/10">
+              <h4 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-4">Zonas de servicio</h4>
+              <ul className="flex flex-wrap gap-x-5 gap-y-2">
+                {locationSlugs.map((s) => {
+                  const label = pages[s]?.h1 || s.replace(/^[a-z]+-/, "").replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+                  return (
+                    <li key={s}>
+                      <Link href={`/${s}`} className="text-white/70 hover:text-white text-sm transition-colors">
+                        {label}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )
+        })()}
+
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/40">
           <p>&copy; {currentYear} {clinic.legal.companyName}</p>
           {clinic.legal.cif && <p>CIF: {clinic.legal.cif}</p>}
         </div>
