@@ -94,6 +94,8 @@ export interface ClinicConfig {
     h1?: string
     seoTitle?: string
     seoMetaDescription?: string
+    priceFrom?: string   // e.g. "40 €" or "Desde 850 €"
+    timeEstimate?: string // e.g. "30-60 min" or "1-2 días"
   }>
   yearsExperience?: number
   process: Array<{

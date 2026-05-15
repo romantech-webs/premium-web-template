@@ -15,15 +15,18 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function MobileCTABar() {
   const clinic = useClinic()
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(false)
   const [overlayOpen, setOverlayOpen] = useState(false)
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY < 50 || window.scrollY > 200)
+      // Hidden in the hero (first ~700px). Showing earlier covers the LCP
+      // element and the primary in-hero CTAs on mobile.
+      setIsVisible(window.scrollY > 600)
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 

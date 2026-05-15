@@ -31,6 +31,14 @@ export function CountUp({
     const el = ref.current
     if (!el || hasAnimated.current) return
 
+    // Small values with decimals (ratings like 5.0) don't animate — animation
+    // captures mid-frames like 4.1 / 4.7 that look wrong vs the real rating.
+    const shouldAnimate = end >= 10 && decimals === 0
+    if (!shouldAnimate) {
+      hasAnimated.current = true
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
@@ -59,7 +67,7 @@ export function CountUp({
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [end, duration])
+  }, [end, duration, decimals])
 
   const display = decimals > 0 ? count.toFixed(decimals) : Math.round(count).toString()
 

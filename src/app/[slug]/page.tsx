@@ -4,7 +4,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import { generateBreadcrumbSchema } from "@/lib/schema"
-import { Phone, MapPin, Star, Clock, CheckCircle2, Shield, Wrench, ChevronRight, MessageCircle } from "lucide-react"
+import { Phone, MapPin, Star, Clock, CheckCircle2, Shield, Wrench, ChevronRight, MessageCircle, Euro } from "lucide-react"
 
 const RESERVED_SLUGS = new Set([
   "aviso-legal", "privacidad", "cookies", "contacto", "reservar",
@@ -27,9 +27,28 @@ async function getSlugAndPage(slug: string) {
 function pageIcon(slug: string) {
   if (slug.startsWith("fontanero-")) return MapPin
   if (slug === "urgencias" || slug === "urgencias-24h") return Clock
-  if (slug === "precios") return Wrench
+  if (slug === "precios" || slug === "tarifas") return Euro
   if (slug.startsWith("sobre")) return Shield
   return CheckCircle2
+}
+
+/**
+ * Try to pull the first price chip out of a free-text body — patterns like
+ * "40-100 €", "desde 850 €", "150 €/hora", "60-150 €".
+ * Falls back to null when nothing matches.
+ */
+function extractPriceChip(text: string): string | null {
+  const patterns = [
+    /(\d{1,4}\s*[–-]\s*\d{1,4})\s*€/,
+    /desde\s*(\d{1,4})\s*€/i,
+    /(\d{1,4}\s*€\s*\/\s*\w+)/i,
+    /(\d{1,4})\s*€/,
+  ]
+  for (const re of patterns) {
+    const m = text.match(re)
+    if (m) return m[0].replace(/\s+/g, " ").replace(/\s*–\s*|\s*-\s*/, "–")
+  }
+  return null
 }
 
 export async function generateMetadata(
@@ -215,17 +234,55 @@ export default async function CustomPagePage(
             </section>
           )}
 
-          {/* Sections */}
-          {page.sections?.map((section, i) => (
-            <section key={i} className="mb-12">
-              <h2 className="text-2xl sm:text-3xl font-display font-bold text-secondary mb-5">
-                {section.heading}
-              </h2>
-              <div className="text-secondary/80 leading-relaxed whitespace-pre-line text-base sm:text-lg">
-                {section.body}
-              </div>
-            </section>
-          ))}
+          {/* Sections — as price cards on /precios, plain prose elsewhere */}
+          {slug === "precios" || slug === "tarifas" ? (
+            page.sections && page.sections.length > 0 && (
+              <section className="mb-12 not-prose">
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-secondary mb-6">
+                  Tarifas orientativas
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {page.sections.map((section, i) => {
+                    const price = extractPriceChip(section.body)
+                    return (
+                      <article
+                        key={i}
+                        className="group p-5 sm:p-6 bg-white rounded-2xl border border-secondary/10 hover:border-primary/30 hover:shadow-lg transition-all flex flex-col"
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <h3 className="text-lg sm:text-xl font-display font-bold text-secondary leading-tight">
+                            {section.heading}
+                          </h3>
+                          {price && (
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 text-primary text-sm font-bold rounded-lg whitespace-nowrap">
+                              {price}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-secondary/75 text-sm leading-relaxed flex-1 whitespace-pre-line">
+                          {section.body}
+                        </p>
+                      </article>
+                    )
+                  })}
+                </div>
+                <p className="mt-6 text-sm text-secondary/55 italic">
+                  Precios orientativos sujetos a diagnóstico in situ. Antes de empezar siempre cierras un presupuesto en firme — sin sorpresas al final.
+                </p>
+              </section>
+            )
+          ) : (
+            page.sections?.map((section, i) => (
+              <section key={i} className="mb-12">
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-secondary mb-5">
+                  {section.heading}
+                </h2>
+                <div className="text-secondary/80 leading-relaxed whitespace-pre-line text-base sm:text-lg">
+                  {section.body}
+                </div>
+              </section>
+            ))
+          )}
 
           {/* Testimonial */}
           {testimonialText && (

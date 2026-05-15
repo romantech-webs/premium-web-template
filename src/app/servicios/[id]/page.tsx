@@ -4,7 +4,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import { generateIndividualServiceSchema, generateBreadcrumbSchema } from "@/lib/schema"
-import { Phone, Star, Shield, Clock, CheckCircle2, ChevronRight, MessageCircle, Wrench } from "lucide-react"
+import { Phone, Star, Shield, Clock, CheckCircle2, ChevronRight, MessageCircle, Wrench, Euro, Timer } from "lucide-react"
 
 async function getSlugAndConfig() {
   const h = await headers()
@@ -184,6 +184,47 @@ export default async function ServicePage(
           </div>
         </div>
       </section>
+
+      {/* Price + Time band */}
+      {(service.priceFrom || service.timeEstimate) && (
+        <section className="bg-white border-b border-secondary/10">
+          <div className="container max-w-5xl mx-auto px-4 py-7">
+            <div className="grid sm:grid-cols-3 gap-4 items-center">
+              {service.priceFrom && (
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Euro className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-secondary/50 font-bold">Desde</div>
+                    <div className="text-2xl font-display font-bold text-secondary">{service.priceFrom}</div>
+                  </div>
+                </div>
+              )}
+              {service.timeEstimate && (
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                    <Timer className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-secondary/50 font-bold">Tiempo medio</div>
+                    <div className="text-lg font-display font-bold text-secondary">{service.timeEstimate}</div>
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-start sm:justify-end">
+                <a
+                  href={`tel:${phoneClean}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-secondary transition-colors text-sm whitespace-nowrap"
+                >
+                  <Phone className="w-4 h-4" />
+                  Pedir presupuesto
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Long description */}
       {service.longDescription && (
