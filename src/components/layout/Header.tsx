@@ -184,7 +184,7 @@ export function Header() {
                   className="btn-primary text-sm whitespace-nowrap shrink-0"
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    Pedir Cita
+                    {clinic.ctaLabel || "Pedir presupuesto"}
                     <ArrowUpRight className="w-4 h-4" />
                   </span>
                 </Link>
@@ -196,7 +196,7 @@ export function Header() {
                   className="btn-primary text-sm whitespace-nowrap shrink-0"
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    Pedir Cita
+                    {clinic.ctaLabel || "Pedir presupuesto"}
                     <ArrowUpRight className="w-4 h-4" />
                   </span>
                 </a>
@@ -279,7 +279,7 @@ export function Header() {
                     className="btn-primary w-full text-center py-4"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-3 text-lg">
-                      Pedir Cita
+                      {clinic.ctaLabel || "Pedir presupuesto"}
                       <ArrowUpRight className="w-5 h-5" />
                     </span>
                   </Link>
@@ -292,7 +292,7 @@ export function Header() {
                     className="btn-primary w-full text-center py-4"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-3 text-lg">
-                      Pedir Cita
+                      {clinic.ctaLabel || "Pedir presupuesto"}
                       <ArrowUpRight className="w-5 h-5" />
                     </span>
                   </a>

@@ -89,7 +89,7 @@ function LuxuryHero() {
               rel={ctaRel}
               className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white text-white text-sm font-medium uppercase tracking-[0.15em] rounded-[4px] hover:bg-white hover:text-[var(--color-secondary)] transition-all duration-300"
             >
-              {clinic.ctaLabel || 'Reservar Cita'}
+              {clinic.ctaLabel || 'Pedir presupuesto'}
               <ArrowRight className="w-4 h-4" />
             </a>
           </motion.div>
@@ -138,7 +138,7 @@ function LuxuryHero() {
                   href="/reservar"
                   className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white text-sm font-medium uppercase tracking-[0.15em] rounded-[4px] hover:bg-white hover:text-[var(--color-secondary)] transition-all duration-300"
                 >
-                  {clinic.ctaLabel || 'Reservar Cita'}
+                  {clinic.ctaLabel || 'Pedir presupuesto'}
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               ) : (
@@ -148,7 +148,7 @@ function LuxuryHero() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white text-sm font-medium uppercase tracking-[0.15em] rounded-[4px] hover:bg-white hover:text-[var(--color-secondary)] transition-all duration-300"
                 >
-                  {clinic.ctaLabel || 'Reservar Cita'}
+                  {clinic.ctaLabel || 'Pedir presupuesto'}
                   <ArrowRight className="w-5 h-5" />
                 </a>
               )}
@@ -319,7 +319,7 @@ export function Hero() {
               className="btn-primary flex-1 text-sm py-3.5"
             >
               <span className="inline-flex items-center justify-center gap-2 w-full">
-                Reservar Cita
+                {clinic.ctaLabel || "Pedir presupuesto"}
                 <ArrowRight className="w-4 h-4" />
               </span>
             </a>
@@ -459,7 +459,7 @@ export function Hero() {
                 whileTap={{ scale: 0.98 }}
               >
                 <span className="inline-flex items-center gap-3">
-                  Reservar Cita
+                  {clinic.ctaLabel || "Pedir presupuesto"}
                   <ArrowRight className="w-5 h-5" />
                 </span>
               </motion.a>
