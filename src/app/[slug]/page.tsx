@@ -312,7 +312,11 @@ export default async function CustomPagePage(
               </h2>
               <div className="space-y-3">
                 {page.faq.map((item, i) => (
-                  <details key={i} className="group bg-neutral rounded-xl border border-secondary/5 overflow-hidden">
+                  <details
+                    key={i}
+                    open={i === 0}
+                    className="group bg-neutral rounded-xl border border-secondary/5 overflow-hidden hover:border-primary/20 transition-colors"
+                  >
                     <summary className="font-semibold text-secondary cursor-pointer text-base sm:text-lg list-none p-5 flex items-center justify-between gap-4 hover:bg-secondary/[0.02]">
                       <span className="flex-1">{item.question}</span>
                       <ChevronRight className="w-4 h-4 text-primary shrink-0 transition-transform group-open:rotate-90" />

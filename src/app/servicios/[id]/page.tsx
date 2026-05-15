@@ -249,16 +249,16 @@ export default async function ServicePage(
                 El proceso, paso a paso
               </h2>
             </div>
-            <ol className="grid sm:grid-cols-2 gap-4">
+            <ol className="grid sm:grid-cols-2 gap-5 sm:gap-6">
               {service.process.map((step, i) => (
                 <li
                   key={i}
-                  className="relative p-5 bg-white rounded-2xl border border-secondary/5 hover:border-primary/30 hover:shadow-lg transition-all"
+                  className="relative p-6 sm:p-7 pt-9 bg-white rounded-2xl border border-secondary/5 hover:border-primary/30 hover:shadow-lg transition-all"
                 >
-                  <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary text-white font-bold flex items-center justify-center shadow-md">
-                    {i + 1}
+                  <div className="absolute -top-5 -left-5 w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary text-white font-display font-bold text-xl flex items-center justify-center shadow-lg shadow-primary/30">
+                    {String(i + 1).padStart(2, "0")}
                   </div>
-                  <p className="text-secondary/85 leading-relaxed pt-2">{step}</p>
+                  <p className="text-secondary/85 leading-relaxed">{step}</p>
                 </li>
               ))}
             </ol>
@@ -280,7 +280,11 @@ export default async function ServicePage(
             </div>
             <div className="space-y-3">
               {relatedFaqs.map((faq, i) => (
-                <details key={i} className="group bg-neutral rounded-xl border border-secondary/5 overflow-hidden">
+                <details
+                  key={i}
+                  open={i === 0}
+                  className="group bg-neutral rounded-xl border border-secondary/5 overflow-hidden hover:border-primary/20 transition-colors"
+                >
                   <summary className="font-semibold text-secondary cursor-pointer text-base sm:text-lg list-none p-5 flex items-center justify-between gap-4 hover:bg-secondary/[0.02]">
                     <span className="flex-1">{faq.question}</span>
                     <ChevronRight className="w-4 h-4 text-primary shrink-0 transition-transform group-open:rotate-90" />
