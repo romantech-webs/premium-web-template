@@ -81,19 +81,29 @@ export default async function CustomPagePage(
           </h1>
 
           {page.intro && (
-            <p className="text-lg sm:text-xl text-secondary/70 leading-relaxed mb-8">
+            <p className="text-lg sm:text-xl text-secondary/70 leading-relaxed mb-6 whitespace-pre-line">
               {page.intro}
             </p>
+          )}
+
+          {page.uniqueAngle && (
+            <section className="my-8 p-5 bg-neutral rounded-xl border-l-4 border-l-accent">
+              <p className="text-base text-secondary/80 leading-relaxed whitespace-pre-line">
+                {page.uniqueAngle}
+              </p>
+            </section>
           )}
 
           {page.testimonial && (
             <blockquote className="my-8 p-5 bg-neutral rounded-xl border-l-4 border-l-primary">
               <p className="text-base text-secondary/80 italic leading-relaxed">
-                &ldquo;{page.testimonial.text}&rdquo;
+                &ldquo;{typeof page.testimonial === "string" ? page.testimonial : page.testimonial.text}&rdquo;
               </p>
-              <footer className="mt-2 text-sm font-semibold text-secondary">
-                — {page.testimonial.author}
-              </footer>
+              {typeof page.testimonial !== "string" && page.testimonial.author && (
+                <footer className="mt-2 text-sm font-semibold text-secondary">
+                  — {page.testimonial.author}
+                </footer>
+              )}
             </blockquote>
           )}
 

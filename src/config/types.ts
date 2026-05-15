@@ -3,9 +3,11 @@ export interface CustomPage {
   metaDescription: string
   h1: string
   intro?: string
+  /** Free-text describing what's unique about this location/page (rendered as paragraph below intro). */
+  uniqueAngle?: string
   sections?: Array<{ heading: string; body: string }>
   faq?: Array<{ question: string; answer: string }>
-  testimonial?: { author: string; text: string; rating?: number }
+  testimonial?: { author?: string; text: string; rating?: number } | string
   services?: string[]
   cta?: { label: string; description?: string }
   /** Schema type for this page: defaults to "WebPage" */
