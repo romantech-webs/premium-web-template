@@ -16,9 +16,21 @@ export function CookieConsent() {
       setState(saved)
       if (saved === "accepted") activateTracking()
     } else {
-      // Show banner after short delay (avoid layout shift)
-      const t = setTimeout(() => setVisible(true), 1000)
-      return () => clearTimeout(t)
+      // Show banner after the user starts interacting (avoids covering LCP
+      // element on first viewport). Triggers on first scroll or after 4s.
+      let armed = true
+      const show = () => {
+        if (!armed) return
+        armed = false
+        setVisible(true)
+      }
+      const onScroll = () => { if (window.scrollY > 60) show() }
+      window.addEventListener("scroll", onScroll, { passive: true })
+      const t = setTimeout(show, 4000)
+      return () => {
+        clearTimeout(t)
+        window.removeEventListener("scroll", onScroll)
+      }
     }
   }, [])
 

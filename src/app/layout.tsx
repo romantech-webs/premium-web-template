@@ -94,8 +94,7 @@ export default async function RootLayout({
           rel="preload"
           as="image"
           href="/images/hero.webp"
-          // @ts-expect-error fetchpriority not in React types yet
-          fetchpriority="high"
+          fetchPriority="high"
         />
         {/* Dynamic CSS variables from config */}
         <style
