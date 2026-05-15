@@ -67,6 +67,15 @@ export async function generateMetadata(): Promise<Metadata> {
       index: true,
       follow: true,
     },
+    verification: {
+      ...(config.verifications?.google ? { google: config.verifications.google } : {}),
+      ...(config.verifications?.yandex ? { yandex: config.verifications.yandex } : {}),
+      other: {
+        ...(config.verifications?.bing ? { "msvalidate.01": config.verifications.bing } : {}),
+        ...(config.verifications?.pinterest ? { "p:domain_verify": config.verifications.pinterest } : {}),
+        ...(config.verifications?.facebook ? { "facebook-domain-verification": config.verifications.facebook } : {}),
+      },
+    },
     icons: {
       icon: [
         { url: "/icon.png", type: "image/png", sizes: "32x32" },

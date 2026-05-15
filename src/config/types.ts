@@ -199,6 +199,15 @@ export interface ClinicConfig {
   urgenciasBadge?: { label: string; description?: string }
   pages?: Record<string, CustomPage>
   blog?: { posts: Record<string, BlogPost> }
+  verifications?: {
+    google?: string   // content of <meta name="google-site-verification">
+    bing?: string     // content of <meta name="msvalidate.01">
+    yandex?: string   // content of <meta name="yandex-verification">
+    pinterest?: string
+    facebook?: string // domain verification
+    /** IndexNow key (uuid-ish hex string). Triggers <key>.txt at root. */
+    indexNowKey?: string
+  }
   _meta?: {
     projectId: string
     widgetApiUrl: string
