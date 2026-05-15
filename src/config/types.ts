@@ -1,3 +1,17 @@
+export interface CustomPage {
+  title: string
+  metaDescription: string
+  h1: string
+  intro?: string
+  sections?: Array<{ heading: string; body: string }>
+  faq?: Array<{ question: string; answer: string }>
+  testimonial?: { author: string; text: string; rating?: number }
+  services?: string[]
+  cta?: { label: string; description?: string }
+  /** Schema type for this page: defaults to "WebPage" */
+  schemaType?: "AboutPage" | "Service" | "LocalBusiness" | "WebPage"
+}
+
 // ClinicConfig — matches the shape produced by mapper.ts in automatizacion-webs
 export interface ClinicConfig {
   name: string
@@ -154,6 +168,7 @@ export interface ClinicConfig {
   addressRegion?: string
   yearsActive?: number
   urgenciasBadge?: { label: string; description?: string }
+  pages?: Record<string, CustomPage>
   _meta?: {
     projectId: string
     widgetApiUrl: string
