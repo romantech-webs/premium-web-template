@@ -33,7 +33,7 @@ export async function generateMetadata(
   const { config, page } = result
   const baseUrl = getBaseUrl(result.clinicSlug, config)
   return {
-    title: page.title,
+    title: { absolute: page.title },
     description: page.metaDescription,
     alternates: { canonical: `${baseUrl}/${slug}` },
     openGraph: {

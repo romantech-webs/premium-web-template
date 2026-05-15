@@ -26,13 +26,14 @@ export async function generateMetadata(
   if (!service) return { title: "Servicio no encontrado" }
   const baseUrl = getBaseUrl(slug, config)
 
+  const description = service.seoMetaDescription || service.description
   return {
-    title: service.name,
-    description: service.longDescription || service.description,
+    title: service.seoTitle ? { absolute: service.seoTitle } : service.name,
+    description,
     alternates: { canonical: `${baseUrl}/servicios/${id}` },
     openGraph: {
-      title: `${service.name} | ${config.name}`,
-      description: service.longDescription || service.description,
+      title: service.seoTitle || `${service.name} | ${config.name}`,
+      description,
       locale: "es_ES",
       type: "website",
     },
@@ -50,13 +51,15 @@ export default async function ServicePage(
   if (!service) return notFound()
   const baseUrl = getBaseUrl(slug, config)
 
-  // Find related FAQs (questions mentioning the service name)
+  // Prefer service-specific FAQs; fall back to global ones mentioning the service name
   const serviceNameLower = service.name.toLowerCase()
-  const relatedFaqs = config.faq.filter(
-    (f) =>
-      f.question.toLowerCase().includes(serviceNameLower) ||
-      f.answer.toLowerCase().includes(serviceNameLower),
-  )
+  const relatedFaqs = service.faq && service.faq.length > 0
+    ? service.faq
+    : config.faq.filter(
+        (f) =>
+          f.question.toLowerCase().includes(serviceNameLower) ||
+          f.answer.toLowerCase().includes(serviceNameLower),
+      )
 
   return (
     <>
@@ -113,13 +116,34 @@ export default async function ServicePage(
         <section className="section-padding bg-neutral">
           <div className="container-wide max-w-4xl">
             <h1 className="text-4xl sm:text-5xl font-display font-bold text-secondary mb-6">
-              {service.name}
+              {service.h1 || service.name}
             </h1>
-            <p className="text-lg text-secondary/70 leading-relaxed">
+            <div className="text-lg text-secondary/70 leading-relaxed whitespace-pre-line">
               {service.longDescription || service.description}
-            </p>
+            </div>
           </div>
         </section>
+
+        {/* Process steps */}
+        {service.process && service.process.length > 0 && (
+          <section className="section-padding bg-white">
+            <div className="container-wide max-w-4xl">
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-secondary mb-8">
+                Cómo lo hago
+              </h2>
+              <ol className="space-y-4">
+                {service.process.map((step, i) => (
+                  <li key={i} className="flex gap-4 p-4 bg-neutral rounded-xl">
+                    <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <p className="text-secondary/80 leading-relaxed pt-1">{step}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+        )}
 
         {/* Benefits + CTA */}
         <ServicePageClient

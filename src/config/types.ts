@@ -86,6 +86,12 @@ export interface ClinicConfig {
     longDescription?: string
     benefits: string[]
     icon: string
+    faq?: Array<{ question: string; answer: string }>
+    process?: string[]
+    relatedKeywords?: string[]
+    h1?: string
+    seoTitle?: string
+    seoMetaDescription?: string
   }>
   yearsExperience?: number
   process: Array<{
