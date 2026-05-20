@@ -344,6 +344,7 @@ export function Hero() {
               !clinic.heroHidePatientsStat && { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
               { end: clinic.services.length, label: "Servicios" },
               { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
+              clinic.heroShowYearsExperience && clinic.yearsExperience && { end: clinic.yearsExperience, prefix: "+", label: "Años experiencia" },
             ].filter(Boolean) as Array<{ end: number; prefix?: string; label: string; decimals?: number }>).map((stat, i) => (
               <div key={i} className="text-center">
                 <p className="text-2xl font-bold text-secondary">
@@ -482,12 +483,17 @@ export function Hero() {
               initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
-              className={`mt-12 pt-10 border-t border-gray-200 grid gap-6 ${clinic.heroHidePatientsStat ? 'grid-cols-2' : 'grid-cols-3'}`}
+              className={(() => {
+                const n = (!clinic.heroHidePatientsStat ? 1 : 0) + 2 + (clinic.heroShowYearsExperience && clinic.yearsExperience ? 1 : 0)
+                const colsClass = n === 4 ? 'grid-cols-4' : n === 3 ? 'grid-cols-3' : 'grid-cols-2'
+                return `mt-12 pt-10 border-t border-gray-200 grid gap-6 ${colsClass}`
+              })()}
             >
               {([
                 !clinic.heroHidePatientsStat && { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
                 { end: clinic.services.length, label: "Tratamientos" },
                 { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
+                clinic.heroShowYearsExperience && clinic.yearsExperience && { end: clinic.yearsExperience, prefix: "+", label: "Años experiencia" },
               ].filter(Boolean) as Array<{ end: number; prefix?: string; label: string; decimals?: number }>).map((stat, i) => (
                 <div key={i} className="text-left flex items-center gap-6">
                   {i > 0 && <div className="w-px h-8 bg-gray-200 -ml-3" />}

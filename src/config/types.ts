@@ -157,6 +157,7 @@ export interface ClinicConfig {
   heroShowRatingBadge?: boolean
   heroNoOverlay?: boolean
   heroHidePatientsStat?: boolean
+  heroShowYearsExperience?: boolean
   whyUsHideIcons?: boolean
   whyUsHideStats?: boolean
   hiddenSections?: Array<'services' | 'process' | 'reviews' | 'socialProof' | 'whyUs' | 'team' | 'gallery' | 'faq' | 'location' | 'cta'>
