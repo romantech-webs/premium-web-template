@@ -107,6 +107,7 @@ export interface ClinicConfig {
     longDescription?: string
     benefits: string[]
     icon: string
+    image?: string
     faq?: Array<{ question: string; answer: string }>
     process?: string[]
     relatedKeywords?: string[]
@@ -155,6 +156,10 @@ export interface ClinicConfig {
   heroDescription: string
   heroShowRatingBadge?: boolean
   heroNoOverlay?: boolean
+  heroHidePatientsStat?: boolean
+  whyUsHideIcons?: boolean
+  whyUsHideStats?: boolean
+  hiddenSections?: Array<'services' | 'process' | 'reviews' | 'socialProof' | 'whyUs' | 'team' | 'gallery' | 'faq' | 'location' | 'cta'>
   specialty: string
   ctaLabel: string
   ctaHeadline: string
@@ -198,6 +203,25 @@ export interface ClinicConfig {
   yearsActive?: number
   urgenciasBadge?: { label: string; description?: string }
   pages?: Record<string, CustomPage>
+  /**
+   * Optional structured pricing list. When present, takes over the /precios
+   * route with a category/table layout. Falls back to pages.precios otherwise.
+   */
+  pricing?: {
+    label?: string
+    title?: string
+    description?: string
+    note?: string
+    categories: Array<{
+      name: string
+      items: Array<{
+        name: string
+        duration?: string
+        price: number
+        priceFrom?: boolean
+      }>
+    }>
+  }
   blog?: { posts: Record<string, BlogPost> }
   verifications?: {
     google?: string   // content of <meta name="google-site-verification">
