@@ -10,12 +10,15 @@ import { cn } from "@/lib/utils"
 
 type NavItem = { label: string; href: string; emphasis?: "urgent" }
 
-function buildNavItems(pages: Record<string, unknown> | undefined): NavItem[] {
+function buildNavItems(
+  pages: Record<string, unknown> | undefined,
+  hasPricing?: boolean,
+): NavItem[] {
   const items: NavItem[] = [{ label: "Servicios", href: "/#servicios" }]
   const has = (k: string) => pages && Object.prototype.hasOwnProperty.call(pages, k)
   if (has("urgencias")) items.push({ label: "Urgencias 24h", href: "/urgencias", emphasis: "urgent" })
   else if (has("urgencias-24h")) items.push({ label: "Urgencias 24h", href: "/urgencias-24h", emphasis: "urgent" })
-  if (has("precios")) items.push({ label: "Precios", href: "/precios" })
+  if (has("precios") || hasPricing) items.push({ label: "Precios", href: "/precios" })
   const aboutKey = ["sobre-maxi", "sobre", "sobre-mi", "quien-soy"].find(has)
   if (aboutKey) items.push({ label: "Sobre mí", href: `/${aboutKey}` })
   items.push({ label: "Contacto", href: "/contacto" })
@@ -52,7 +55,10 @@ export function Header() {
   const clinic = useClinic()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const navItems = buildNavItems(clinic.pages as Record<string, unknown> | undefined)
+  const navItems = buildNavItems(
+    clinic.pages as Record<string, unknown> | undefined,
+    Boolean(clinic.pricing),
+  )
 
   useEffect(() => {
     const handleScroll = () => {
