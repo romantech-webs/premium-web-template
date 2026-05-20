@@ -54,6 +54,7 @@ export function WhyUs() {
           </motion.div>
 
           {/* Stats grid — 2x2 with large numbers */}
+          {!clinic.whyUsHideStats && (
           <div className="grid grid-cols-2 gap-3 mb-10">
             {stats.map((stat, index) => {
               const Icon = getIcon(stat.icon)
@@ -79,6 +80,7 @@ export function WhyUs() {
               )
             })}
           </div>
+          )}
 
           {/* Features as vertical timeline */}
           <div className="relative pl-8">
@@ -108,8 +110,8 @@ export function WhyUs() {
           </div>
         </div>
 
-        {/* Desktop layout: original 2-col */}
-        <div className="hidden lg:grid lg:grid-cols-2 gap-16 items-center">
+        {/* Desktop layout: original 2-col (collapses to 1-col when stats grid is hidden) */}
+        <div className={`hidden lg:grid gap-16 items-center ${clinic.whyUsHideStats ? 'lg:grid-cols-1' : 'lg:grid-cols-2'}`}>
           {/* Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -139,9 +141,11 @@ export function WhyUs() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="flex gap-5 group"
                   >
+                    {!clinic.whyUsHideIcons && (
                     <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-accent group-hover:scale-110 group-hover:border-accent transition-all duration-300">
                       <Icon className="w-6 h-6 text-accent group-hover:text-white transition-colors duration-300" weight={DEFAULT_ICON_WEIGHT} />
                     </div>
+                    )}
                     <div>
                       <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                       <p className="text-white/50 leading-relaxed">{item.description}</p>
@@ -153,6 +157,7 @@ export function WhyUs() {
           </motion.div>
 
           {/* Stats Grid */}
+          {!clinic.whyUsHideStats && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -188,6 +193,7 @@ export function WhyUs() {
             </div>
             {!isLuxury && <div className="absolute -bottom-6 -right-6 w-32 h-32 border-4 border-accent/30 rounded-2xl -z-10" />}
           </motion.div>
+          )}
         </div>
       </div>
     </section>

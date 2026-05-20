@@ -71,8 +71,10 @@ export function Services() {
                 <div key={service.id} className="w-[80vw] max-w-[320px]" style={{ scrollSnapAlign: "center" }}>
                   <Link href={`/servicios/${service.id}`} className="block h-full">
                     <div className="h-full p-5 bg-gradient-to-br from-white to-neutral rounded-2xl border border-gray-100 shadow-sm">
-                      <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                        <Icon className="w-5 h-5 text-primary" weight={DEFAULT_ICON_WEIGHT} />
+                      <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-3 overflow-hidden">
+                        {service.image
+                          ? <img src={service.image} alt="" className="w-9 h-9 object-contain" />
+                          : <Icon className="w-5 h-5 text-primary" weight={DEFAULT_ICON_WEIGHT} />}
                       </div>
                       <h3 className="text-base font-bold text-secondary mb-1.5">{service.name}</h3>
                       <p className="text-secondary/60 text-sm mb-3 leading-relaxed line-clamp-4">{service.description}</p>
@@ -135,8 +137,10 @@ export function Services() {
                         {String(index + 1).padStart(2, '0')}
                       </div>
                     )}
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:rotate-3 group-hover:scale-110 transition-all duration-300">
-                      <Icon className="w-7 h-7 text-primary group-hover:text-white transition-colors duration-300" weight={DEFAULT_ICON_WEIGHT} />
+                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 overflow-hidden group-hover:bg-primary group-hover:rotate-3 group-hover:scale-110 transition-all duration-300">
+                      {service.image
+                        ? <img src={service.image} alt="" className="w-11 h-11 object-contain" />
+                        : <Icon className="w-7 h-7 text-primary group-hover:text-white transition-colors duration-300" weight={DEFAULT_ICON_WEIGHT} />}
                     </div>
                     <h3 className="text-xl font-bold text-secondary mb-3">{service.name}</h3>
                     <p className="text-secondary/60 text-sm mb-6 leading-relaxed">{service.description}</p>

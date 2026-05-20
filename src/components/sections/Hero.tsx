@@ -251,7 +251,8 @@ export function Hero() {
               ))}
             </div>
             <span className="text-xs font-bold text-secondary">
-              {clinic.reviews.rating} · {clinic.reviews.count}
+              {clinic.reviews.rating}
+              {!clinic.heroHidePatientsStat && <> · {clinic.reviews.count}</>}
             </span>
           </motion.div>
         </div>
@@ -339,11 +340,11 @@ export function Hero() {
             transition={{ delay: 0.6, duration: 0.5 }}
             className="mt-8 pt-6 border-t border-gray-200 flex justify-between"
           >
-            {[
-              { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
+            {([
+              !clinic.heroHidePatientsStat && { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
               { end: clinic.services.length, label: "Servicios" },
               { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
-            ].map((stat, i) => (
+            ].filter(Boolean) as Array<{ end: number; prefix?: string; label: string; decimals?: number }>).map((stat, i) => (
               <div key={i} className="text-center">
                 <p className="text-2xl font-bold text-secondary">
                   <CountUp end={stat.end} prefix={stat.prefix} decimals={stat.decimals} />
@@ -389,7 +390,8 @@ export function Hero() {
               </div>
               <div className="w-px h-4 bg-gray-200" />
               <span className="text-sm font-semibold text-secondary">
-                {clinic.reviews.rating} · {clinic.reviews.count} reseñas
+                {clinic.reviews.rating}
+                {!clinic.heroHidePatientsStat && <> · {clinic.reviews.count} reseñas</>}
               </span>
             </motion.div>
 
@@ -480,13 +482,13 @@ export function Hero() {
               initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
-              className="mt-12 pt-10 border-t border-gray-200 grid grid-cols-3 gap-6"
+              className={`mt-12 pt-10 border-t border-gray-200 grid gap-6 ${clinic.heroHidePatientsStat ? 'grid-cols-2' : 'grid-cols-3'}`}
             >
-              {[
-                { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
+              {([
+                !clinic.heroHidePatientsStat && { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
                 { end: clinic.services.length, label: "Tratamientos" },
                 { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
-              ].map((stat, i) => (
+              ].filter(Boolean) as Array<{ end: number; prefix?: string; label: string; decimals?: number }>).map((stat, i) => (
                 <div key={i} className="text-left flex items-center gap-6">
                   {i > 0 && <div className="w-px h-8 bg-gray-200 -ml-3" />}
                   <div>
