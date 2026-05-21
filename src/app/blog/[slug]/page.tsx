@@ -194,7 +194,7 @@ export default async function BlogPostPage(
                 ¿Te puedo ayudar?
               </div>
               <h2 className="text-2xl sm:text-3xl font-display font-bold mb-3 leading-tight">
-                {post.callToAction ? post.callToAction.split(".")[0] + "." : `¿Necesitas un fontanero en ${config.address.city}?`}
+                {post.callToAction ? post.callToAction.split(".")[0] + "." : `¿Te ayudamos?`}
               </h2>
               {post.callToAction && post.callToAction.split(".").length > 1 && (
                 <p className="opacity-90 mb-6 text-base sm:text-lg">
@@ -217,9 +217,7 @@ export default async function BlogPostPage(
           <nav className="mt-10 pt-8 border-t border-secondary/10 flex flex-wrap gap-3 text-sm">
             <Link href="/blog" className="text-secondary/60 hover:text-primary transition-colors">← Volver al blog</Link>
             <span className="text-secondary/20">·</span>
-            <Link href="/precios" className="text-secondary/60 hover:text-primary transition-colors">Tarifas</Link>
-            <span className="text-secondary/20">·</span>
-            <Link href="/urgencias" className="text-secondary/60 hover:text-primary transition-colors">Urgencias</Link>
+            <Link href="/contacto" className="text-secondary/60 hover:text-primary transition-colors">Contacto</Link>
           </nav>
         </div>
       </article>

@@ -57,10 +57,10 @@ export default async function BlogIndexPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary leading-[1.05] mb-5 text-balance">
-            Guías de fontanería
+            Blog de {config.name}
           </h1>
           <p className="text-lg sm:text-xl text-secondary/70 leading-relaxed max-w-3xl">
-            Precios, normativa, ayudas y consejos prácticos escritos por {config.team?.[0]?.name || config.name}. Sin tecnicismos vacíos: lo que tienes que saber antes de llamar a un fontanero.
+            Consejos prácticos de {config.specialty.toLowerCase()} escritos por {config.team?.[0]?.name || config.name}. Información clara, sin tecnicismos vacíos, para ayudarte a decidir.
           </p>
         </div>
       </section>
@@ -104,10 +104,10 @@ export default async function BlogIndexPage() {
             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/40 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
             <div className="relative">
               <h2 className="text-2xl sm:text-3xl font-display font-bold mb-3">
-                ¿Tienes una avería ahora mismo?
+                ¿Prefieres que te atendamos directamente?
               </h2>
               <p className="opacity-90 mb-6">
-                Las guías están bien para leer despacio. Para una urgencia: {config.phone}.
+                Las guías están para leerlas con calma. Si quieres una cita, llámanos: {config.phone}.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a href={`tel:${phoneClean}`} className="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-secondary font-bold rounded-xl hover:bg-neutral shadow-xl transition-all">
