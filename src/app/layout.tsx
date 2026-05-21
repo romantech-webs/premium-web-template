@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import { Cormorant_Garamond, Montserrat } from "next/font/google"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import { ClinicProvider } from "@/config/clinic-context"
-import { generateLocalBusinessSchema, generateFAQSchema, generateServiceSchema, generateBreadcrumbSchema, generateWebSiteSchema, isHealthSchemaType } from "@/lib/schema"
+import { generateLocalBusinessSchema, generateWebSiteSchema } from "@/lib/schema"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { WhatsAppWidget } from "@/components/layout/WhatsAppWidget"
@@ -107,13 +107,11 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <head>
-        {/* Preload LCP hero image — responsive */}
+        {/* Preload LCP hero image */}
         <link
           rel="preload"
           as="image"
           href="/images/hero.webp"
-          imageSrcSet="/images/hero-mobile.webp 480w, /images/hero.webp 1440w"
-          imageSizes="100vw"
           fetchPriority="high"
         />
         {/* Dynamic CSS variables from config */}
@@ -127,7 +125,8 @@ export default async function RootLayout({
             }`,
           }}
         />
-        {/* Schema.org JSON-LD */}
+        {/* Schema.org JSON-LD — site-wide nodes (WebSite + business).
+            Page-specific schema (FAQ, services, breadcrumbs) lives in each route. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -138,28 +137,6 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(generateLocalBusinessSchema(config, baseUrl)),
-          }}
-        />
-        {isHealthSchemaType(config.schemaType) && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(generateFAQSchema(config)),
-            }}
-          />
-        )}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateServiceSchema(config, baseUrl)),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateBreadcrumbSchema(baseUrl, [
-              { name: "Inicio", path: "/" },
-            ])),
           }}
         />
         {/* Widget globals + script */}

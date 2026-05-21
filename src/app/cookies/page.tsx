@@ -1,14 +1,16 @@
 import { headers } from "next/headers"
 import { notFound } from "next/navigation"
-import { getClinicConfig } from "@/config/load-config"
+import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import type { Metadata } from "next"
 
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers()
-  const config = await getClinicConfig(h.get("x-clinic-slug") || "")
+  const slug = h.get("x-clinic-slug") || ""
+  const config = await getClinicConfig(slug)
   return {
     title: "Política de Cookies",
     description: `Información sobre el uso de cookies en el sitio web de ${config?.name || ""}`,
+    alternates: { canonical: `${getBaseUrl(slug, config)}/cookies` },
   }
 }
 

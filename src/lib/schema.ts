@@ -32,10 +32,24 @@ function normalizeDays(spec: string): string[] {
   return s.split(/[,\s]+/).map((d) => DAY_MAP[d]).filter((d): d is string => Boolean(d))
 }
 
+function padTime(t: string): string {
+  const [h, m] = t.split(":")
+  return `${h.padStart(2, "0")}:${m}`
+}
+
 function parseHours(spec: string): { opens?: string; closes?: string } {
   const m = spec.match(/(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})/)
-  if (m) return { opens: m[1], closes: m[2] }
+  if (m) return { opens: padTime(m[1]), closes: padTime(m[2]) }
   return {}
+}
+
+/** Normalize a free-text country to an ISO 3166-1 alpha-2 code (schema.org expects the code). */
+function isoCountry(country: string | undefined): string {
+  const c = (country || "").trim().toLowerCase()
+  if (!c) return "ES"
+  if (["es", "españa", "espana", "spain"].includes(c)) return "ES"
+  if (/^[a-z]{2}$/.test(c)) return c.toUpperCase()
+  return (country || "").trim()
 }
 
 export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: string) {
@@ -92,14 +106,14 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
       "@type": "PostalAddress",
       addressLocality: clinic.address.city,
       addressRegion: clinic.addressRegion || clinic.address.province,
-      addressCountry: clinic.address.country,
+      addressCountry: isoCountry(clinic.address.country),
     } : {
       "@type": "PostalAddress",
       streetAddress: clinic.address.street,
       addressLocality: clinic.address.city,
       addressRegion: clinic.addressRegion || clinic.address.province,
       postalCode: clinic.address.postalCode,
-      addressCountry: clinic.address.country,
+      addressCountry: isoCountry(clinic.address.country),
     },
     geo: {
       "@type": "GeoCoordinates",
@@ -145,6 +159,24 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
       ...(owner.bio ? { description: owner.bio } : {}),
       worksFor: { "@id": `${baseUrl}/#business` },
     }
+  }
+
+  // Additional physical centers → schema.org `department` (each its own location node)
+  if (clinic.centers && clinic.centers.length > 0) {
+    schema.department = clinic.centers.map((c) => ({
+      "@type": clinic.schemaType,
+      name: c.name || clinic.name,
+      ...(c.phone ? { telephone: c.phone } : {}),
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: c.address.street,
+        addressLocality: c.address.city,
+        addressRegion: clinic.addressRegion || c.address.province,
+        postalCode: c.address.postalCode,
+        addressCountry: isoCountry(c.address.country),
+      },
+      ...(c.googleMapsUrl ? { hasMap: c.googleMapsUrl } : {}),
+    }))
   }
 
   return schema

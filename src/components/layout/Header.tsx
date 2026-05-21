@@ -233,7 +233,7 @@ export function Header() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="lg:hidden fixed inset-0 z-[55] overflow-y-auto overscroll-contain"
-            style={{ background: "color-mix(in srgb, var(--color-secondary) 97%, transparent)" }}
+            style={{ background: "var(--color-secondary)" }}
           >
             {/* Close button — inside overlay so it's always clickable */}
             <button

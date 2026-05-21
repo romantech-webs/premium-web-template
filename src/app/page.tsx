@@ -1,7 +1,8 @@
 import dynamic from "next/dynamic"
 import { headers } from "next/headers"
+import { getClinicConfig, getBaseUrl } from "@/config/load-config"
+import { generateFAQSchema, generateServiceSchema, isHealthSchemaType } from "@/lib/schema"
 import { Hero } from "@/components/sections/Hero"
-import { getClinicConfig } from "@/config/load-config"
 
 const Services = dynamic(() => import("@/components/sections/Services").then(m => ({ default: m.Services })))
 const Process = dynamic(() => import("@/components/sections/Process").then(m => ({ default: m.Process })))
@@ -17,11 +18,24 @@ const CTA = dynamic(() => import("@/components/sections/CTA").then(m => ({ defau
 export default async function HomePage() {
   const slug = (await headers()).get("x-clinic-slug") || ""
   const config = slug ? await getClinicConfig(slug) : null
+  const baseUrl = config ? getBaseUrl(slug, config) : ""
   const hidden = new Set(config?.hiddenSections ?? [])
   const show = (key: string) => !hidden.has(key as never)
 
   return (
     <>
+      {config && isHealthSchemaType(config.schemaType) && config.faq.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateFAQSchema(config)) }}
+        />
+      )}
+      {config && config.services.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateServiceSchema(config, baseUrl)) }}
+        />
+      )}
       <Hero />
       {show("services") && <Services />}
       {show("process") && <Process />}

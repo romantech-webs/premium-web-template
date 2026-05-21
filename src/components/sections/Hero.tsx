@@ -188,11 +188,12 @@ export function Hero() {
     ? clinic.reviews.featured.reduce((best, r) => r.text.length > best.text.length ? r : best, clinic.reviews.featured[0])
     : null
   const headlineSize = getHeadlineSizeClasses(clinic.heroHeadline)
-  const fullHeadline = (clinic.heroHeadline || []).filter(Boolean).join(" ")
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary/5">
-      <h1 className="sr-only">{fullHeadline}</h1>
+      <h1 className="sr-only">
+        {[clinic.specialty, clinic.address.city].filter(Boolean).join(" en ")} — {clinic.name}
+      </h1>
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-[0.03]">

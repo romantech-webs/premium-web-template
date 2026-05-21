@@ -64,6 +64,7 @@ export default async function ServicePage(
 
   const whatsappUrl = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(config.whatsappMessage)}`
   const phoneClean = config.phone.replace(/\s/g, "")
+  const otherServices = config.services.filter((s) => s.id !== service.id).slice(0, 6)
 
   return (
     <>
@@ -79,7 +80,6 @@ export default async function ServicePage(
           __html: JSON.stringify(
             generateBreadcrumbSchema(baseUrl, [
               { name: "Inicio", path: "/" },
-              { name: "Servicios", path: "/#servicios" },
               { name: service.name, path: `/servicios/${service.id}` },
             ]),
           ),
@@ -310,7 +310,7 @@ export default async function ServicePage(
                 Atención inmediata
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4 leading-tight">
-                ¿Necesitas {service.name.toLowerCase()}?
+                ¿Necesitas {service.name}?
               </h2>
               <p className="opacity-90 mb-7 text-base sm:text-lg max-w-2xl">
                 Llamada directa, sin centralitas. Diagnostico tu caso, te paso un presupuesto cerrado y solo empiezo cuando lo apruebas.
@@ -336,16 +336,29 @@ export default async function ServicePage(
             </div>
           </div>
 
-          {/* Related links */}
-          <nav className="mt-10 pt-8 border-t border-secondary/10 flex flex-wrap gap-3 text-sm">
-            <Link href="/" className="text-secondary/60 hover:text-primary transition-colors">← Volver al inicio</Link>
-            <span className="text-secondary/20">·</span>
-            <Link href="/precios" className="text-secondary/60 hover:text-primary transition-colors">Tarifas orientativas</Link>
-            <span className="text-secondary/20">·</span>
-            <Link href="/urgencias" className="text-secondary/60 hover:text-primary transition-colors">Urgencias 24h</Link>
-            <span className="text-secondary/20">·</span>
-            <Link href="/sobre-maxi" className="text-secondary/60 hover:text-primary transition-colors">Sobre Maxi</Link>
-          </nav>
+          {/* Related services — internal linking */}
+          {otherServices.length > 0 && (
+            <nav aria-label="Otros servicios" className="mt-10 pt-8 border-t border-secondary/10">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-secondary/50 mb-4">Otros servicios</h2>
+              <ul className="flex flex-wrap gap-2">
+                {otherServices.map((s) => (
+                  <li key={s.id}>
+                    <Link
+                      href={`/servicios/${s.id}`}
+                      className="inline-flex items-center px-3 py-1.5 bg-neutral border border-secondary/10 text-secondary/75 text-sm rounded-full hover:border-primary/30 hover:text-primary transition-colors"
+                    >
+                      {s.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-3 text-sm">
+                <Link href="/" className="text-secondary/60 hover:text-primary transition-colors">← Volver al inicio</Link>
+                <span className="text-secondary/20">·</span>
+                <Link href="/contacto" className="text-secondary/60 hover:text-primary transition-colors">Contacto y ubicación</Link>
+              </div>
+            </nav>
+          )}
         </div>
       </section>
 
