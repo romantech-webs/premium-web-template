@@ -10,6 +10,26 @@ export function isHealthSchemaType(schemaType: string): boolean {
   return HEALTH_SCHEMA_TYPES.includes(schemaType)
 }
 
+/**
+ * Returns the @type value for a business node carrying review snippets.
+ *
+ * Google's Review snippet validator requires the parent_node to be one of a fixed
+ * top-level list (LocalBusiness, Organization, Product, …). Medical subtypes like
+ * `PhysicalTherapy` or `Dentist` are technically subclasses of LocalBusiness in
+ * schema.org, but Google does NOT resolve that hierarchy and flags them as
+ * "El tipo de objeto del campo '<parent_node>' no es válido" in Search Console.
+ *
+ * Declaring @type as an array that explicitly includes "LocalBusiness" makes the
+ * site eligible for review rich results while keeping the specific medical subtype
+ * for E-E-A-T / topical relevance.
+ */
+function getBusinessNodeType(schemaType: string): string | string[] {
+  if (isHealthSchemaType(schemaType)) {
+    return ["LocalBusiness", schemaType]
+  }
+  return schemaType
+}
+
 const DAY_MAP: Record<string, string> = {
   lunes: "Monday", martes: "Tuesday", miercoles: "Wednesday", "miércoles": "Wednesday",
   jueves: "Thursday", viernes: "Friday", sabado: "Saturday", "sábado": "Saturday",
@@ -93,7 +113,7 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": clinic.schemaType,
+    "@type": getBusinessNodeType(clinic.schemaType),
     "@id": `${baseUrl}/#business`,
     name: clinic.name,
     description: clinic.description,
@@ -164,7 +184,7 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
   // Additional physical centers → schema.org `department` (each its own location node)
   if (clinic.centers && clinic.centers.length > 0) {
     schema.department = clinic.centers.map((c) => ({
-      "@type": clinic.schemaType,
+      "@type": getBusinessNodeType(clinic.schemaType),
       name: c.name || clinic.name,
       ...(c.phone ? { telephone: c.phone } : {}),
       address: {
