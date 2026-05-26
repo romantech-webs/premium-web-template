@@ -53,6 +53,8 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: config.seo.defaultTitle,
       description: config.seo.defaultDescription,
+      url: baseUrl,
+      siteName: config.name,
       images: [`${baseUrl}/og-image.jpg`],
       locale: "es_ES",
       type: "website",

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
+import { generateBreadcrumbSchema } from "@/lib/schema"
 import { Phone, ChevronRight, Clock, BookOpen } from "lucide-react"
 
 async function getSlugAndConfig() {
@@ -39,9 +40,21 @@ export default async function BlogIndexPage() {
 
   const whatsappUrl = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(config.whatsappMessage)}`
   const phoneClean = config.phone.replace(/\s/g, "")
+  const baseUrl = getBaseUrl(result.slug, config)
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            generateBreadcrumbSchema(baseUrl, [
+              { name: "Inicio", path: "/" },
+              { name: "Blog", path: "/blog" },
+            ]),
+          ),
+        }}
+      />
       <section className="relative pt-32 pb-12 bg-gradient-to-br from-neutral via-white to-primary/5 overflow-hidden">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/[0.04] rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
         <div className="container max-w-5xl mx-auto px-4 relative">
