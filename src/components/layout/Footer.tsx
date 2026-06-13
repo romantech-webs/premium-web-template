@@ -198,7 +198,7 @@ export function Footer() {
           )}
           <p>
             <a
-              href="https://romantechwebs.com?utm_source=client_site&utm_medium=footer&utm_campaign=referral"
+              href="https://romantech.es?utm_source=client_site&utm_medium=footer&utm_campaign=referral"
               target="_blank"
               rel="noopener"
               className="hover:text-white/70 transition-colors"
