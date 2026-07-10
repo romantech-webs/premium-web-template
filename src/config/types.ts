@@ -116,6 +116,8 @@ export interface ClinicConfig {
     seoMetaDescription?: string
     priceFrom?: string   // e.g. "40 €" or "Desde 850 €"
     timeEstimate?: string // e.g. "30-60 min" or "1-2 días"
+    /** Keeps /servicios/{id} and the sitemap entry alive, but drops the card from the homepage grid. */
+    hideFromHome?: boolean
   }>
   yearsExperience?: number
   process: Array<{
@@ -158,6 +160,8 @@ export interface ClinicConfig {
   heroNoOverlay?: boolean
   heroHidePatientsStat?: boolean
   heroShowYearsExperience?: boolean
+  /** Hides every review-derived element of the hero: star badges, featured quote and the rating stat. */
+  heroHideSocialProof?: boolean
   whyUsHideIcons?: boolean
   whyUsHideStats?: boolean
   hiddenSections?: Array<'services' | 'process' | 'reviews' | 'socialProof' | 'whyUs' | 'team' | 'gallery' | 'faq' | 'location' | 'cta'>
@@ -166,6 +170,8 @@ export interface ClinicConfig {
   ctaHeadline: string
   ctaDescription: string
   statsLabel: string
+  /** Value for the `statsLabel` hero stat. Falls back to the Google review count when absent. */
+  patientsCount?: number
   schemaType: string
   sectionCopy: {
     servicesLabel: string

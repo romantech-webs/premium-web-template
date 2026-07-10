@@ -14,6 +14,7 @@ function getIcon(iconName: string) {
 export function Services() {
   const clinic = useClinic()
   const isLuxury = clinic.theme === 'luxury'
+  const visibleServices = clinic.services.filter(s => !s.hideFromHome)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -65,7 +66,7 @@ export function Services() {
             className="carousel-snap gap-4 pb-4"
             style={{ paddingInline: "calc(50vw - min(40vw, 160px))" }}
           >
-            {clinic.services.map((service, index) => {
+            {visibleServices.map((service, index) => {
               const Icon = getIcon(service.icon)
               return (
                 <div key={service.id} className="w-[80vw] max-w-[320px]" style={{ scrollSnapAlign: "center" }}>
@@ -95,7 +96,7 @@ export function Services() {
 
           {/* Dot indicators */}
           <div className="flex justify-center gap-2 mt-4">
-            {clinic.services.map((_, i) => (
+            {visibleServices.map((_, i) => (
               <button
                 key={i}
                 className="w-2 h-2 rounded-full transition-all duration-300"
@@ -119,7 +120,7 @@ export function Services() {
 
         {/* Desktop: Flex grid — centers orphan items on last row */}
         <div className="hidden md:flex md:flex-wrap md:justify-center gap-6">
-          {clinic.services.map((service, index) => {
+          {visibleServices.map((service, index) => {
             const Icon = getIcon(service.icon)
             return (
               <motion.div

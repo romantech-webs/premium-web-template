@@ -184,9 +184,12 @@ export function Hero() {
   if (clinic.theme === 'luxury') return <LuxuryHero />
 
   const whatsappUrl = `https://wa.me/${clinic.whatsapp}?text=${encodeURIComponent(clinic.whatsappMessage)}`
-  const featuredReview = clinic.reviews.featured.length > 0
+  const showSocialProof = !clinic.heroHideSocialProof
+  const featuredReview = showSocialProof && clinic.reviews.featured.length > 0
     ? clinic.reviews.featured.reduce((best, r) => r.text.length > best.text.length ? r : best, clinic.reviews.featured[0])
     : null
+  const visibleServiceCount = clinic.services.filter(s => !s.hideFromHome).length
+  const patientsCount = clinic.patientsCount ?? clinic.reviews.count
   const headlineSize = getHeadlineSizeClasses(clinic.heroHeadline)
 
   return (
@@ -240,6 +243,7 @@ export function Hero() {
           )}
 
           {/* Floating rating badge on image — top-24 clears the fixed header */}
+          {showSocialProof && (
           <motion.div
             initial={false}
             animate={{ opacity: 1, y: 0 }}
@@ -256,6 +260,7 @@ export function Hero() {
               {!clinic.heroHidePatientsStat && <> · {clinic.reviews.count}</>}
             </span>
           </motion.div>
+          )}
         </div>
 
         {/* Content below image */}
@@ -342,9 +347,9 @@ export function Hero() {
             className="mt-8 pt-6 border-t border-gray-200 flex justify-between"
           >
             {([
-              !clinic.heroHidePatientsStat && { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
-              { end: clinic.services.length, label: "Servicios" },
-              { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
+              !clinic.heroHidePatientsStat && { end: patientsCount, prefix: "+", label: clinic.statsLabel },
+              { end: visibleServiceCount, label: "Servicios" },
+              showSocialProof && { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
               clinic.heroShowYearsExperience && clinic.yearsExperience && { end: clinic.yearsExperience, prefix: "+", label: "Años experiencia" },
             ].filter(Boolean) as Array<{ end: number; prefix?: string; label: string; decimals?: number }>).map((stat, i) => (
               <div key={i} className="text-center">
@@ -369,6 +374,7 @@ export function Hero() {
             className="text-left"
           >
             {/* Trust badge */}
+            {showSocialProof && (
             <motion.div
               initial={false}
               animate={{ opacity: 1, y: 0 }}
@@ -396,6 +402,7 @@ export function Hero() {
                 {!clinic.heroHidePatientsStat && <> · {clinic.reviews.count} reseñas</>}
               </span>
             </motion.div>
+            )}
 
             {/* Headline (visual; SEO h1 is sr-only above) */}
             <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-secondary leading-[1.1] mb-6" aria-hidden="true">
@@ -485,15 +492,15 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
               className={(() => {
-                const n = (!clinic.heroHidePatientsStat ? 1 : 0) + 2 + (clinic.heroShowYearsExperience && clinic.yearsExperience ? 1 : 0)
+                const n = (!clinic.heroHidePatientsStat ? 1 : 0) + 1 + (showSocialProof ? 1 : 0) + (clinic.heroShowYearsExperience && clinic.yearsExperience ? 1 : 0)
                 const colsClass = n === 4 ? 'grid-cols-4' : n === 3 ? 'grid-cols-3' : 'grid-cols-2'
                 return `mt-12 pt-10 border-t border-gray-200 grid gap-6 ${colsClass}`
               })()}
             >
               {([
-                !clinic.heroHidePatientsStat && { end: clinic.reviews.count, prefix: "+", label: clinic.statsLabel },
-                { end: clinic.services.length, label: "Tratamientos" },
-                { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
+                !clinic.heroHidePatientsStat && { end: patientsCount, prefix: "+", label: clinic.statsLabel },
+                { end: visibleServiceCount, label: "Tratamientos" },
+                showSocialProof && { end: clinic.reviews.rating, decimals: 1, label: "Valoración" },
                 clinic.heroShowYearsExperience && clinic.yearsExperience && { end: clinic.yearsExperience, prefix: "+", label: "Años experiencia" },
               ].filter(Boolean) as Array<{ end: number; prefix?: string; label: string; decimals?: number }>).map((stat, i) => (
                 <div key={i} className="text-left flex items-center gap-6">
@@ -533,7 +540,7 @@ export function Hero() {
               </div>
 
               {/* Floating badge - Rating */}
-              {clinic.heroShowRatingBadge !== false && (
+              {clinic.heroShowRatingBadge !== false && showSocialProof && (
               <motion.div
                 initial={false}
                 animate={{ opacity: 1, x: 0 }}
