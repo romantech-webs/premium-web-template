@@ -69,7 +69,11 @@ export function CountUp({
     return () => observer.disconnect()
   }, [end, duration, decimals])
 
-  const display = decimals > 0 ? count.toFixed(decimals) : Math.round(count).toLocaleString("es-ES")
+  // Manual thousands separator (es-ES) instead of toLocaleString: deterministic on
+  // server and client (no ICU dependency, no hydration mismatch). 2000 → "2.000".
+  const display = decimals > 0
+    ? count.toFixed(decimals)
+    : Math.round(count).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
 
   return (
     <span ref={ref} className={className}>
