@@ -69,7 +69,7 @@ export function CountUp({
     return () => observer.disconnect()
   }, [end, duration, decimals])
 
-  const display = decimals > 0 ? count.toFixed(decimals) : Math.round(count).toString()
+  const display = decimals > 0 ? count.toFixed(decimals) : Math.round(count).toLocaleString("es-ES")
 
   return (
     <span ref={ref} className={className}>
