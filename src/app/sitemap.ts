@@ -52,10 +52,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }] : []
 
+  // /precios and /equipo are real routes only when the config carries that data.
+  const preciosEntry: MetadataRoute.Sitemap = config?.pricing ? [{
+    url: `${baseUrl}/precios`,
+    lastModified: BUILD_DATE,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }] : []
+
+  const equipoEntry: MetadataRoute.Sitemap = config?.team?.length ? [{
+    url: `${baseUrl}/equipo`,
+    lastModified: BUILD_DATE,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }] : []
+
   return [
     { url: baseUrl, lastModified: BUILD_DATE, changeFrequency: "monthly", priority: 1 },
     ...reservarEntry,
     { url: `${baseUrl}/contacto`, lastModified: BUILD_DATE, changeFrequency: "monthly", priority: 0.8 },
+    ...preciosEntry,
+    ...equipoEntry,
     ...serviceUrls,
     ...customPageUrls,
     ...blogIndexEntry,

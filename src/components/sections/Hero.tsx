@@ -33,7 +33,7 @@ function LuxuryHero() {
       {/* Full-screen background image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/hero.webp"
+          src={clinic.heroImage || "/images/hero.webp"}
           alt={`${clinic.name} - ${clinic.tagline}`}
           fill
           className="object-cover"
@@ -191,6 +191,8 @@ export function Hero() {
   const visibleServiceCount = clinic.services.filter(s => !s.hideFromHome).length
   const patientsCount = clinic.patientsCount ?? clinic.reviews.count
   const headlineSize = getHeadlineSizeClasses(clinic.heroHeadline)
+  const heroImage = clinic.heroImage || "/images/hero.webp"
+  const showStats = !clinic.heroHideStats
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary/5">
@@ -231,7 +233,7 @@ export function Hero() {
         {/* Hero image — full width with gradient overlay */}
         <div className="relative w-full h-[50vh] min-h-[320px]">
           <Image
-            src="/images/hero.webp"
+            src={heroImage}
             alt={`${clinic.name} - ${clinic.tagline}`}
             fill
             className="object-cover"
@@ -340,6 +342,7 @@ export function Hero() {
           </motion.div>
 
           {/* Stats — horizontal scroll */}
+          {showStats && (
           <motion.div
             initial={false}
             animate={{ opacity: 1, y: 0 }}
@@ -360,6 +363,18 @@ export function Hero() {
               </div>
             ))}
           </motion.div>
+          )}
+
+          {clinic.heroNote && (
+            <motion.p
+              initial={false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="mt-8 pt-6 border-t border-gray-200 text-sm text-secondary/60 leading-relaxed"
+            >
+              {clinic.heroNote}
+            </motion.p>
+          )}
         </div>
       </div>
 
@@ -475,6 +490,7 @@ export function Hero() {
                 </span>
               </motion.a>
 
+              {!clinic.heroHideCallButton && (
               <motion.a
                 href={`tel:${clinic.phone.replace(/\s/g, "")}`}
                 className="btn-secondary text-base"
@@ -484,9 +500,11 @@ export function Hero() {
                 <Phone className="w-5 h-5" />
                 Llamar Ahora
               </motion.a>
+              )}
             </motion.div>
 
             {/* Stats */}
+            {showStats && (
             <motion.div
               initial={false}
               animate={{ opacity: 1, y: 0 }}
@@ -514,6 +532,18 @@ export function Hero() {
                 </div>
               ))}
             </motion.div>
+            )}
+
+            {clinic.heroNote && (
+              <motion.p
+                initial={false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+                className="mt-12 pt-10 border-t border-gray-200 text-base text-secondary/60 max-w-xl leading-relaxed"
+              >
+                {clinic.heroNote}
+              </motion.p>
+            )}
           </motion.div>
 
           {/* Hero Image — desktop */}
@@ -527,7 +557,7 @@ export function Hero() {
               <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-primary/10 to-accent/20 rounded-[2rem] -rotate-3" />
               <div className="relative aspect-[4/5] rounded-[1.5rem] overflow-hidden shadow-2xl shadow-primary/20">
                 <Image
-                  src="/images/hero.webp"
+                  src={heroImage}
                   alt={`${clinic.name} - ${clinic.tagline}`}
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
@@ -564,6 +594,7 @@ export function Hero() {
               )}
 
               {/* Floating badge - Specialty */}
+              {!clinic.heroHideSpecialtyBadge && (
               <motion.div
                 initial={false}
                 animate={{ opacity: 1, y: 0 }}
@@ -584,6 +615,7 @@ export function Hero() {
                   </div>
                 </motion.div>
               </motion.div>
+              )}
 
               <div className="absolute -bottom-4 -right-4 w-24 h-24 border-4 border-accent rounded-2xl -z-10" />
             </div>

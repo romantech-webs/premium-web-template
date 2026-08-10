@@ -4,13 +4,21 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { Instagram, Linkedin, Award } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
+import { cn } from "@/lib/utils"
 
-export function Team() {
+/** `asPage` drops the between-sections chrome when this renders as /equipo instead of a homepage block. */
+export function Team({ asPage = false }: { asPage?: boolean } = {}) {
   const clinic = useClinic()
   const isLuxury = clinic.theme === 'luxury'
 
   return (
-    <section id="equipo" className="section-padding bg-neutral relative overflow-hidden section-divider">
+    <section
+      id="equipo"
+      className={cn(
+        "bg-neutral relative overflow-hidden",
+        asPage ? "pt-6 pb-20 lg:pb-28" : "section-padding section-divider",
+      )}
+    >
       {/* Background */}
       {!isLuxury && (
         <div className="absolute inset-0 opacity-50">
@@ -25,7 +33,7 @@ export function Team() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          className={cn("text-center max-w-3xl mx-auto mb-16", asPage && "mb-12")}
         >
           <span className="section-label justify-center">{clinic.sectionCopy.teamLabel}</span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-bold text-secondary mt-4 mb-4 lg:mb-6">
@@ -37,7 +45,7 @@ export function Team() {
         </motion.div>
 
         {/* Team Grid - Single member layout */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-20 md:space-y-24">
           {clinic.team.map((member, index) => (
             <motion.div
               key={index}

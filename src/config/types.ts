@@ -162,6 +162,33 @@ export interface ClinicConfig {
   heroShowYearsExperience?: boolean
   /** Hides every review-derived element of the hero: star badges, featured quote and the rating stat. */
   heroHideSocialProof?: boolean
+  /**
+   * Hero image path. Defaults to "/images/hero.webp".
+   * Static images are served with a 1-year `immutable` Cache-Control, so replacing
+   * the file in place leaves old visitors stuck on the previous photo — point this
+   * at a new filename (e.g. "/images/hero-2.webp") to bust that cache.
+   */
+  heroImage?: string
+  /** Hides the whole stats row under the hero CTAs (patients / treatments / rating / years). */
+  heroHideStats?: boolean
+  /** Short line rendered where the stats row sits. Pairs with `heroHideStats` to replace numbers with a claim. */
+  heroNote?: string
+  /** Hides the floating badge over the hero image (specialty + play icon). */
+  heroHideSpecialtyBadge?: boolean
+  /**
+   * Drops the secondary "Llamar Ahora" button from the desktop hero, leaving a single CTA.
+   * Mobile keeps its compact phone icon: the header hides the number at that width.
+   */
+  heroHideCallButton?: boolean
+  /** Extra header nav entries, inserted before "Contacto" (e.g. anchors to home sections). */
+  navExtraItems?: Array<{ label: string; href: string }>
+  /**
+   * Trust badges under the hero of service and custom pages. Omit for the vertical
+   * default (health verticals only get the Google rating); pass [] to hide the strip.
+   */
+  serviceTrustSignals?: Array<{ icon?: "star" | "shield" | "clock" | "check"; title: string; subtitle?: string }>
+  /** Closing CTA copy on service pages. Health verticals fall back to `ctaDescription`. */
+  serviceCtaDescription?: string
   whyUsHideIcons?: boolean
   whyUsHideStats?: boolean
   hiddenSections?: Array<'services' | 'process' | 'reviews' | 'socialProof' | 'whyUs' | 'team' | 'gallery' | 'faq' | 'location' | 'cta'>

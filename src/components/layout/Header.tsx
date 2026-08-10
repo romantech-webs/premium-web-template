@@ -13,6 +13,7 @@ type NavItem = { label: string; href: string; emphasis?: "urgent" }
 function buildNavItems(
   pages: Record<string, unknown> | undefined,
   hasPricing?: boolean,
+  extraItems?: Array<{ label: string; href: string }>,
 ): NavItem[] {
   const items: NavItem[] = [{ label: "Servicios", href: "/#servicios" }]
   const has = (k: string) => pages && Object.prototype.hasOwnProperty.call(pages, k)
@@ -21,6 +22,9 @@ function buildNavItems(
   if (has("precios") || hasPricing) items.push({ label: "Precios", href: "/precios" })
   const aboutKey = ["sobre-maxi", "sobre", "sobre-mi", "quien-soy"].find(has)
   if (aboutKey) items.push({ label: "Sobre mí", href: `/${aboutKey}` })
+  for (const extra of extraItems ?? []) {
+    if (!items.some(i => i.href === extra.href)) items.push(extra)
+  }
   items.push({ label: "Contacto", href: "/contacto" })
   return items
 }
@@ -58,6 +62,7 @@ export function Header() {
   const navItems = buildNavItems(
     clinic.pages as Record<string, unknown> | undefined,
     Boolean(clinic.pricing),
+    clinic.navExtraItems,
   )
 
   useEffect(() => {

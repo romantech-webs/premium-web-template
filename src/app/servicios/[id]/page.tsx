@@ -3,8 +3,9 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
-import { generateIndividualServiceSchema, generateBreadcrumbSchema } from "@/lib/schema"
-import { Phone, Star, Shield, Clock, CheckCircle2, ChevronRight, MessageCircle, Wrench, Euro, Timer } from "lucide-react"
+import { generateIndividualServiceSchema, generateBreadcrumbSchema, isHealthSchemaType } from "@/lib/schema"
+import { TrustStrip } from "@/components/TrustStrip"
+import { Phone, CheckCircle2, ChevronRight, MessageCircle, Wrench, Stethoscope, Euro, Timer } from "lucide-react"
 
 async function getSlugAndConfig() {
   const h = await headers()
@@ -65,6 +66,7 @@ export default async function ServicePage(
   const whatsappUrl = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(config.whatsappMessage)}`
   const phoneClean = config.phone.replace(/\s/g, "")
   const otherServices = config.services.filter((s) => s.id !== service.id).slice(0, 6)
+  const isHealth = isHealthSchemaType(config.schemaType)
 
   return (
     <>
@@ -103,8 +105,8 @@ export default async function ServicePage(
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-6">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-5">
-                <Wrench className="w-3.5 h-3.5" />
-                Servicio profesional
+                {isHealth ? <Stethoscope className="w-3.5 h-3.5" /> : <Wrench className="w-3.5 h-3.5" />}
+                {isHealth ? "Tratamiento" : "Servicio profesional"}
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-secondary leading-[1.05] mb-5 text-balance">
@@ -152,36 +154,7 @@ export default async function ServicePage(
           </div>
 
           {/* Trust strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-10 pt-8 border-t border-secondary/10">
-            <div className="flex items-center gap-2.5">
-              <Star className="w-5 h-5 text-amber-400 fill-amber-400 shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">{config.reviews.rating} · {config.reviews.count} reseñas</div>
-                <div className="text-secondary/50 text-[11px]">Google</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Shield className="w-5 h-5 text-primary shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">Autónomo profesional</div>
-                <div className="text-secondary/50 text-[11px]">Factura + IVA</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Clock className="w-5 h-5 text-accent shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">Mismo día</div>
-                <div className="text-secondary/50 text-[11px]">Disponibilidad</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">Presupuesto cerrado</div>
-                <div className="text-secondary/50 text-[11px]">Sin sorpresas</div>
-              </div>
-            </div>
-          </div>
+          <TrustStrip config={config} />
         </div>
       </section>
 
@@ -313,7 +286,10 @@ export default async function ServicePage(
                 ¿Necesitas {service.name}?
               </h2>
               <p className="opacity-90 mb-7 text-base sm:text-lg max-w-2xl">
-                Llamada directa, sin centralitas. Diagnostico tu caso, te paso un presupuesto cerrado y solo empiezo cuando lo apruebas.
+                {config.serviceCtaDescription
+                  || (isHealth
+                    ? config.ctaDescription
+                    : "Llamada directa, sin centralitas. Diagnostico tu caso, te paso un presupuesto cerrado y solo empiezo cuando lo apruebas.")}
               </p>
               <div className="flex flex-wrap gap-3">
                 <a

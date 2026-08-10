@@ -4,6 +4,7 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
 import { generateBreadcrumbSchema } from "@/lib/schema"
+import { TrustStrip } from "@/components/TrustStrip"
 import { Phone, MapPin, Star, Clock, CheckCircle2, Shield, Wrench, ChevronRight, MessageCircle, Euro } from "lucide-react"
 
 const RESERVED_SLUGS = new Set([
@@ -158,36 +159,7 @@ export default async function CustomPagePage(
           </div>
 
           {/* Trust strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-10 pt-8 border-t border-secondary/10">
-            <div className="flex items-center gap-2.5 text-secondary/70">
-              <Star className="w-5 h-5 text-amber-400 fill-amber-400 shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">{config.reviews.rating} · {config.reviews.count} reseñas</div>
-                <div className="text-secondary/50 text-[11px]">Google</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 text-secondary/70">
-              <Shield className="w-5 h-5 text-primary shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">Autónomo profesional</div>
-                <div className="text-secondary/50 text-[11px]">Factura · garantía</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 text-secondary/70">
-              <Clock className="w-5 h-5 text-accent shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">Atención el mismo día</div>
-                <div className="text-secondary/50 text-[11px]">Disponibilidad urgencias</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 text-secondary/70">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <div className="font-bold text-secondary">Presupuesto cerrado</div>
-                <div className="text-secondary/50 text-[11px]">Sin sorpresas</div>
-              </div>
-            </div>
-          </div>
+          <TrustStrip config={config} />
         </div>
       </section>
 
