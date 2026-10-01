@@ -61,8 +61,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: config.seo.defaultTitle,
-      description: config.seo.defaultDescription,
       images: [`${baseUrl}/og-image.jpg`],
     },
     robots: config._meta?.noindex ? { index: false, follow: false } : {
@@ -113,7 +111,7 @@ export default async function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/images/hero.webp"
+          href={config.heroImage || "/images/hero.webp"}
           fetchPriority="high"
         />
         {/* Dynamic CSS variables from config */}

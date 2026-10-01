@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { getClinicConfig, getBaseUrl } from "@/config/load-config"
-import { generateIndividualServiceSchema, generateBreadcrumbSchema, isHealthSchemaType } from "@/lib/schema"
+import { generateIndividualServiceSchema, generateBreadcrumbSchema, generateFAQSchema, isHealthSchemaType } from "@/lib/schema"
 import { TrustStrip } from "@/components/TrustStrip"
 import { Phone, CheckCircle2, ChevronRight, MessageCircle, Wrench, Stethoscope, Euro, Timer } from "lucide-react"
 
@@ -35,6 +35,8 @@ export async function generateMetadata(
     openGraph: {
       title: service.seoTitle || `${service.name} | ${config.name}`,
       description,
+      url: `${baseUrl}/servicios/${id}`,
+      siteName: config.name,
       locale: "es_ES",
       type: "website",
       images: [`${baseUrl}/og-image.jpg`],
@@ -76,6 +78,14 @@ export default async function ServicePage(
           __html: JSON.stringify(generateIndividualServiceSchema(config, service, baseUrl)),
         }}
       />
+      {relatedFaqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateFAQSchema(config, relatedFaqs)),
+          }}
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -1,10 +1,11 @@
 import { headers } from "next/headers"
 import type { MetadataRoute } from "next"
-import { getClinicConfig, getBaseUrl } from "@/config/load-config"
+import { getClinicConfig, getBaseUrl, getConfigModifiedAt } from "@/config/load-config"
 
-// Evaluated once per deployment (module load), NOT per request — gives a stable
-// `lastmod` instead of a timestamp that changes on every crawl.
-const BUILD_DATE = new Date()
+// Fallback si no se puede leer el mtime del config. El `lastmod` normal es la fecha real
+// de modificación del config.json del sitio: un reinicio de PM2 ya no "modifica" todas las
+// URL de todos los clientes a la vez (Google acaba ignorando un lastmod que siempre cambia).
+const PROCESS_START = new Date()
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const h = await headers()
@@ -14,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const config = await getClinicConfig(slug)
   const baseUrl = getBaseUrl(slug, config)
+  const BUILD_DATE = (await getConfigModifiedAt(slug)) ?? PROCESS_START
 
   const serviceUrls: MetadataRoute.Sitemap = (config?.services || []).map((s) => ({
     url: `${baseUrl}/servicios/${s.id}`,

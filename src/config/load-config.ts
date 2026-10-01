@@ -35,6 +35,16 @@ export async function getClinicConfig(slug: string): Promise<ClinicConfig | null
   }
 }
 
+/** Fecha de última modificación real del config.json del sitio (para `lastmod` del sitemap). */
+export async function getConfigModifiedAt(slug: string): Promise<Date | null> {
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) return null
+  try {
+    return (await stat(path.join(SITES_DIR, slug, "config.json"))).mtime
+  } catch {
+    return null
+  }
+}
+
 export function invalidateConfig(slug: string) {
   cache.delete(slug)
 }

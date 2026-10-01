@@ -11,21 +11,22 @@ export function isHealthSchemaType(schemaType: string): boolean {
 }
 
 /**
- * Returns the @type value for a business node carrying review snippets.
- *
- * Google's Review snippet validator requires the parent_node to be one of a fixed
- * top-level list (LocalBusiness, Organization, Product, …). Medical subtypes like
- * `PhysicalTherapy` or `Dentist` are technically subclasses of LocalBusiness in
- * schema.org, but Google does NOT resolve that hierarchy and flags them as
- * "El tipo de objeto del campo '<parent_node>' no es válido" in Search Console.
- *
- * Declaring @type as an array that explicitly includes "LocalBusiness" makes the
- * site eligible for review rich results while keeping the specific medical subtype
- * for E-E-A-T / topical relevance.
+ * Tipos de schema.org del tipo de negocio de la config que NO son un negocio sino una
+ * terapia (`MedicalTherapy`): `PhysicalTherapy` y `PsychologicalTreatment`. Como @type
+ * de un nodo de negocio no validan como entidad local; se mapean a su equivalente.
+ */
+const BUSINESS_TYPE_ALIASES: Record<string, string> = {
+  PhysicalTherapy: "Physiotherapy",
+  PsychologicalTreatment: "MedicalClinic",
+}
+
+/**
+ * @type del nodo de negocio. Se mantiene "LocalBusiness" junto al subtipo médico: Google
+ * no resuelve la jerarquía de subclases de schema.org en algunos validadores.
  */
 function getBusinessNodeType(schemaType: string): string | string[] {
   if (isHealthSchemaType(schemaType)) {
-    return ["LocalBusiness", schemaType]
+    return ["LocalBusiness", BUSINESS_TYPE_ALIASES[schemaType] ?? schemaType]
   }
   return schemaType
 }
@@ -89,14 +90,6 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
     })
     .filter(Boolean)
 
-  const reviews = (clinic.reviews.featured || []).map((r) => ({
-    "@type": "Review",
-    author: { "@type": "Person", name: r.author },
-    reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5 },
-    reviewBody: r.text,
-    ...(r.date ? { datePublished: r.date } : {}),
-  }))
-
   const sameAs = [
     clinic.social.instagram,
     clinic.social.facebook,
@@ -142,14 +135,6 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
     },
     areaServed,
     ...(openingHours.length > 0 ? { openingHoursSpecification: openingHours } : {}),
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: clinic.reviews.rating.toString(),
-      reviewCount: clinic.reviews.count.toString(),
-      bestRating: "5",
-      worstRating: "1",
-    },
-    ...(reviews.length > 0 ? { review: reviews } : {}),
     ...(clinic.priceRange ? { priceRange: clinic.priceRange } : {}),
     ...(clinic.paymentMethods && clinic.paymentMethods.length > 0
       ? { paymentAccepted: clinic.paymentMethods.join(", ") } : {}),
@@ -183,9 +168,13 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
 
   // Additional physical centers → schema.org `department` (each its own location node)
   if (clinic.centers && clinic.centers.length > 0) {
-    schema.department = clinic.centers.map((c) => ({
+    schema.department = clinic.centers.map((c, i) => ({
       "@type": getBusinessNodeType(clinic.schemaType),
+      "@id": `${baseUrl}/#center-${i + 1}`,
       name: c.name || clinic.name,
+      url: baseUrl,
+      parentOrganization: { "@id": `${baseUrl}/#business` },
+      ...(c.coordinates ? { geo: { "@type": "GeoCoordinates", latitude: c.coordinates.lat, longitude: c.coordinates.lng } } : {}),
       ...(c.phone ? { telephone: c.phone } : {}),
       address: {
         "@type": "PostalAddress",
@@ -202,11 +191,14 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
   return schema
 }
 
-export function generateFAQSchema(clinic: ClinicConfig) {
+export function generateFAQSchema(
+  clinic: ClinicConfig,
+  items: Array<{ question: string; answer: string }> = clinic.faq,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: clinic.faq.map((item) => ({
+    mainEntity: items.map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: {

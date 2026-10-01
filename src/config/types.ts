@@ -82,6 +82,8 @@ export interface ClinicConfig {
     phone: string
     googleMapsUrl: string
     googleMapsEmbed: string
+    /** Opcional: si está, el JSON-LD del centro emite `geo`. */
+    coordinates?: { lat: number; lng: number }
   }>
   social: {
     instagram: string | null
