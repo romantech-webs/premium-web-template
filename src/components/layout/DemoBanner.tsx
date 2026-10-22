@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X } from "lucide-react"
+import { ArrowRight, X } from "lucide-react"
 import { useClinic } from "@/config/clinic-context"
 
 const DISMISS_KEY = "demo-aviso-cerrado"
+// WhatsApp de ventas (Emilio) al que llega "Quiero activarla"
+const VENTAS_WHATSAPP = "34611057553"
 
 // Aviso discreto de demo: tarjeta abajo a la izquierda (escritorio) o píldora sobre la
 // barra de "Pedir cita" (móvil). No tapa la cabecera ni lleva enlace: el precio va escrito
@@ -21,20 +23,25 @@ export function DemoBanner() {
   useEffect(() => {
     if (!isDemo || !leadId) return
     try { if (sessionStorage.getItem(DISMISS_KEY)) { setDismissed(true); return } } catch {}
-    // Aparece pasado el hero y con el aviso de cookies ya contestado, para no solaparse con él
+    // Aparece pasado el hero y, si la web tiene aviso de cookies, cuando ya está contestado
+    const hasCookieNotice = Boolean(clinic.tracking?.ga4Id || clinic.tracking?.metaPixelId)
     const check = () => {
       let consent: string | null = null
       try { consent = localStorage.getItem("cookie-consent") } catch {}
-      if (window.scrollY > window.innerHeight * 0.7 && consent) {
+      if (window.scrollY > window.innerHeight * 0.7 && (consent || !hasCookieNotice)) {
         setVisible(true)
         window.removeEventListener("scroll", check)
       }
     }
     window.addEventListener("scroll", check, { passive: true })
     return () => window.removeEventListener("scroll", check)
-  }, [isDemo, leadId])
+  }, [isDemo, leadId, clinic.tracking])
 
   if (!isDemo || !leadId || dismissed) return null
+
+  const activar = `https://wa.me/${VENTAS_WHATSAPP}?text=${encodeURIComponent(
+    `Hola Emilio, he visto la web de ${clinic.name} y quiero activarla. ¿Cuáles son los siguientes pasos?`
+  )}`
 
   const close = () => {
     setDismissed(true)
@@ -62,6 +69,15 @@ export function DemoBanner() {
                 <span className="hidden lg:inline">Esta web puede ser la vuestra: </span>
                 sin coste de alta y <strong>59 €/mes</strong> con IVA, sin permanencia.
               </p>
+              <a
+                href={activar}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+              >
+                Quiero activarla
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
             </div>
             <button
               onClick={close}

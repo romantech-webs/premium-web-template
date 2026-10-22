@@ -1,16 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useClinic } from "@/config/clinic-context"
 
 type ConsentState = "pending" | "accepted" | "rejected"
 
 const STORAGE_KEY = "cookie-consent"
 
 export function CookieConsent() {
+  const clinic = useClinic()
   const [state, setState] = useState<ConsentState>("pending")
   const [visible, setVisible] = useState(false)
+  // Sin GA4 ni píxel de Meta la web no pone cookies de análisis: no hay nada que consentir
+  const hasTracking = Boolean(clinic.tracking?.ga4Id || clinic.tracking?.metaPixelId)
 
   useEffect(() => {
+    if (!hasTracking) return
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved === "accepted" || saved === "rejected") {
       setState(saved)
@@ -32,7 +37,7 @@ export function CookieConsent() {
         window.removeEventListener("scroll", onScroll)
       }
     }
-  }, [])
+  }, [hasTracking])
 
   function accept() {
     localStorage.setItem(STORAGE_KEY, "accepted")
@@ -47,7 +52,7 @@ export function CookieConsent() {
     setVisible(false)
   }
 
-  if (!visible || state !== "pending") return null
+  if (!hasTracking || !visible || state !== "pending") return null
 
   return (
     <div
