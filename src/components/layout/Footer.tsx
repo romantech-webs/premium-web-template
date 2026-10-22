@@ -122,7 +122,7 @@ export function Footer() {
               <Phone className="w-4 h-4 shrink-0" /> {clinic.phone}
             </a>
             {clinic.email && (
-              <a href={`mailto:${clinic.email}`} className="flex items-center gap-3 text-white/70 text-sm">
+              <a href={`mailto:${clinic.email}`} className="flex items-center gap-3 text-white/70 text-sm min-w-0 break-all">
                 <Mail className="w-4 h-4 shrink-0" /> {clinic.email}
               </a>
             )}
@@ -252,10 +252,10 @@ export function Footer() {
               {clinic.email && (
               <li>
                 <a href={`mailto:${clinic.email}`} className="flex items-center gap-4 text-white/70 hover:text-white hover:translate-x-1 transition-all duration-300 group">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
                     <Mail className="w-4 h-4" />
                   </div>
-                  <span className="text-sm">{clinic.email}</span>
+                  <span className="text-sm min-w-0 break-all">{clinic.email}</span>
                 </a>
               </li>
               )}
