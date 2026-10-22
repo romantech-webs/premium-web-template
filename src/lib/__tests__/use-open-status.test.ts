@@ -55,3 +55,24 @@ describe("computeOpenStatus", () => {
     expect(computeOpenStatus(schedule, saturday(11)).isOpen).toBe(true)
   })
 })
+
+describe("rangos de días y horarios partidos", () => {
+  const schedule = [
+    { days: "Lunes a jueves", hours: "10:00–14:00 y 16:00–20:00" },
+    { days: "Viernes", hours: "10:00–14:30" },
+    { days: "Sábado", hours: "10:00–15:00" },
+    { days: "Domingo", hours: "Cerrado" },
+  ]
+  it("abre un miércoles a las 11:00", () => {
+    expect(computeOpenStatus(schedule, new Date(2026, 9, 21, 11, 0)).isOpen).toBe(true)
+  })
+  it("cierra un miércoles a las 15:00 y avisa de la reapertura", () => {
+    expect(computeOpenStatus(schedule, new Date(2026, 9, 21, 15, 0))).toEqual({ isOpen: false, label: "Abre a las 16:00" })
+  })
+  it("abre un jueves por la tarde", () => {
+    expect(computeOpenStatus(schedule, new Date(2026, 9, 22, 17, 30)).isOpen).toBe(true)
+  })
+  it("sigue entendiendo «Lunes a viernes»", () => {
+    expect(computeOpenStatus([{ days: "Lunes a viernes", hours: "9:00 - 14:00" }], new Date(2026, 9, 23, 10, 0)).isOpen).toBe(true)
+  })
+})

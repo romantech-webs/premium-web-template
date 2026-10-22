@@ -58,10 +58,9 @@ function padTime(t: string): string {
   return `${h.padStart(2, "0")}:${m}`
 }
 
-function parseHours(spec: string): { opens?: string; closes?: string } {
-  const m = spec.match(/(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})/)
-  if (m) return { opens: padTime(m[1]), closes: padTime(m[2]) }
-  return {}
+/** Todas las franjas: "10:00–14:00 y 16:00–20:00" → dos especificaciones, no solo la primera. */
+function parseHours(spec: string): Array<{ opens: string; closes: string }> {
+  return [...spec.matchAll(/(\d{1,2}:\d{2})\s*[-–—]\s*(\d{1,2}:\d{2})/g)].map((m) => ({ opens: padTime(m[1]), closes: padTime(m[2]) }))
 }
 
 /** Normalize a free-text country to an ISO 3166-1 alpha-2 code (schema.org expects the code). */
@@ -77,16 +76,15 @@ export function generateLocalBusinessSchema(clinic: ClinicConfig, baseUrl: strin
   const isSAB = !clinic.address.street && !clinic.address.postalCode
 
   const openingHours = clinic.schedule
-    .map((s) => {
+    .flatMap((s) => {
       const days = normalizeDays(s.days)
-      const hours = parseHours(s.hours)
-      if (days.length === 0 || !hours.opens || !hours.closes) return null
-      return {
+      if (days.length === 0) return []
+      return parseHours(s.hours).map((h) => ({
         "@type": "OpeningHoursSpecification",
         dayOfWeek: days,
-        opens: hours.opens,
-        closes: hours.closes,
-      }
+        opens: h.opens,
+        closes: h.closes,
+      }))
     })
     .filter(Boolean)
 

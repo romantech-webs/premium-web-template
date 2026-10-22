@@ -233,6 +233,8 @@ export interface ClinicConfig {
   theme?: 'default' | 'luxury'
   customDomain?: string
   serviceAreas?: string[]
+  /** Texto bajo «Dónde estamos» (una sola sede). Sin él: «Te esperamos en <calle>, <ciudad>.» */
+  locationDescription?: string
   priceRange?: string
   paymentMethods?: string[]
   addressRegion?: string

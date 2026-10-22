@@ -191,7 +191,7 @@ export function Location() {
       <p className="text-base sm:text-lg lg:text-xl text-secondary/60 leading-relaxed">
         {hasMultipleCenters
           ? `Atendemos en ${additionalCenters.length + 1} centros, mismo equipo profesional. Elige el que más te convenga.`
-          : `Estamos en el corazón de ${clinic.address.city}, con fácil acceso en transporte público y parking cercano.`}
+          : clinic.locationDescription || `Te esperamos en ${clinic.address.street}, ${clinic.address.city}.`}
       </p>
     </motion.div>
   )

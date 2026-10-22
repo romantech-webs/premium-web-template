@@ -26,6 +26,22 @@ const DAY_NAMES: Record<string, number[]> = {
   "sábado y domingo": [6, 0], "sabado y domingo": [6, 0],
 }
 
+const WEEK = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"]
+const sinTilde = (d: string) => d.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
+/** "lunes a jueves", "martes - sábado", "viernes y sábado": cualquier rango o par de días. */
+function parseDays(daysLower: string): number[] | undefined {
+  if (DAY_NAMES[daysLower]) return DAY_NAMES[daysLower]
+  const m = sinTilde(daysLower).match(/^([a-z]+)\s*(a|-|y)\s*([a-z]+)$/)
+  if (!m) return undefined
+  const from = WEEK.map(sinTilde).indexOf(m[1]), to = WEEK.map(sinTilde).indexOf(m[3])
+  if (from < 0 || to < 0) return undefined
+  if (m[2] === "y") return [from, to]
+  const out: number[] = []
+  for (let d = from; ; d = (d + 1) % 7) { out.push(d); if (d === to || out.length > 7) break }
+  return out
+}
+
 export function computeOpenStatus(
   schedule: Array<{ days: string; hours: string }>,
   now: Date,
@@ -40,11 +56,11 @@ export function computeOpenStatus(
     const daysLower = normalizeDashes(entry.days).toLowerCase().trim().replace(/\s+/g, " ")
     if (daysLower === "cerrado" || entry.hours.toLowerCase().trim() === "cerrado") continue
 
-    const matchedDays = DAY_NAMES[daysLower]
+    const matchedDays = parseDays(daysLower)
     if (!matchedDays || !matchedDays.includes(dayIndex)) continue
 
     // Parse hours like "09:00 - 20:00" or "09:00 - 14:00 / 16:00 - 20:00"
-    const timeRanges = normalizeDashes(entry.hours).split("/").map(r => r.trim())
+    const timeRanges = normalizeDashes(entry.hours).split(/\/|,| y /).map(r => r.trim())
     for (const range of timeRanges) {
       const parts = range.split("-").map(p => p.trim())
       if (parts.length !== 2) continue
